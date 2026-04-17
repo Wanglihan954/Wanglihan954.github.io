@@ -2053,6 +2053,39 @@ body::before {
 .progress-circle-container {
   position: absolute;
 }
+#local-search-input {
+  outline: none;
+}
+.search-result-container {
+  overflow: auto;
+  margin: 0;
+  padding: 0.5rem 0 1rem 0;
+  height: calc(100% - 160px);
+}
+.search-result-container ul.search-result-list {
+  margin: 0;
+  padding: 0;
+}
+.search-result-container ul.search-result-list li {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0;
+}
+.search-result-container ul.search-result-list li .search-result-title {
+  font-family: 'Songti SC', 'Noto Serif SC', STZhongsong, STKaiti, KaiTi, Roboto, serif;
+  font-weight: 900;
+  font-size: 1.2rem;
+}
+.search-result-container ul.search-result-list li .search-result {
+  margin: 0;
+  font-size: 0.8rem;
+}
+.search-result-container ul.search-result-list li .search-result .search-keyword {
+  background: transparent;
+  color: #f00;
+  font-style: normal;
+  text-decoration: underline;
+}
 .search-popup {
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
@@ -2294,4 +2327,273 @@ iframe.bilibili-video {
 }
 .girl-item .girl-from::after {
   content: '」';
+}
+:root {
+  --my-card-bg: #fff;
+  --my-radius: 16px;
+  --my-shadow: 0 4px 24px -6px rgba(0,0,0,0.08);
+  --nav-height: 60px;
+}
+html.dark {
+  --my-card-bg: #1e1e20;
+  --my-shadow: 0 4px 24px -6px rgba(0,0,0,0.4);
+}
+/* =============================================== */
+/* 🌟 1. 顶部毛玻璃通栏导航栏 (.valaxy-nav) */
+/* =============================================== */
+.valaxy-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding: 0 24px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+/* 👇 核心修复：使用 Grid 强制绝对对称，天王老子来了也挤不歪 */
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important; /* 左右两边各1等份，中间自适应 */
+  align-items: center !important;
+}
+html.dark .valaxy-nav {
+  background: rgba(30,30,32,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+/* --- 导航栏左右布局：分别靠左右对齐 --- */
+.valaxy-nav .nav-left,
+.valaxy-nav .nav-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.valaxy-nav .nav-left {
+  justify-content: flex-start !important;
+}
+.valaxy-nav .nav-right {
+  justify-content: flex-end !important;
+}
+/* --- 导航栏中间标题：解除旧封印，完美融入网格 --- */
+.valaxy-nav .nav-center {
+  position: static !important; /* 废弃容易出 bug 的绝对定位 */
+  transform: none !important;
+  width: auto !important; /* 让它根据文字自然撑开 */
+  min-width: 300px; /* 给标题留足呼吸空间 */
+  height: var(--nav-height) !important;
+  overflow: hidden !important;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.nav-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transform: translateY(0);
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.nav-center.show-article-title .nav-title-wrapper {
+  transform: translateY(-60px);
+}
+/* --- 网站名 & 文章标题字体 --- */
+.valaxy-nav .site-name,
+.valaxy-nav .article-title {
+  height: var(--nav-height);
+  line-height: var(--nav-height);
+  display: block;
+  text-align: center !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: var(--font-family-serif, serif) !important;
+  font-size: 1.15rem !important;
+  font-weight: bold !important;
+  letter-spacing: 2px !important;
+  color: var(--hty-text-color) !important;
+  text-decoration: none !important;
+}
+.valaxy-nav .article-title {
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.valaxy-nav .article-title:hover {
+  opacity: 0.6;
+}
+/* --- 导航栏图标按钮精细化 --- */
+.valaxy-nav .nav-item {
+  color: var(--hty-text-color);
+  font-size: 1.5rem !important;
+  opacity: 0.6;
+  transition: all 0.2s;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 5px !important;
+}
+.valaxy-nav .nav-item:hover {
+  opacity: 1;
+  color: var(--hty-primary-color);
+  transform: scale(1.15);
+}
+.valaxy-nav .nav-item svg {
+  width: 1.6rem !important;
+  height: 1.6rem !important;
+  stroke-width: 1.5 !important;
+}
+.valaxy-nav .nav-item span {
+  font-size: 1.05rem !important;
+  margin-left: 6px !important;
+}
+/* =============================================== */
+/* 🏗️ 2. 全局防干扰清理 */
+/* =============================================== */
+body:not(.is-home) .sidebar-toggle,
+body:not(.is-home) #menu-btn,
+body:not(.is-home) .sidebar #toggle-mode-btn {
+  display: none !important;
+}
+@media screen and (min-width: 1200px) {
+  body:not(.is-home) .container {
+    display: grid !important;
+    justify-content: center !important;
+    grid-template-columns: 280px minmax(0, 1fr) 260px !important;
+    grid-template-rows: auto auto !important;
+    gap: 30px !important;
+    max-width: 85vw !important;
+    margin: 90px auto 40px auto !important; /* 顶部让出导航栏高度 */
+    padding: 0 20px !important;
+    align-items: start;
+  }
+  body:not(.is-home) footer,
+  body:not(.is-home) #footer {
+    grid-column: 1/-1;
+    grid-row: 3 !important;
+    margin-top: 40px !important;
+  }
+}
+body:not(.is-home) #content {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  background: var(--my-card-bg) !important;
+  border-radius: var(--my-radius) !important;
+  box-shadow: var(--my-shadow) !important;
+  padding: 40px 50px !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+}
+body:not(.is-home) .sidebar {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  position: sticky !important;
+  top: 90px !important; /* 吸顶距离完美对接导航栏 */
+  background: var(--my-card-bg) !important;
+  border-right: none !important;
+  border-radius: var(--my-radius) !important;
+  box-shadow: var(--my-shadow) !important;
+  padding: 30px 20px !important;
+  margin: 0 !important;
+  width: auto !important;
+  opacity: 1 !important;
+}
+/* 核心卡片 3：右侧目录区 */
+.right-sidebar {
+  grid-column: 3 !important;
+  grid-row: 2 !important;
+  position: sticky;
+  top: 90px !important;
+  background: var(--my-card-bg) !important;
+  border-radius: var(--my-radius) !important;
+  box-shadow: var(--my-shadow) !important;
+  padding: 24px;
+  margin: 0 !important;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  opacity: 1 !important;
+}
+/* --- 彻底重写右侧目录样式：灰细精致版 --- */
+.right-sidebar::before {
+  content: "文章目录";
+  display: block;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--hty-text-color);
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed rgba(150,150,150,0.3);
+}
+.right-sidebar ol,
+.right-sidebar ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+}
+.right-sidebar .toc-number {
+  display: none !important;
+}
+.right-sidebar .toc-child {
+  padding-left: 15px !important;
+}
+.right-sidebar li.toc-item {
+  margin-bottom: 10px !important;
+  line-height: 1.4 !important;
+}
+.right-sidebar a.toc-link {
+  font-size: 0.9rem !important;
+  color: var(--hty-text-color) !important;
+  opacity: 0.7;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  display: block;
+  transition: all 0.2s ease;
+}
+.right-sidebar a.toc-link:hover,
+.right-sidebar a.toc-link.active {
+  opacity: 1;
+  color: var(--hty-primary-color) !important;
+  transform: translateX(3px);
+}
+/* =============================================== */
+/* 📱 4. 手机端响应式降级处理 */
+/* =============================================== */
+@media screen and (max-width: 1199px) {
+  .valaxy-nav .nav-center {
+    display: none !important;
+  }
+  .right-sidebar {
+    display: none !important;
+  }
+  body:not(.is-home) .container {
+    display: block !important;
+    padding: 0 15px !important;
+    margin-top: 80px !important;
+  }
+  body:not(.is-home) .sidebar {
+    position: relative !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 20px auto !important;
+  }
+  body:not(.is-home) #content {
+    margin: 20px 0 !important;
+    padding: 20px !important;
+  }
+}
+/* 🔪 解除宽度封印（严格限定在非首页，保护主页排版！） */
+body:not(.is-home) #content .post-card,
+body:not(.is-home) #content .post-block,
+body:not(.is-home) #content .markdown-body {
+  max-width: 100% !important;
+  width: 100% !important;
 }
