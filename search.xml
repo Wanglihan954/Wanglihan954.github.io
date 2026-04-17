@@ -4,7 +4,7 @@
     <title>Github学生优惠获取教程</title>
     <url>/posts/70d8eb1/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js"></script><h1 id="Github学生优惠获取教程"><a href="#Github学生优惠获取教程" class="headerlink" title="Github学生优惠获取教程"></a>Github学生优惠获取教程</h1>
-    <div id="aplayer-lOpioUdL" class="aplayer aplayer-tag-marker meting-tag-marker"
+    <div id="aplayer-qwjPlqvH" class="aplayer aplayer-tag-marker meting-tag-marker"
          data-id="497572729" data-server="netease" data-type="song" data-mode="circulation" data-autoplay="false" data-mutex="true" data-listmaxheight="340px" data-preload="auto" data-theme="#C20C0C"
     ></div>
 
@@ -45,7 +45,7 @@
 <h2 id="学生邮箱添加-可以使用VPN"><a href="#学生邮箱添加-可以使用VPN" class="headerlink" title="学生邮箱添加(可以使用VPN)"></a>学生邮箱添加(可以使用VPN)</h2><ol>
 <li>进入邮箱设置板块，若已添加学校邮箱但未显示通过，需进行验证</li>
 <li>操作入口：找到<code>Add email address</code>（添加邮箱地址）选项，录入学校邮箱并完成学校邮箱验证<ol>
-<li>示例邮箱格式：<a href="mailto:&#50;&#x30;&#50;&#51;&#48;&#x30;&#48;&#49;&#64;&#112;&#x6b;&#x75;&#46;&#101;&#100;&#x75;&#46;&#x63;&#110;">20230001@pku.edu.cn</a>（仅为格式参考，需替换为真实学校邮箱）</li>
+<li>示例邮箱格式：<a href="mailto:&#x32;&#x30;&#50;&#x33;&#x30;&#x30;&#x30;&#x31;&#64;&#x70;&#107;&#117;&#x2e;&#101;&#x64;&#117;&#x2e;&#x63;&#x6e;">20230001@pku.edu.cn</a>（仅为格式参考，需替换为真实学校邮箱）</li>
 </ol>
 </li>
 </ol>
@@ -1151,6 +1151,46 @@
       </tags>
   </entry>
   <entry>
+    <title>WPS for Linux 字体配置(字体缺失解决办法)</title>
+    <url>/posts/5cd3f1bd/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js"></script><h2 id="WPS-for-Linux-字体配置-字体缺失解决办法"><a href="#WPS-for-Linux-字体配置-字体缺失解决办法" class="headerlink" title="WPS for Linux 字体配置(字体缺失解决办法)"></a>WPS for Linux 字体配置(字体缺失解决办法)</h2><h3 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h3><blockquote>
+<p>有些linux装完wps后提示“部分字体无法显示”或“some formula symbols might be not display”。这是因为缺少某些字体导致，主要是特殊符号或公式字体等等，而这些字体其实是在windows中可以找到的。有兴趣的自己去研究。</p>
+</blockquote>
+<h3 id="2-解决方案"><a href="#2-解决方案" class="headerlink" title="2. 解决方案"></a>2. 解决方案</h3><p>2.1. 下载字体库</p>
+<p><a href="https://pan.baidu.com/s/1AhdMyXPbYsEnP0PYlLbVtQ" title="点击这里下载字体库（鼠标悬浮查看密码）">点击这里下载字体库（鼠标悬浮查看密码）</a>(g9ci)</p>
+<p>2.2. 添加字体（使下载的字体库生效）</p>
+<p>方法一：解压到 <a href="https://so.csdn.net/so/search?q=WPS&spm=1001.2101.3001.7020">WPS</a>的默认字体文件夹中(wps-office)，然后重启WPS即可</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo unzip wps_symbol_fonts.zip -d /usr/share/fonts/wps-office</span><br></pre></td></tr></table></figure>
+
+<p>tips：如果<code>/usr/share/fonts/</code>目录下没有<code>wps-office</code>文件夹，则使用方法二。</p>
+<p>方法二：</p>
+<ul>
+<li>将字体库文件解压</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">sudo unzip wps_symbol_fonts.<span class="built_in">zip</span>		<span class="comment"># 解压zip文件</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>更新字体</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="meta"># 生成字体索引sudo mkfontscalesudo mkfontdir# 更新字体缓存sudo fc-cache</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>重新打开WPS，提示不再出现。</li>
+</ul>
+<p>方法三：图形化操作</p>
+<ul>
+<li>点击zip文件，鼠标右键 -&gt; 解压，解压后会得到一些tff文件</li>
+<li>双击点开tff文件，点击安装（全部的tff文件都操作一遍即可）</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Ubuntu个性化</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>为 WSL2 一键设置代理</title>
     <url>/posts/22a73298/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js"></script><h1 id="为-WSL2-一键设置代理"><a href="#为-WSL2-一键设置代理" class="headerlink" title="为 WSL2 一键设置代理"></a>为 WSL2 一键设置代理</h1><h2 id="WSL1-和-WSL2-网络的区别"><a href="#WSL1-和-WSL2-网络的区别" class="headerlink" title="WSL1 和 WSL2 网络的区别"></a>WSL1 和 WSL2 网络的区别</h2><p>在 WSL1 时代，由于 Linux 子系统和 Windows 共享了网络端口，所以访问 Windows 的代理非常简单。例如 Windows 的代理客户端监听了 8000 端口，那么只需要在 Linux 子系统中执行如下命令，就可以让当前 session 中的请求通过代理访问互联网：</p>
@@ -1191,46 +1231,6 @@
 </li>
 </ol>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> .proxyrc</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Ubuntu个性化</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>WPS for Linux 字体配置(字体缺失解决办法)</title>
-    <url>/posts/5cd3f1bd/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js"></script><h2 id="WPS-for-Linux-字体配置-字体缺失解决办法"><a href="#WPS-for-Linux-字体配置-字体缺失解决办法" class="headerlink" title="WPS for Linux 字体配置(字体缺失解决办法)"></a>WPS for Linux 字体配置(字体缺失解决办法)</h2><h3 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h3><blockquote>
-<p>有些linux装完wps后提示“部分字体无法显示”或“some formula symbols might be not display”。这是因为缺少某些字体导致，主要是特殊符号或公式字体等等，而这些字体其实是在windows中可以找到的。有兴趣的自己去研究。</p>
-</blockquote>
-<h3 id="2-解决方案"><a href="#2-解决方案" class="headerlink" title="2. 解决方案"></a>2. 解决方案</h3><p>2.1. 下载字体库</p>
-<p><a href="https://pan.baidu.com/s/1AhdMyXPbYsEnP0PYlLbVtQ" title="点击这里下载字体库（鼠标悬浮查看密码）">点击这里下载字体库（鼠标悬浮查看密码）</a>(g9ci)</p>
-<p>2.2. 添加字体（使下载的字体库生效）</p>
-<p>方法一：解压到 <a href="https://so.csdn.net/so/search?q=WPS&spm=1001.2101.3001.7020">WPS</a>的默认字体文件夹中(wps-office)，然后重启WPS即可</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo unzip wps_symbol_fonts.zip -d /usr/share/fonts/wps-office</span><br></pre></td></tr></table></figure>
-
-<p>tips：如果<code>/usr/share/fonts/</code>目录下没有<code>wps-office</code>文件夹，则使用方法二。</p>
-<p>方法二：</p>
-<ul>
-<li>将字体库文件解压</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">sudo unzip wps_symbol_fonts.<span class="built_in">zip</span>		<span class="comment"># 解压zip文件</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>更新字体</li>
-</ul>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="meta"># 生成字体索引sudo mkfontscalesudo mkfontdir# 更新字体缓存sudo fc-cache</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>重新打开WPS，提示不再出现。</li>
-</ul>
-<p>方法三：图形化操作</p>
-<ul>
-<li>点击zip文件，鼠标右键 -&gt; 解压，解压后会得到一些tff文件</li>
-<li>双击点开tff文件，点击安装（全部的tff文件都操作一遍即可）</li>
-</ul>
-]]></content>
       <categories>
         <category>Ubuntu个性化</category>
       </categories>

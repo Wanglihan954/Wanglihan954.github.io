@@ -63,18 +63,21 @@ IconifyProviders = {
     // Wait for 1 second before switching API hosts
     rotate: 1000,
   },
-};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><div class="nav-left"><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item" href="/links/" title="我的小伙伴们"><span class="icon iconify" data-icon="ri:links-line"></span></a><a class="nav-item" href="/girls/" title="她们都是我的翅膀"><span class="icon iconify" data-icon="ri:women-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">宁翰のHEXO</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">Github学生优惠获取教程</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><script>document.addEventListener('DOMContentLoaded', function() {
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><div class="nav-left"><a class="nav-item" id="mobile-menu-btn" href="javascript:;" onclick="toggleSidebar()" title="菜单"><span class="icon iconify" data-icon="ri:menu-line"></span></a><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/links/" title="我的小伙伴们"><span class="icon iconify" data-icon="ri:links-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="她们都是我的翅膀"><span class="icon iconify" data-icon="ri:women-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">宁翰のHEXO</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">Github学生优惠获取教程</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" onclick="closeAllDrawers()"></div><div id="mobile-toc-btn" onclick="toggleToc()" title="文章目录"><span class="icon iconify" data-icon="ri:list-unordered"></span></div><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
   const navCenter = document.getElementById('nav-center');
   if (navCenter && document.querySelector('.article-title')) {
     window.addEventListener('scroll', function() {
-      if (window.scrollY > 150) {
-        navCenter.classList.add('show-article-title');
-      } else {
-        navCenter.classList.remove('show-article-title');
-      }
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
     });
   }
 });
+
+// 手机端抽屉开关逻辑
+window.toggleSidebar = function() { document.body.classList.toggle('sidebar-open'); };
+window.toggleToc = function() { document.body.classList.toggle('toc-open'); };
+window.closeAllDrawers = function() { document.body.classList.remove('sidebar-open', 'toc-open'); };
 </script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
 .search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
@@ -90,11 +93,9 @@ IconifyProviders = {
 .search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
 .search-keyword { color: #ff5252; font-weight: bold; }
 </style><script>let mySearchData = null;
-// 暴露给全局的打开函数
 window.openMySearch = function() {
   document.getElementById('my-search-modal').style.display = 'flex';
   setTimeout(() => document.getElementById('my-search-input').focus(), 100);
-  
   if (!mySearchData) {
     fetch('/search.xml').then(res => res.text()).then(str => {
       const parser = new DOMParser();
@@ -107,15 +108,11 @@ window.openMySearch = function() {
     }).catch(err => console.error("搜索数据加载失败:", err));
   }
 };
-
-// 暴露给全局的关闭函数
 window.closeMySearch = function() {
   document.getElementById('my-search-modal').style.display = 'none';
   document.getElementById('my-search-input').value = '';
   document.getElementById('my-search-results').innerHTML = '';
 };
-
-// 监听输入事件
 document.addEventListener('DOMContentLoaded', function() {
   const input = document.getElementById('my-search-input');
   if(input) {
@@ -124,16 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const results = document.getElementById('my-search-results');
       if (!keyword) { results.innerHTML = ''; return; }
       if (!mySearchData) return;
-
-      const matched = mySearchData.filter(item => 
-        item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword)
-      );
-
-      if (matched.length === 0) {
-        results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>';
-        return;
-      }
-
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
       results.innerHTML = matched.map(item => {
         const reg = new RegExp(keyword, 'gi');
         const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
@@ -144,15 +133,13 @@ document.addEventListener('DOMContentLoaded', function() {
           let end = Math.min(content.length, index + 30);
           content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
           content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
-        } else {
-          content = content.substring(0, 60) + '...';
-        }
+        } else { content = content.substring(0, 60) + '...'; }
         return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
       }).join('');
     });
   }
 });</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">宁翰のHEXO</span><sub class="site-subtitle">我的世界</sub><div class="site-description">踏着梦走过时光</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">17</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">3</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">8</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#181717"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/girls/" title="她们都是我的翅膀" style="color:#FF69B4"><span class="icon iconify" data-icon="ri:women-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/70d8eb1/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="宁翰のHEXO"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Github学生优惠获取教程</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2025-12-12 21:31:43" itemprop="dateCreated datePublished" datetime="2025-12-12T21:31:43+08:00">2025-12-12</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2026-04-16 16:07:42" itemprop="dateModified" datetime="2026-04-16T16:07:42+08:00">2026-04-16</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">996</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">3m</span></span></span><span class="leancloud_visitors" id="/posts/70d8eb1/" data-flag-title="Github学生优惠获取教程"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/70d8eb1/"></span></span></a><div class="post-classify"><span class="post-tag"><a class="tag-item" href="/tags/Agent/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Agent</span></a><a class="tag-item" href="/tags/Github/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Github</span></a><a class="tag-item" href="/tags/LLM/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">LLM</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><h1 id="Github学生优惠获取教程"><a href="#Github学生优惠获取教程" class="headerlink" title="Github学生优惠获取教程"></a>Github学生优惠获取教程</h1>
-    <div id="aplayer-lOpioUdL" class="aplayer aplayer-tag-marker meting-tag-marker"
+    <div id="aplayer-qwjPlqvH" class="aplayer aplayer-tag-marker meting-tag-marker"
          data-id="497572729" data-server="netease" data-type="song" data-mode="circulation" data-autoplay="false" data-mutex="true" data-listmaxheight="340px" data-preload="auto" data-theme="#C20C0C"
     ></div>
 
@@ -193,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <h2 id="学生邮箱添加-可以使用VPN"><a href="#学生邮箱添加-可以使用VPN" class="headerlink" title="学生邮箱添加(可以使用VPN)"></a>学生邮箱添加(可以使用VPN)</h2><ol>
 <li>进入邮箱设置板块，若已添加学校邮箱但未显示通过，需进行验证</li>
 <li>操作入口：找到<code>Add email address</code>（添加邮箱地址）选项，录入学校邮箱并完成学校邮箱验证<ol>
-<li>示例邮箱格式：<a href="mailto:&#50;&#x30;&#50;&#51;&#48;&#x30;&#48;&#49;&#64;&#112;&#x6b;&#x75;&#46;&#101;&#100;&#x75;&#46;&#x63;&#110;">20230001@pku.edu.cn</a>（仅为格式参考，需替换为真实学校邮箱）</li>
+<li>示例邮箱格式：<a href="mailto:&#x32;&#x30;&#50;&#x33;&#x30;&#x30;&#x30;&#x31;&#64;&#x70;&#107;&#117;&#x2e;&#101;&#x64;&#117;&#x2e;&#x63;&#x6e;">20230001@pku.edu.cn</a>（仅为格式参考，需替换为真实学校邮箱）</li>
 </ol>
 </li>
 </ol>

@@ -48,18 +48,21 @@ IconifyProviders = {
     // Wait for 1 second before switching API hosts
     rotate: 1000,
   },
-};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><div class="nav-left"><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item" href="/links/" title="我的小伙伴们"><span class="icon iconify" data-icon="ri:links-line"></span></a><a class="nav-item" href="/girls/" title="她们都是我的翅膀"><span class="icon iconify" data-icon="ri:women-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">宁翰のHEXO</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">Hello World</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><script>document.addEventListener('DOMContentLoaded', function() {
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><div class="nav-left"><a class="nav-item" id="mobile-menu-btn" href="javascript:;" onclick="toggleSidebar()" title="菜单"><span class="icon iconify" data-icon="ri:menu-line"></span></a><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/links/" title="我的小伙伴们"><span class="icon iconify" data-icon="ri:links-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="她们都是我的翅膀"><span class="icon iconify" data-icon="ri:women-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">宁翰のHEXO</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">Hello World</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" onclick="closeAllDrawers()"></div><div id="mobile-toc-btn" onclick="toggleToc()" title="文章目录"><span class="icon iconify" data-icon="ri:list-unordered"></span></div><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
   const navCenter = document.getElementById('nav-center');
   if (navCenter && document.querySelector('.article-title')) {
     window.addEventListener('scroll', function() {
-      if (window.scrollY > 150) {
-        navCenter.classList.add('show-article-title');
-      } else {
-        navCenter.classList.remove('show-article-title');
-      }
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
     });
   }
 });
+
+// 手机端抽屉开关逻辑
+window.toggleSidebar = function() { document.body.classList.toggle('sidebar-open'); };
+window.toggleToc = function() { document.body.classList.toggle('toc-open'); };
+window.closeAllDrawers = function() { document.body.classList.remove('sidebar-open', 'toc-open'); };
 </script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
 .search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
@@ -75,11 +78,9 @@ IconifyProviders = {
 .search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
 .search-keyword { color: #ff5252; font-weight: bold; }
 </style><script>let mySearchData = null;
-// 暴露给全局的打开函数
 window.openMySearch = function() {
   document.getElementById('my-search-modal').style.display = 'flex';
   setTimeout(() => document.getElementById('my-search-input').focus(), 100);
-  
   if (!mySearchData) {
     fetch('/search.xml').then(res => res.text()).then(str => {
       const parser = new DOMParser();
@@ -92,15 +93,11 @@ window.openMySearch = function() {
     }).catch(err => console.error("搜索数据加载失败:", err));
   }
 };
-
-// 暴露给全局的关闭函数
 window.closeMySearch = function() {
   document.getElementById('my-search-modal').style.display = 'none';
   document.getElementById('my-search-input').value = '';
   document.getElementById('my-search-results').innerHTML = '';
 };
-
-// 监听输入事件
 document.addEventListener('DOMContentLoaded', function() {
   const input = document.getElementById('my-search-input');
   if(input) {
@@ -109,16 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const results = document.getElementById('my-search-results');
       if (!keyword) { results.innerHTML = ''; return; }
       if (!mySearchData) return;
-
-      const matched = mySearchData.filter(item => 
-        item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword)
-      );
-
-      if (matched.length === 0) {
-        results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>';
-        return;
-      }
-
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
       results.innerHTML = matched.map(item => {
         const reg = new RegExp(keyword, 'gi');
         const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
@@ -129,9 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
           let end = Math.min(content.length, index + 30);
           content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
           content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
-        } else {
-          content = content.substring(0, 60) + '...';
-        }
+        } else { content = content.substring(0, 60) + '...'; }
         return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
       }).join('');
     });

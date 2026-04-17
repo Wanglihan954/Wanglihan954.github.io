@@ -2368,7 +2368,7 @@ html.dark .valaxy-nav {
 .valaxy-nav .nav-right {
   display: flex !important;
   align-items: center !important;
-  gap: 12px !important;
+  gap: 20px !important;
 }
 .valaxy-nav .nav-left {
   justify-content: flex-start !important;
@@ -2596,4 +2596,211 @@ body:not(.is-home) #content .post-block,
 body:not(.is-home) #content .markdown-body {
   max-width: 100% !important;
   width: 100% !important;
+}
+/* ================================================= */
+/* 📱 5. 终极手机端适配：APP 级侧边抽屉交互 */
+/* ================================================= */
+/* 默认在电脑端隐藏手机特有组件 */
+#mobile-menu-btn,
+#mobile-overlay,
+#mobile-toc-btn {
+  display: none;
+}
+/* 默认状态（电脑端）：把汉堡菜单藏起来 */
+#mobile-menu-btn {
+  display: none !important;
+}
+@media screen and (max-width: 768px) {
+  .desktop-nav-links {
+    display: none !important;
+  }
+  #mobile-menu-btn {
+    display: inline-flex !important;
+  }
+  .valaxy-nav .nav-center {
+    display: flex !important; /* 恢复中间的博客标题 */
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+  }
+  .valaxy-nav .article-title {
+    display: none !important;
+  }
+  #mobile-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  body.sidebar-open #mobile-overlay,
+  body.toc-open #mobile-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+  body:not(.is-home) .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -320px !important; /* 默认藏在屏幕左边外面 */
+    width: 280px !important;
+    height: 100vh !important;
+    z-index: 2001 !important;
+    margin: 0 !important;
+    border-radius: 0 20px 20px 0 !important; /* 只给右边加圆角，更像抽屉 */
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    overflow-y: auto;
+    padding-top: 50px !important; /* 给顶部留点呼吸空间 */
+  }
+  body.sidebar-open .sidebar {
+    transform: translateX(320px) !important;
+  }
+  .right-sidebar {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    right: -320px !important; /* 默认藏在屏幕右边外面 */
+    width: 260px !important;
+    height: 100vh !important;
+    z-index: 2001 !important;
+    margin: 0 !important;
+    border-radius: 20px 0 0 20px !important;
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    padding-top: 50px !important;
+  }
+  body.toc-open .right-sidebar {
+    transform: translateX(-320px) !important;
+  }
+  #mobile-toc-btn {
+    display: flex;
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    background: var(--my-card-bg);
+    border-radius: 50%; /* 圆形悬浮球 */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 1999;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: var(--hty-primary-color);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  #mobile-toc-btn:active {
+    transform: scale(0.9);
+  }
+  #mobile-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  body.sidebar-open #mobile-overlay,
+  body.toc-open #mobile-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+  body:not(.is-home) .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -320px !important;
+    width: 280px !important;
+    height: 100vh !important;
+    z-index: 2001 !important;
+    margin: 0 !important;
+    border-radius: 0 20px 20px 0 !important;
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    overflow-y: auto;
+    padding-top: 50px !important;
+  }
+  body.sidebar-open .sidebar {
+    transform: translateX(320px) !important;
+  }
+}
+@media screen and (max-width: 768px) and (max-width: 768px) {
+  .valaxy-nav {
+    display: flex !important; /* 强制改回弹性盒子 */
+    justify-content: space-between !important;
+    grid-template-columns: none !important; /* 彻底删掉 Grid 规则 */
+    padding: 0 10px !important;
+  }
+  .valaxy-nav .nav-left,
+  .valaxy-nav .nav-right {
+    flex: 0 0 auto !important;
+    gap: 4px !important; /* 手机端图标紧凑点 */
+  }
+  .desktop-nav-links {
+    display: none !important;
+  }
+  #mobile-menu-btn {
+    display: inline-flex !important;
+  }
+  .desktop-only-icon {
+    display: none !important;
+  }
+  .valaxy-nav .nav-center {
+    position: absolute !important;
+    left: 50% !important;
+    top: 0;
+    transform: translateX(-50%) !important;
+    width: 40% !important; /* 核心：限制宽度，防止挤到两边的图标 */
+    display: flex !important;
+    justify-content: center !important;
+    pointer-events: none; /* 防止遮挡点击图标 */
+  }
+  .valaxy-nav .site-name {
+    font-size: 1rem !important; /* 手机标题稍微缩小点，防溢出 */
+    letter-spacing: 0px !important;
+  }
+  .valaxy-nav .nav-item {
+    padding: 5px !important;
+  }
+  .valaxy-nav .nav-item svg {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+}
+/* ================================================= */
+/* 💻 修复：代码块防溢出与丝滑滚动优化 */
+/* ================================================= */
+.markdown-body pre,
+.markdown-body .highlight {
+  max-width: 100% !important; /* 绝不允许代码块比手机屏幕还宽 */
+  width: 100% !important;
+  overflow-x: auto !important; /* 内容太长时，自动出现横向滚动条 */
+  box-sizing: border-box !important;
+  -webkit-overflow-scrolling: touch !important; /* 🍎 核心：让 iPhone 等手机端手指滑动极其丝滑 */
+  padding-bottom: 5px !important; /* 给底部的滚动条留一点呼吸空间，防遮挡文字 */
+}
+/* 🎨 顺手美化一下滚动条，让它看起来更精致，不那么突兀 */
+.markdown-body .highlight::-webkit-scrollbar,
+.markdown-body pre::-webkit-scrollbar {
+  height: 6px !important; /* 滚动条变细一点 */
+}
+.markdown-body .highlight::-webkit-scrollbar-thumb,
+.markdown-body pre::-webkit-scrollbar-thumb {
+  background: rgba(150,150,150,0.4) !important; /* 半透明灰色 */
+  border-radius: 4px !important; /* 圆角滚动条 */
+}
+.markdown-body .highlight::-webkit-scrollbar-track,
+.markdown-body pre::-webkit-scrollbar-track {
+  background: transparent !important; /* 轨道全透明 */
 }
