@@ -2803,11 +2803,26 @@ body {
   font-weight: 900 !important;
   color: var(--my-text-heading) !important;
 }
-.post-title {
+/* 1. 只有文章页里真正的 H1 主标题才放大居中，展现气势 */
+h1.post-title {
   font-size: 2.2rem !important;
   text-align: center !important;
   margin-bottom: 1rem !important;
   letter-spacing: 0.05em !important;
+  display: block !important;
+  width: 100%;
+}
+/* 2. 首页卡片、归档页时间轴里的辅助标题，恢复精巧靠左 */
+h2.post-title,
+h3.post-title,
+span.post-title,
+a.post-title,
+.post-card .post-title,
+.archive .post-title {
+  font-size: 1.15rem !important;
+  text-align: left !important;
+  margin-bottom: 0 !important;
+  letter-spacing: 0 !important;
 }
 .post-meta {
   text-align: center !important;
