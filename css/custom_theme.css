@@ -564,8 +564,12 @@ hr {
 /* Official ZZZ Wiki Bangboo icon used by the agents page shortcut. */
 .links-item .sidebar-page-icon {
   display: block;
-  width: 2rem;
-  height: 2rem;
+  width: 2rem !important;
+  height: 2rem !important;
+  max-width: 2rem !important;
+  max-height: 2rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
   object-fit: contain;
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.22));
   transition: transform 160ms ease, filter 160ms ease;
