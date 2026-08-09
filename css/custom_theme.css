@@ -1,0 +1,826 @@
+/* Yun x Inter-Knot inspired skin.
+ * Keeps Yun's layout and behavior while adding a ZZZ-like industrial UI.
+ */
+
+:root {
+  --ik-yellow: #f6ff00;
+  --ik-blue: #19a7ff;
+  --ik-black: #060707;
+  --ik-panel: rgba(18, 20, 21, 0.78);
+  --ik-text: #f4f5f2;
+  --ik-muted: #a6aba8;
+  --ik-grid: rgba(255, 255, 255, 0.075);
+  --ik-shadow: 0 12px 30px rgba(0, 0, 0, 0.34);
+  --hty-primary-color: var(--ik-yellow) !important;
+  --hty-text-color: var(--ik-text) !important;
+  --my-card-bg: var(--ik-panel) !important;
+  --my-text-body: var(--ik-text) !important;
+  --my-text-heading: #fff !important;
+  --my-text-quote: #d4d8d5 !important;
+  --my-border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html {
+  background-color: var(--ik-black) !important;
+}
+
+body {
+  color: var(--ik-text) !important;
+  background-color: transparent !important;
+  background-image:
+    radial-gradient(circle at 16% 8%, rgba(25, 167, 255, 0.22), transparent 28rem),
+    radial-gradient(circle at 82% 24%, rgba(246, 255, 0, 0.14), transparent 24rem),
+    linear-gradient(135deg, var(--ik-grid) 0 1px, transparent 1px 14px),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 14px) !important;
+  background-size: auto, auto, 14px 14px, 14px 14px !important;
+  background-attachment: fixed !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(105deg, transparent 0 72%, rgba(246, 255, 0, 0.06) 72% 74%, transparent 74%),
+    var(--yun-bg-image) !important;
+  background-size: auto, cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  opacity: 0.78 !important;
+  filter: blur(4px) saturate(0.82) contrast(1.08) !important;
+  transform: scale(1.02);
+}
+
+::selection {
+  color: #000;
+  background: var(--ik-yellow);
+}
+
+/* Dark control bar with high-visibility actions. */
+.valaxy-nav {
+  top: 10px !important;
+  left: 14px !important;
+  right: 14px !important;
+  width: auto !important;
+  height: 58px !important;
+  padding: 0 18px !important;
+  background: linear-gradient(rgba(35, 38, 38, 0.9), rgba(16, 17, 17, 0.86)) !important;
+  border: 3px solid #020303 !important;
+  border-radius: 20px 4px 20px 4px !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13), var(--ik-shadow) !important;
+  overflow: visible !important;
+}
+
+.valaxy-nav::before {
+  content: "INTER-KNOT // 20020730";
+  position: absolute;
+  left: 28px;
+  bottom: -10px;
+  padding: 2px 10px;
+  color: #000;
+  background: var(--ik-yellow);
+  border: 2px solid #000;
+  font: 800 10px/1.2 Consolas, monospace;
+  letter-spacing: 0.08em;
+  transform: skewX(-14deg);
+}
+
+.valaxy-nav .site-name,
+.valaxy-nav .article-title {
+  color: #fff !important;
+  font-family: "Arial Black", "Microsoft YaHei", sans-serif !important;
+  font-style: italic;
+  letter-spacing: 0.08em !important;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.valaxy-nav .nav-item {
+  min-width: 36px;
+  min-height: 36px;
+  color: #fff !important;
+  opacity: 0.82 !important;
+  border-radius: 9px 2px 9px 2px;
+}
+
+.valaxy-nav .nav-item:hover {
+  color: #000 !important;
+  background: var(--ik-yellow) !important;
+  opacity: 1 !important;
+  transform: skewX(-8deg) translateY(-2px) !important;
+  box-shadow: 3px 3px 0 #000;
+}
+
+/* Main panels. */
+#content,
+.sidebar,
+.right-sidebar,
+.post-card,
+.post-block,
+.search-modal-content {
+  color: var(--ik-text) !important;
+  background-color: var(--ik-panel) !important;
+  border: 3px solid #020303 !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), var(--ik-shadow) !important;
+  backdrop-filter: saturate(115%);
+  -webkit-backdrop-filter: saturate(115%);
+}
+
+body:not(.is-home) #content,
+body:not(.is-home) .sidebar,
+.right-sidebar,
+.search-modal-content {
+  border-radius: 18px 4px 18px 4px !important;
+}
+
+body:not(.is-home) #content,
+.post-card {
+  position: relative;
+  overflow: hidden;
+}
+
+body:not(.is-home) #content::before,
+.post-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 88px;
+  height: 8px;
+  background: repeating-linear-gradient(135deg, var(--ik-yellow) 0 8px, #000 8px 12px);
+  pointer-events: none;
+}
+
+.sidebar::after,
+.right-sidebar::after {
+  content: "";
+  display: block;
+  height: 6px;
+  margin-top: 18px;
+  background: linear-gradient(90deg, var(--ik-yellow) 0 38%, transparent 38% 42%, var(--ik-blue) 42% 62%, transparent 62%);
+  transform: skewX(-24deg);
+}
+
+/* Sidebar social icons. Inline colors come from the theme config. */
+.links-of-author-item[title="GitHub"] {
+  color: var(--ik-text) !important;
+}
+
+.links-of-author-item[title="GitHub"]:hover {
+  color: var(--ik-yellow) !important;
+  filter: drop-shadow(0 0 5px rgba(246, 255, 0, 0.55));
+}
+
+/* Taxonomy and generic content pages must not fall back to Yun's white card. */
+#page,
+#archive,
+#tag,
+#category,
+#comment {
+  color: var(--ik-text) !important;
+  background: rgba(18, 20, 21, 0.74) !important;
+  border: 3px solid #020303 !important;
+  border-radius: 18px 4px 18px 4px !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 6px 7px 0 rgba(0, 0, 0, 0.6) !important;
+}
+
+#page > .post-header,
+#archive > .post-header,
+#tag > .post-header,
+#category > .post-header {
+  border-bottom: 0 !important;
+}
+
+#page > .post-header .post-title,
+#archive > .post-header .post-title,
+#tag > .post-header .post-title,
+#category > .post-header .post-title {
+  color: #fff !important;
+}
+
+.page-subtitle {
+  color: var(--ik-muted) !important;
+}
+
+/* Yun-style taxonomy pages, recolored for the Inter-Knot skin. */
+.category-lists {
+  max-width: 720px;
+  margin: 1.25rem auto 2rem !important;
+  padding: 0.75rem clamp(1rem, 5vw, 3rem) 1.5rem !important;
+}
+
+.category-lists .category-list {
+  display: block;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.category-lists .category-list-item {
+  position: relative;
+  display: block;
+  min-height: 42px;
+  padding: 9px 54px 9px 34px !important;
+  color: var(--ik-text) !important;
+  border-bottom: 1px dashed rgba(244, 245, 242, 0.22);
+  list-style: none;
+  transition: padding-left 160ms ease, background-color 160ms ease;
+}
+
+.category-lists .category-list-item:hover {
+  padding-left: 40px !important;
+  background: linear-gradient(90deg, rgba(246, 255, 0, 0.1), transparent 72%);
+}
+
+.category-lists .category-list-item::before {
+  content: "📂" !important;
+  position: absolute;
+  left: 5px;
+  top: 10px;
+  color: var(--ik-yellow) !important;
+  font-size: 1rem;
+  filter: saturate(1.2);
+}
+
+.category-lists .category-list-child {
+  margin: 5px 0 0 12px !important;
+  padding-left: 18px !important;
+  border-left: 2px solid rgba(25, 167, 255, 0.5);
+}
+
+.category-lists .category-list-child .category-list-item::before {
+  content: "📁" !important;
+}
+
+.category-lists .category-list-link {
+  margin: 0 !important;
+  color: #fff !important;
+  border-bottom: 1px dotted rgba(244, 245, 242, 0.45) !important;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.category-lists .category-list-link:hover {
+  color: var(--ik-yellow) !important;
+}
+
+.category-lists .category-list-count {
+  position: absolute;
+  right: 7px;
+  top: 11px;
+  color: var(--ik-muted) !important;
+  font: 700 0.82rem/1.4 Consolas, monospace;
+}
+
+.category-lists .category-list-count::before {
+  content: "[ " !important;
+  color: var(--ik-blue);
+}
+
+.category-lists .category-list-count::after {
+  content: " ]" !important;
+  color: var(--ik-blue);
+}
+
+.tag-cloud {
+  max-width: 820px;
+  margin: 1.25rem auto 2rem !important;
+  padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 2rem !important;
+}
+
+.tag-cloud-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.55rem 0.35rem;
+  line-height: 1.7;
+}
+
+.tag-cloud-tags a {
+  position: relative;
+  margin: 0 0.45rem !important;
+  padding: 0 0.15rem 0.08rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px #000;
+  transition: color 150ms ease, transform 150ms ease, text-shadow 150ms ease;
+}
+
+.tag-cloud-tags a:nth-child(3n + 1) {
+  color: var(--ik-yellow) !important;
+}
+
+.tag-cloud-tags a:nth-child(3n + 2) {
+  color: var(--ik-blue) !important;
+}
+
+.tag-cloud-tags a:nth-child(3n) {
+  color: #ff6fb5 !important;
+}
+
+.tag-cloud-tags a::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform 150ms ease;
+}
+
+.tag-cloud-tags a:hover {
+  color: #fff !important;
+  transform: translateY(-3px) rotate(-1deg);
+  text-shadow: 0 0 10px currentColor, 2px 2px 0 #000;
+}
+
+.tag-cloud-tags a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Hexo emits an empty article after generated taxonomy content. */
+.category-lists + article#page,
+.tag-cloud + article#page {
+  display: none !important;
+}
+
+/* Comment shell and form fields follow the same dark surface. */
+#comment .comment-tooltip,
+#comment input,
+#comment textarea,
+#comment .wl-panel,
+#comment .wl-header,
+#comment .wl-editor {
+  color: var(--ik-text) !important;
+  background: rgba(5, 6, 6, 0.62) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+#comment input::placeholder,
+#comment textarea::placeholder {
+  color: rgba(244, 245, 242, 0.48) !important;
+}
+
+/* Home cards become compact industrial modules. */
+.is-home #content {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.post-card {
+  margin-bottom: 22px !important;
+  border-radius: 18px 18px 4px 18px !important;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease !important;
+}
+
+.post-card:hover {
+  border-color: var(--ik-yellow) !important;
+  transform: translateY(-5px) rotate(-0.25deg);
+  box-shadow: 7px 8px 0 #000, 0 0 0 2px var(--ik-yellow) !important;
+}
+
+.post-card:nth-child(even):hover {
+  border-color: var(--ik-blue) !important;
+  box-shadow: 7px 8px 0 #000, 0 0 0 2px var(--ik-blue) !important;
+}
+
+.post-card .post-title,
+h1.post-title,
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  color: #fff !important;
+  font-family: "Arial Black", "Microsoft YaHei", sans-serif !important;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.post-card .post-title-link {
+  color: #fff !important;
+  text-decoration: none !important;
+}
+
+.post-card:hover .post-title-link {
+  color: var(--ik-yellow) !important;
+}
+
+.post-card-content,
+.post-card-excerpt,
+.markdown-body,
+.markdown-body p,
+.post-meta,
+.site-author-name,
+.site-description {
+  color: var(--ik-text) !important;
+}
+
+.post-meta,
+.post-description,
+.post-card__actions,
+.right-sidebar a.toc-link {
+  color: var(--ik-muted) !important;
+}
+
+/* Buttons, tags and navigation indicators. */
+.hty-button,
+.pagination .page-number,
+.pagination .extend {
+  color: #000 !important;
+  background: var(--ik-yellow) !important;
+  border: 2px solid #000 !important;
+  border-radius: 8px 2px 8px 2px !important;
+  box-shadow: 3px 3px 0 #000 !important;
+  font-weight: 900 !important;
+  transform: skewX(-7deg);
+}
+
+.hty-button:hover,
+.pagination a:hover {
+  background: var(--ik-blue) !important;
+  transform: skewX(-7deg) translateY(-2px) !important;
+}
+
+.tag-item,
+.category-item {
+  color: var(--ik-yellow) !important;
+}
+
+.post-card-tag .tag-item:nth-child(even) {
+  color: #65c7ff !important;
+}
+
+.markdown-body a,
+.right-sidebar a.toc-link:hover,
+.right-sidebar a.toc-link.active {
+  color: var(--ik-yellow) !important;
+}
+
+.markdown-body blockquote {
+  color: #e8ebe8 !important;
+  background: repeating-linear-gradient(135deg, #202323 0 10px, #1b1d1e 10px 20px) !important;
+  border: 0 !important;
+  border-left: 7px solid var(--ik-yellow) !important;
+  border-radius: 0 12px 3px 0 !important;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.markdown-body code:not([class*="language-"]) {
+  color: var(--ik-yellow) !important;
+  background: #050606 !important;
+  border: 1px solid #343838;
+}
+
+figure.highlight,
+.highlight,
+.highlight table,
+.highlight .code,
+.highlight .gutter,
+.highlight pre {
+  color: #e8ebe8 !important;
+  background: #0b0d0d !important;
+}
+
+figure.highlight {
+  border: 3px solid #000 !important;
+  border-radius: 12px 3px 12px 3px !important;
+  box-shadow: 5px 5px 0 rgba(25, 167, 255, 0.55) !important;
+  overflow: hidden;
+}
+
+.highlight .string,
+.highlight .attr,
+.highlight .addition {
+  color: var(--ik-yellow) !important;
+}
+
+.highlight .keyword,
+.highlight .selector-tag,
+.highlight .deletion {
+  color: #ff5f87 !important;
+}
+
+.highlight .number,
+.highlight .literal,
+.highlight .built_in {
+  color: #65c7ff !important;
+}
+
+.markdown-body img {
+  border: 4px solid #000;
+  border-radius: 14px 3px 14px 3px !important;
+  box-shadow: 6px 6px 0 rgba(246, 255, 0, 0.72);
+}
+
+hr {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+#footer {
+  color: var(--ik-muted) !important;
+}
+
+#footer a {
+  color: var(--ik-yellow) !important;
+}
+
+/* Codex pet: reuse the original xiaolemi v2 spritesheet. */
+#xiaolemi-pet {
+  position: fixed;
+  right: 68px;
+  bottom: 14px;
+  z-index: 18;
+  width: 150px;
+  aspect-ratio: 192 / 208;
+  user-select: none;
+  touch-action: none;
+  cursor: grab;
+  filter: drop-shadow(0 8px 7px rgba(0, 0, 0, 0.42));
+  animation: xiaolemi-float 3.2s ease-in-out infinite;
+}
+
+#xiaolemi-pet.is-dragging {
+  cursor: grabbing;
+  animation: none;
+}
+
+.xiaolemi-pet__actor {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: inherit;
+}
+
+.xiaolemi-pet__actor:focus-visible {
+  outline: 3px solid var(--ik-yellow);
+  outline-offset: 3px;
+  border-radius: 48%;
+}
+
+.xiaolemi-pet__sprite {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: url("/images/pet/xiaolemi.webp");
+  background-repeat: no-repeat;
+  background-size: 800% 1100%;
+  image-rendering: auto;
+  pointer-events: none;
+}
+
+.xiaolemi-pet__bubble {
+  position: absolute;
+  right: 72%;
+  bottom: 76%;
+  width: max-content;
+  max-width: 180px;
+  padding: 7px 10px;
+  color: #111;
+  background: rgba(255, 255, 255, 0.96);
+  border: 2px solid #090a0a;
+  border-radius: 12px 12px 3px 12px;
+  box-shadow: 3px 3px 0 var(--ik-yellow);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px) scale(0.94);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.xiaolemi-pet__bubble.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@keyframes xiaolemi-float {
+  0%, 100% { transform: translateY(0) rotate(-0.5deg); }
+  50% { transform: translateY(-7px) rotate(0.8deg); }
+}
+
+/* ZZZ agent directory: turn Yun's compact portrait list into Inter-Knot files. */
+#girls {
+  --agent-card: rgba(12, 14, 16, 0.86);
+  --agent-line: rgba(255, 255, 255, 0.18);
+}
+
+#girls .girls-number {
+  display: inline-flex;
+  align-items: center;
+  min-width: 2.2rem;
+  min-height: 2.2rem;
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.25rem 0.75rem;
+  color: #090a0a;
+  background: var(--ik-yellow);
+  border: 2px solid #090a0a;
+  box-shadow: 4px 4px 0 #090a0a;
+  font-family: var(--ik-display-font);
+  font-weight: 900;
+  transform: skew(-5deg);
+}
+
+#girls .girls-number::after {
+  content: " AGENTS";
+  margin-left: 0.25rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+}
+
+#girls .girl-banner {
+  width: fit-content;
+  margin: 0 auto 1.5rem;
+  padding: 0.35rem 1.15rem;
+  color: #090a0a;
+  background: var(--ik-yellow);
+  border: 2px solid #090a0a;
+  clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+  font-family: var(--ik-display-font);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+#girls .girl-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  padding: 0;
+}
+
+#girls .girl-item {
+  display: block;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+}
+
+#girls .girl-url {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+#girls .girl-info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  min-height: 188px;
+  margin: 0;
+  padding: 1rem 0.65rem 0.85rem;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(36, 39, 42, 0.9), var(--agent-card));
+  border: 1px solid var(--agent-line);
+  border-left: 4px solid var(--ik-blue);
+  border-radius: 3px 14px 3px 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+#girls .girl-info::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: -15px;
+  width: 54px;
+  height: 7px;
+  background: repeating-linear-gradient(135deg, var(--ik-yellow) 0 7px, #090a0a 7px 11px);
+  transform: rotate(45deg);
+}
+
+#girls .girl-url:hover .girl-info,
+#girls .girl-url:focus-visible .girl-info {
+  border-color: var(--ik-yellow);
+  border-left-color: var(--ik-yellow);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), 4px 4px 0 var(--ik-yellow);
+  transform: translateY(-4px);
+}
+
+#girls .girl-avatar {
+  width: 96px;
+  height: 96px;
+  padding: 3px;
+  object-fit: cover;
+  object-position: center top;
+  background: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #090a0a, 0 8px 18px rgba(0, 0, 0, 0.4);
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+#girls .girl-url:hover .girl-avatar,
+#girls .girl-url:focus-visible .girl-avatar {
+  border-color: var(--ik-yellow);
+  transform: scale(1.04);
+}
+
+#girls .girl-name {
+  margin-top: 0.75rem;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+#girls .girl-from {
+  margin-top: 0.35rem;
+  color: rgba(255, 255, 255, 0.64);
+  font-family: var(--ik-display-font);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+#girls .girl-from::before {
+  content: "[ ";
+  color: var(--ik-blue);
+}
+
+#girls .girl-from::after {
+  content: " ]";
+  color: var(--ik-blue);
+}
+
+/* Keep the interface usable on tablets and phones. */
+@media (max-width: 768px) {
+  .valaxy-nav {
+    top: 6px !important;
+    left: 6px !important;
+    right: 6px !important;
+    padding: 0 8px !important;
+    border-radius: 14px 3px 14px 3px !important;
+  }
+
+  .valaxy-nav::before {
+    display: none;
+  }
+
+  .post-card {
+    margin-bottom: 14px !important;
+    border-radius: 14px 14px 3px 14px !important;
+  }
+
+  .post-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .category-lists {
+    padding: 0.75rem !important;
+  }
+
+  .tag-cloud {
+    padding: 1rem 0.5rem 1.5rem !important;
+  }
+
+  #girls .girl-items {
+    grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+    gap: 0.7rem;
+  }
+
+  #girls .girl-info {
+    min-height: 170px;
+    padding-inline: 0.45rem;
+  }
+
+  #girls .girl-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  #xiaolemi-pet {
+    right: 50px;
+    bottom: 64px;
+    width: 112px;
+  }
+
+  .xiaolemi-pet__bubble {
+    right: 62%;
+    max-width: 145px;
+    font-size: 0.7rem;
+  }
+
+  body:not(.is-home) #content,
+  body:not(.is-home) .sidebar,
+  .right-sidebar {
+    border-radius: 14px 3px 14px 3px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-card,
+  .valaxy-nav .nav-item,
+  .hty-button,
+  #xiaolemi-pet {
+    transition: none !important;
+    animation: none !important;
+  }
+}
