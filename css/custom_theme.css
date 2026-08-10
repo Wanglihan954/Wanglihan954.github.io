@@ -127,6 +127,17 @@ body::before {
   -webkit-backdrop-filter: saturate(115%);
 }
 
+/* The original Yun sidebar artwork has a bright lower half that becomes a
+ * white rectangle when background-size: contain is used on tall screens. */
+.sidebar {
+  background-image:
+    linear-gradient(180deg, rgba(7, 10, 14, 0.96), rgba(35, 10, 22, 0.94) 58%, rgba(8, 12, 15, 0.98)),
+    radial-gradient(circle at 22% 28%, rgba(25, 167, 255, 0.16), transparent 45%) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
 body:not(.is-home) #content,
 body:not(.is-home) .sidebar,
 .right-sidebar,
