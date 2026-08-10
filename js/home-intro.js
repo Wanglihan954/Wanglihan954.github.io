@@ -1,36 +1,37 @@
 (() => {
-  const hero = document.getElementById('home-profile')
-  if (!hero) return
+  let loadingTimer
+  let revealTimer
 
-  const storageKey = 'weblog-home-intro-seen-v1'
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  let hasSeenIntro = reduceMotion
+  const initHomeSequence = () => {
+    const sequence = document.getElementById('home-sequence')
+    if (!sequence) return
 
-  try {
-    hasSeenIntro = hasSeenIntro || sessionStorage.getItem(storageKey) === 'true'
-  } catch (_) {
-    // The animation still works when storage is unavailable.
+    window.clearTimeout(loadingTimer)
+    window.clearTimeout(revealTimer)
+    sequence.classList.remove('home-sequence--loading')
+    sequence.classList.remove('home-sequence--profile')
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const loadingDelay = reduceMotion ? 0 : 2200
+    const revealDelay = reduceMotion ? 0 : 4000
+
+    loadingTimer = window.setTimeout(() => {
+      sequence.classList.add('home-sequence--loading')
+    }, loadingDelay)
+
+    revealTimer = window.setTimeout(() => {
+      sequence.classList.remove('home-sequence--loading')
+      sequence.classList.add('home-sequence--profile')
+    }, revealDelay)
+
+    sequence.querySelector('.home-profile__down')?.addEventListener('click', (event) => {
+      const articles = document.getElementById('recent-posts')
+      if (!articles) return
+      event.preventDefault()
+      articles.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+    }, { once: true })
   }
 
-  const finishIntro = () => {
-    hero.classList.add('home-profile--intro-seen')
-    try {
-      sessionStorage.setItem(storageKey, 'true')
-    } catch (_) {}
-  }
-
-  if (hasSeenIntro) {
-    hero.classList.add('home-profile--intro-seen')
-  } else {
-    window.setTimeout(finishIntro, 2350)
-  }
-
-  hero.querySelector('.home-intro__skip')?.addEventListener('click', finishIntro)
-
-  hero.querySelector('.home-profile__down')?.addEventListener('click', (event) => {
-    const articleList = document.getElementById('recent-posts')
-    if (!articleList) return
-    event.preventDefault()
-    articleList.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
-  })
+  document.addEventListener('DOMContentLoaded', initHomeSequence)
+  document.addEventListener('pjax:success', initHomeSequence)
 })()
