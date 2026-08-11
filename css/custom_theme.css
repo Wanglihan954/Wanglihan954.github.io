@@ -73,8 +73,7 @@ body::before {
   overflow: visible !important;
 }
 
-.valaxy-nav::before {
-  content: "INTER-KNOT // 20020730";
+.valaxy-nav .nav-badge {
   position: absolute;
   left: 28px;
   bottom: -10px;
@@ -99,7 +98,7 @@ body::before {
 .valaxy-nav .nav-item {
   min-width: 36px;
   min-height: 36px;
-  color: #fff !important;
+  color: var(--nav-item-color, #fff) !important;
   opacity: 0.82 !important;
   border-radius: 9px 2px 9px 2px;
 }
@@ -110,6 +109,33 @@ body::before {
   opacity: 1 !important;
   transform: skewX(-8deg) translateY(-2px) !important;
   box-shadow: 3px 3px 0 #000;
+}
+
+.valaxy-nav .nav-mask-icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  background-color: currentColor;
+  mask-image: var(--nav-mask-image);
+  mask-mode: luminance;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.28));
+  pointer-events: none;
+}
+
+.valaxy-nav .nav-config-image {
+  display: block;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.valaxy-nav .nav-item:hover .nav-mask-icon {
+  color: #000;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.35));
 }
 
 .bangboo-icon {
