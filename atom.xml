@@ -67,13 +67,13 @@
     <category term="Seventh Knot" scheme="https://20020730.xyz/categories/Seventh-Knot/"/>
     
     
-    <category term="Hexo Helper" scheme="https://20020730.xyz/tags/Hexo-Helper/"/>
-    
-    <category term="文章预览" scheme="https://20020730.xyz/tags/%E6%96%87%E7%AB%A0%E9%A2%84%E8%A7%88/"/>
-    
     <category term="Valaxy" scheme="https://20020730.xyz/tags/Valaxy/"/>
     
     <category term="Pug" scheme="https://20020730.xyz/tags/Pug/"/>
+    
+    <category term="Hexo Helper" scheme="https://20020730.xyz/tags/Hexo-Helper/"/>
+    
+    <category term="文章预览" scheme="https://20020730.xyz/tags/%E6%96%87%E7%AB%A0%E9%A2%84%E8%A7%88/"/>
     
     <category term="SEO" scheme="https://20020730.xyz/tags/SEO/"/>
     
@@ -100,13 +100,13 @@
     
     <category term="Hexo" scheme="https://20020730.xyz/tags/Hexo/"/>
     
+    <category term="JavaScript" scheme="https://20020730.xyz/tags/JavaScript/"/>
+    
     <category term="CSS" scheme="https://20020730.xyz/tags/CSS/"/>
     
     <category term="移动端适配" scheme="https://20020730.xyz/tags/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E9%80%82%E9%85%8D/"/>
     
     <category term="响应式设计" scheme="https://20020730.xyz/tags/%E5%93%8D%E5%BA%94%E5%BC%8F%E8%AE%BE%E8%AE%A1/"/>
-    
-    <category term="JavaScript" scheme="https://20020730.xyz/tags/JavaScript/"/>
     
   </entry>
   
@@ -193,11 +193,11 @@
     
     <category term="Valaxy" scheme="https://20020730.xyz/tags/Valaxy/"/>
     
+    <category term="首页动画" scheme="https://20020730.xyz/tags/%E9%A6%96%E9%A1%B5%E5%8A%A8%E7%94%BB/"/>
+    
     <category term="Pug" scheme="https://20020730.xyz/tags/Pug/"/>
     
     <category term="JavaScript" scheme="https://20020730.xyz/tags/JavaScript/"/>
-    
-    <category term="首页动画" scheme="https://20020730.xyz/tags/%E9%A6%96%E9%A1%B5%E5%8A%A8%E7%94%BB/"/>
     
   </entry>
   

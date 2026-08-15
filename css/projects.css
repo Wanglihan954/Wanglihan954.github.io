@@ -941,6 +941,11 @@ body.is-project-dialog-open {
   object-fit: cover;
 }
 
+.ik-project-dialog__avatar-fallback[hidden],
+.ik-project-dialog__avatar img[hidden] {
+  display: none;
+}
+
 .ik-project-dialog__close {
   display: grid;
   width: 54px;
