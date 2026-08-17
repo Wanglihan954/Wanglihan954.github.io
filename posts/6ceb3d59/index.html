@@ -1,0 +1,464 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="宁翰"><meta name="copyright" content="宁翰"><meta name="generator" content="Hexo 8.1.1"><meta name="theme" content="hexo-theme-yun"><title>论文阅读｜Robust Promptable Video Object Segmentation | Seventh Knot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{"renderMathInElement":true,"strict":"ignore","output":"htmlAndMathml","displayMode":true,"trust":true},
+    ...undefined?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"20020730.xyz","root":"/","title":"世界需要七休日","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.xml"},"localsearch":{"enable":"fasle","trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://comment.20020730.xyz","comment":true,"visitor":true,"emoji":["//unpkg.com/@waline/emojis@1.1.0/weibo",{"name":"嗯呢漫布","folder":"/images/zzz-stickers","prefix":"bangboo-","type":"jpg","icon":"/images/zzz-stickers/bangboo-thanks.jpg","items":["gift","thanks","rest"]},{"name":"丽都漫步","folder":"/images/zzz-stickers","prefix":"lidu-","type":"png","icon":"/images/zzz-stickers/lidu-anby.png","items":["anby","nekomata","lycaon","rina","soldier11","wise"]}],"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="Seventh Knot" type="application/atom+xml"><link rel="stylesheet" href="/css/custom_theme.css?v=20260812-3"><link rel="stylesheet" href="/css/projects.css?v=20260817-1"><script src="/js/web-pet.js" defer></script><script src="/js/mobile-navigation.js" defer></script><script src="/js/home-intro.js?v=20260810-6" defer></script><meta name="description" content="Promptable video object segmentation (PVOS) 模型在输入退化（噪声、模糊、低照度、恶劣天气）下性能大幅下降，阻碍了其在安全关键领域的部署。本文首次系统性研究 RobustPVOS：构建包含 351 个真实视频片段、2500+ 物体掩码的两个真实世界评测数据集；同时用 8 种带时间变化的退化对现有 VOS 数据集合成训练数据。…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读｜Robust Promptable Video Object Segmentation">
+<meta property="og:url" content="https://20020730.xyz/posts/6ceb3d59/index.html">
+<meta property="og:site_name" content="Seventh Knot">
+<meta property="og:description" content="Promptable video object segmentation (PVOS) 模型在输入退化（噪声、模糊、低照度、恶劣天气）下性能大幅下降，阻碍了其在安全关键领域的部署。本文首次系统性研究 RobustPVOS：构建包含 351 个真实视频片段、2500+ 物体掩码的两个真实世界评测数据集；同时用 8 种带时间变化的退化对现有 VOS 数据集合成训练数据。…">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/robustpvos/fig1.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/robustpvos/fig3.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/robustpvos/fig2.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/robustpvos/fig4.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/robustpvos/fig5.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/robustpvos/fig6.webp">
+<meta property="article:published_time" content="2026-08-15T12:45:00.000Z">
+<meta property="article:modified_time" content="2026-08-15T15:00:00.000Z">
+<meta property="article:author" content="宁翰">
+<meta property="article:tag" content="AI论文">
+<meta property="article:tag" content="SAM2">
+<meta property="article:tag" content="Tracking">
+<meta property="article:tag" content="文献笔记">
+<meta property="article:tag" content="视频目标分割">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://20020730.xyz/images/tracking/robustpvos/fig1.webp"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><span class="nav-badge">INTER-KNOT // 20020730</span><div class="nav-left"><button class="nav-item" id="mobile-menu-btn" type="button" title="菜单" aria-label="打开菜单" aria-controls="site-overview-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:menu-line"></span></button><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="代理人档案"><span class="nav-mask-icon" style="--nav-mask-image: url('/images/bangboo-nav.png')" aria-hidden="true"></span></a><a class="nav-item desktop-only-icon" href="/projects/" title="项目终端"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">Seventh Knot</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">论文阅读｜Robust Promptable Video Object Segmentation</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" aria-hidden="true"></div><button id="mobile-toc-btn" type="button" title="文章目录" aria-label="打开文章目录" aria-controls="post-toc-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:list-unordered"></span></button><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
+  const navCenter = document.getElementById('nav-center');
+  if (navCenter && document.querySelector('.article-title')) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
+    });
+  }
+});
+</script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
+.search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.search-header { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(150,150,150,0.1); }
+.search-header input { flex: 1; border: none; background: transparent; outline: none; font-size: 1.1rem; color: var(--hty-text-color); margin: 0 15px; }
+.search-header .close-btn { cursor: pointer; font-size: 1.4rem; opacity: 0.6; transition: all 0.2s; }
+.search-header .close-btn:hover { opacity: 1; color: var(--hty-primary-color); transform: rotate(90deg); }
+.search-results { overflow-y: auto; padding: 10px 24px 20px; }
+.search-result-item { display: block; padding: 15px 0; border-bottom: 1px dashed rgba(150,150,150,0.1); text-decoration: none; color: var(--hty-text-color); transition: all 0.2s; }
+.search-result-item:hover { transform: translateX(5px); }
+.search-result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--hty-primary-color); }
+.search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
+.search-keyword { color: #ff5252; font-weight: bold; }
+</style><script>let mySearchData = null;
+window.openMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('my-search-input').focus(), 100);
+  if (!mySearchData) {
+    fetch('/search.xml').then(res => res.text()).then(str => {
+      const parser = new DOMParser();
+      const entries = parser.parseFromString(str, "text/xml").getElementsByTagName("entry");
+      mySearchData = Array.from(entries).map(entry => ({
+        title: entry.getElementsByTagName('title')[0]?.textContent || '',
+        content: entry.getElementsByTagName('content')[0]?.textContent.replace(/<[^>]+>/g, '') || '',
+        url: entry.getElementsByTagName('url')[0]?.textContent || ''
+      }));
+    }).catch(err => console.error("搜索数据加载失败:", err));
+  }
+};
+window.closeMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'none';
+  document.getElementById('my-search-input').value = '';
+  document.getElementById('my-search-results').innerHTML = '';
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('my-search-input');
+  if(input) {
+    input.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+      const results = document.getElementById('my-search-results');
+      if (!keyword) { results.innerHTML = ''; return; }
+      if (!mySearchData) return;
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
+      results.innerHTML = matched.map(item => {
+        const reg = new RegExp(keyword, 'gi');
+        const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        let content = item.content;
+        const index = content.toLowerCase().indexOf(keyword);
+        if (index > -1) {
+          let start = Math.max(0, index - 30);
+          let end = Math.min(content.length, index + 30);
+          content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+          content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        } else { content = content.substring(0, 60) + '...'; }
+        return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
+      }).join('');
+    });
+  }
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">57</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">78</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/6ceb3d59/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">论文阅读｜Robust Promptable Video Object Segmentation</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-08-15 20:45:00" itemprop="dateCreated datePublished" datetime="2026-08-15T20:45:00+08:00">2026-08-15</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">5k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">19m</span></span></span><span class="leancloud_visitors" id="/posts/6ceb3d59/" data-flag-title="论文阅读｜Robust Promptable Video Object Segmentation"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/6ceb3d59/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">文献阅读</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/Tracking/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Tracking</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%96%87%E7%8C%AE%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">文献笔记</span></a><a class="tag-item" href="/tags/AI%E8%AE%BA%E6%96%87/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">AI论文</span></a><a class="tag-item" href="/tags/SAM2/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">SAM2</span></a><a class="tag-item" href="/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">视频目标分割</span></a><a class="tag-item" href="/tags/Tracking/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Tracking</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p>本文基于论文、补充材料与公开代码整理。文中的“我的理解”和“批判性思考”属于个人分析；<br>论文插图均来自原论文或补充材料，仅用于学习与讨论。</p>
+</blockquote>
+<h2 id="论文信息"><a href="#论文信息" class="headerlink" title="论文信息"></a>论文信息</h2><p><strong>Title:</strong> Robust Promptable Video Object Segmentation<br><strong>Authors:</strong> Sohyun Lee, Yeho Gwon, Lukas Hoyer, Konrad Schindler, Christos Sakaridis, Suha Kwak<br><strong>Venue:</strong> CVPR 2026<br><strong>DOI:</strong> 无<br><strong>GitHub:</strong> 无官方代码<br><strong>Project Page:</strong> <a target="_blank" rel="noopener" href="https://sohyun-l.github.io/RobustPVOS_project_page/">https://sohyun-l.github.io/RobustPVOS_project_page/</a><br><strong>IF &#x2F; CCF:</strong> CCF-A</p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>Promptable video object segmentation (PVOS) 模型在输入退化（噪声、模糊、低照度、恶劣天气）下性能大幅下降，阻碍了其在安全关键领域的部署。本文首次系统性研究 RobustPVOS：构建包含 351 个真实视频片段、2500+ 物体掩码的两个真实世界评测数据集；同时用 8 种带时间变化的退化对现有 VOS 数据集合成训练数据。提出 Memory-object-conditioned Gated-rank Adaptation (MoGA)：利用 memory bank 中维护的 object-specific 表示来调节鲁棒化过程，使模型能以时间一致的方式对不同跟踪对象差异化处理。实验在合成与真实数据集上均取得一致提升。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="论文资源"><a href="#论文资源" class="headerlink" title="论文资源"></a>论文资源</h2><ul>
+<li><strong>PDF:</strong> 已导入 Zotero</li>
+<li><strong>Paper:</strong> <a target="_blank" rel="noopener" href="https://sohyun-l.github.io/RobustPVOS_project_page/">https://sohyun-l.github.io/RobustPVOS_project_page/</a></li>
+<li><strong>GitHub:</strong> 无官方代码（benchmark 数据见项目页）</li>
+</ul>
+<hr>
+<h2 id="1-研究动机"><a href="#1-研究动机" class="headerlink" title="1. 研究动机"></a>1. 研究动机</h2><h3 id="要解决什么问题？"><a href="#要解决什么问题？" class="headerlink" title="要解决什么问题？"></a>要解决什么问题？</h3><blockquote>
+<p>在噪声、模糊、低照度、雨雾雪等退化条件下，promptable 视频目标分割（PVOS）模型性能大幅退化——实证发现 SAM2 在退化输入下表现显著下降，阻碍其在自动驾驶、机器人等安全关键领域的部署。</p>
+</blockquote>
+<h3 id="现有方法的问题"><a href="#现有方法的问题" class="headerlink" title="现有方法的问题"></a>现有方法的问题</h3><ul>
+<li>现有鲁棒性方法（RobustSAM、GaRA-SAM、URIE、AirNet 等）都是针对<strong>单帧图像</strong>的，逐帧独立处理，无法建模视频中的时间一致性，分割结果在时间上不一致</li>
+<li>真实视频的退化在<strong>空间和时间上都变化</strong>：同一场景中不同物体受退化影响不同（如雾中远处物体几乎不可见、近处清晰），逐帧方法对整帧均匀处理，无法考虑物体间的差异</li>
+<li>视频域的鲁棒方法（VPSeg、事件相机）只针对驾驶场景的语义分割或单目标，不适用于 PVOS 的<strong>多目标 + prompt 驱动</strong>范式</li>
+</ul>
+<h3 id="作者的核心思路"><a href="#作者的核心思路" class="headerlink" title="作者的核心思路"></a>作者的核心思路</h3><blockquote>
+<p>利用现代视频分割模型（SAM2）中 memory bank 维护的 object pointer 表示，将低秩适配器的 rank-1 分量按”对象”进行门控选择（gated-rank adaptation），让鲁棒化过程对每个跟踪对象差异化、且在时间上保持一致。</p>
+</blockquote>
+<hr>
+<h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2. 主要贡献"></a>2. 主要贡献</h2><ol>
+<li><strong>Contribution 1：</strong> 开创 RobustPVOS 这一研究方向——首个针对真实退化条件下 PVOS 的综合 benchmark，含两个带密集物体级标注的真实世界评测集（ACDC-Video、MVSeg&#x2F;MVSeg-adv）</li>
+<li><strong>Contribution 2：</strong> 构建合成训练&#x2F;评测数据——对 MOSE、YouTube-VOS、DAVIS 施加 8 种带时间变化（Fourier 时域调制）的退化，共 46,768 个训练片段、1.7M 帧、390 万物体掩码</li>
+<li><strong>Contribution 3：</strong> 提出 MoGA（Memory-object-conditioned Gated-rank Adaptation）——首个面向 RobustPVOS 的 memory-conditioned 鲁棒化方法，以 1.1M 可训练参数（仅 SAM2 的 1.4%）超越全微调 SAM2</li>
+</ol>
+<h4 id="我认为真正的新意"><a href="#我认为真正的新意" class="headerlink" title="我认为真正的新意"></a>我认为真正的新意</h4><blockquote>
+<p>真正的新意不在”rank-1 分解 + 门控”（这继承自 GaRA-SAM），而在<strong>把门控的输入从”退化帧的特征”换成”memory bank 里的 object pointer”</strong>——这使得门控决策天然具备跨帧记忆和时间一致性，并且是按对象（per-object）独立决策的。这本质上是把 MoE 式的”按输入选择专家”升级为”按对象记忆选择专家”，利用了视频分割架构中已有的、却一直被当作”记忆存储”使用的 object 表示。另外值得注意：门控模块没有直接监督，仅靠分割 loss 隐式学习选择路径（mixture-of-experts 范式），这在鲁棒性方法中很少见。</p>
+</blockquote>
+<hr>
+<h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><blockquote>
+<p><strong>阅读说明</strong><br>无官方代码，按论文 Method 整理。MoGA 建立在 SAM2 架构之上，属于对 SAM2 的轻量改造。</p>
+</blockquote>
+<h3 id="3-1-整体框架"><a href="#3-1-整体框架" class="headerlink" title="3.1 整体框架"></a>3.1 整体框架</h3><p><img src="https://20020730.xyz/images/tracking/robustpvos/fig1.webp" alt="Figure 1: Overview of (a) RobustPVOS and (b) our benchmark. RobustPVOS is the task of tracking and segmenting objects, indi- cated by ini..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/robustpvos/fig3.webp" alt="Figure 3: Overview of MoGA integrated into SAM2 [37]. Top: an example input video under adverse weather conditions. Frames with orange ou..." loading="lazy"></p>
+<p><strong>核心架构图</strong></p>
+<blockquote>
+<p>论文 Figure 3：MoGA 集成进 SAM2 的 memory attention。橙色框 &#x3D; 已处理的帧（存入 memory bank），黄色框 &#x3D; 当前帧。MoGA 模块挂在 memory attention 的 Q&#x2F;K&#x2F;V（self-attention）和 Q（cross-attention）线性投影上。</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Prompt (第一帧, box/point)</span><br><span class="line">  ↓</span><br><span class="line">Image Encoder (SAM2, 冻结)</span><br><span class="line">  ↓</span><br><span class="line">Memory Bank（存 object pointer M = &#123;m_o&#125;）</span><br><span class="line">  ↓</span><br><span class="line">Memory Attention (SAM2, 冻结权重 W0)</span><br><span class="line">  ├─ Q/K/V 线性投影 ← 挂 MoGA 低秩适配器 ΔW_o</span><br><span class="line">  │    （ΔW 分解为 rank-1 分量 &#123;a_i, b_i&#125;，由门控向量 z_o 选择性激活）</span><br><span class="line">  └─ 门控模块 g(·)：输入 object pointer m_o</span><br><span class="line">       → 3 层 MLP → Gumbel-Sigmoid → 二进制门控 z_o ∈ &#123;0,1&#125;^R</span><br><span class="line">  ↓</span><br><span class="line">Mask Decoder (SAM2, 冻结)</span><br><span class="line">  ↓</span><br><span class="line">输出: 当前帧各对象掩码</span><br></pre></td></tr></table></figure>
+
+<h4 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h4><ol>
+<li>给定带提示的初始帧，SAM2 编码并初始化 memory bank，其中每个对象 o 有一个 object pointer m_o ∈ R^d，随帧累积编码该对象的历史特征</li>
+<li>对后续每一帧，memory attention 通过 Q&#x2F;K&#x2F;V 线性投影执行跨帧匹配；MoGA 在这些投影上并联低秩适配器</li>
+<li>低秩适配器 ΔW &#x3D; BA 分解为 R 个 rank-1 分量 {b_i a_i^T}；共享的 3 层 MLP 门控网络以各对象的 object pointer 为输入，输出该对象专属的二进制 gating mask z_o，决定激活哪些分量</li>
+<li>前向传播为 h &#x3D; W0 x + (1&#x2F;O)Σ_o (Σ_i z_{o,i}·b_i a_i^T) x，即每个对象用自己激活的适配器子集处理</li>
+<li>训练只更新 MoGA 参数与 LayerNorm（冻结 SAM2 其余参数），损失为每帧每对象的 focal + dice 组合分割损失</li>
+</ol>
+<hr>
+<h3 id="3-2-Core-Module-1-—-MoGA-门控机制-Memory-object-conditioned-Gating"><a href="#3-2-Core-Module-1-—-MoGA-门控机制-Memory-object-conditioned-Gating" class="headerlink" title="3.2 Core Module 1 — MoGA 门控机制 (Memory-object-conditioned Gating)"></a>3.2 Core Module 1 — <code>MoGA 门控机制 (Memory-object-conditioned Gating)</code></h3><h4 id="为什么需要？"><a href="#为什么需要？" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>同一场景中不同对象受退化影响不同（雾中远景 vs 近景），而帧级鲁棒化方法（GaRA-SAM 等）对整帧统一处理，无法按对象差异化；且逐帧独立决策导致分割结果时间抖动。门控必须”看见”对象的历史状态，才能做出时间一致的决策。</p>
+<h4 id="核心做法"><a href="#核心做法" class="headerlink" title="核心做法"></a>核心做法</h4><ul>
+<li>沿用 GaRA-SAM 的思路：把低秩适配器 ΔW 分解为 R 个 rank-1 分量，可选择性激活</li>
+<li>关键差异：门控的输入不是当前帧特征，而是 SAM2 memory bank 中每个对象的 object pointer m_o</li>
+<li>门控网络 g(·) 是共享的 3 层 MLP + Gumbel-Sigmoid，但按对象独立应用；训练时用 straight-through estimator 实现可微的硬门控，推理时退化为确定性阈值</li>
+<li>所有对象共享同一组 rank-1 分量 {a_i, b_i}（Siamese 结构），只通过门控向量 z_o 区分——参数高效</li>
+</ul>
+<h4 id="关键公式"><a href="#关键公式" class="headerlink" title="关键公式"></a>关键公式</h4><p>低秩适配器分解（R 个 rank-1 分量）与门控 logits（τ 为温度，G_i ~ Gumbel(0,1)）：</p>
+<p>$$<br>\Delta W &#x3D; BA &#x3D; \sum_{i&#x3D;1}^{R} b_i a_i^{\top}, \qquad<br>\alpha_o &#x3D; \text{MLP}(m_o), \qquad<br>\tilde{z}<em>{o,i} &#x3D; \sigma!\left(\frac{1}{\tau}(\alpha</em>{o,i} + G_i)\right)<br>$$</p>
+<p>训练时硬门控 + straight-through estimator，以及 MoGA 前向传播（对象专属适配器，共享分量）：</p>
+<p>$$<br>z_{o,i} &#x3D; \begin{cases} \mathbb{I}[\tilde{z}<em>{o,i} &gt; 0.5] &amp; \text{(forward)} \ \tilde{z}</em>{o,i} &amp; \text{(backward)} \end{cases}, \qquad<br>h &#x3D; W_0 x + \frac{1}{O}\sum_{o&#x3D;1}^{O} \left( \sum_{i&#x3D;1}^{R} z_{o,i} \cdot b_i a_i^{\top} \right) x<br>$$</p>
+<p>训练损失（focal + dice，门控无直接监督）：</p>
+<p>$$<br>\mathcal{L}<em>{\text{total}} &#x3D; \frac{1}{T \cdot O}\sum</em>{t&#x3D;1}^{T}\sum_{o&#x3D;1}^{O} \mathcal{L}<em>{\text{seg}}(y</em>{o,t}, \hat{y}_{o,t})<br>$$</p>
+<h4 id="代码对应"><a href="#代码对应" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: 无官方代码（GitHub 未发布）</span><br><span class="line">Class: MoGA（集成于 SAM2 的 memory attention 投影层）</span><br><span class="line">Function: gating module g(·) = 3-layer MLP + Gumbel-Sigmoid</span><br></pre></td></tr></table></figure>
+
+<h4 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h4><p>MoGA 本质上是把”鲁棒化适配器”变成了一个<strong>由对象记忆驱动的 MoE</strong>：rank-1 分量是专家，object pointer 是路由输入。妙处在于 object pointer 本身随帧累积（包含该对象被退化和被遮挡的历史），所以门控决策自动获得时间一致性——这是逐帧方法不可能有的性质。论文 Table 6 的消融也证实了这一点：只加 memory-conditioning（所有对象共享门控输入）只能到 70.9，按对象独立门控（71.8）才是完整的增益。代价是 3 层 MLP 需要先看完整对象历史，所以推理前期（记忆未积累）增益小，后期才体现（Figure 6 中 J&amp;F 从 40% 渐进升到 80%+）。</p>
+<hr>
+<h3 id="3-3-Core-Module-2-—-Benchmark-构造：真实标注-时变合成退化"><a href="#3-3-Core-Module-2-—-Benchmark-构造：真实标注-时变合成退化" class="headerlink" title="3.3 Core Module 2 — Benchmark 构造：真实标注 + 时变合成退化"></a>3.3 Core Module 2 — <code>Benchmark 构造：真实标注 + 时变合成退化</code></h3><h4 id="核心做法-1"><a href="#核心做法-1" class="headerlink" title="核心做法"></a>核心做法</h4><ul>
+<li><strong>真实评测集</strong>：从 ACDC-Video（149 片段，3,259 帧，613 个对象掩码；雾&#x2F;雪&#x2F;雨&#x2F;夜晚）与 MVSeg（202 片段，13,581 帧，1,930 个对象掩码）中收集自然退化视频，手工标注密集的逐对象、跨帧一致的像素级掩码（修正原数据只有类别级掩码或无时间一致性的问题），并剔除退化轻微或静态物体的片段；MVSeg 中只保留低照度&#x2F;雨&#x2F;雪&#x2F;噪声&#x2F;运动模糊的子集构成 MVSeg-adv</li>
+<li><strong>合成训练集</strong>：对 MOSE、YouTube-VOS、DAVIS 施加 8 种退化（color jitter、Gaussian noise、ISO noise、motion blur、resampling blur、fog、rain、snow），用 Fourier-based temporal modulation 让退化强度在帧间平滑变化，模拟真实视频的时变退化模式；共 46,768 片段 &#x2F; 1,774,560 帧 &#x2F; 3,872,048 对象掩码</li>
+<li><strong>协议</strong>：首帧提供全部对象的 prompt，全序列跟踪分割，用标准 VOS 指标 J、F、J&amp;F 评测</li>
+</ul>
+<h4 id="关键公式-1"><a href="#关键公式-1" class="headerlink" title="关键公式"></a>关键公式</h4><p>8 种退化 + 时域调制（细节见论文第 3 节，无显式公式，此处给出评测指标）：</p>
+<p>$$<br>J &#x3D; \frac{1}{N}\sum_{i} \frac{|M_i \cap G_i|}{|M_i \cup G_i|}, \qquad<br>J&amp;F &#x3D; \frac{1}{2}(J + F)<br>$$</p>
+<p>其中 M_i、G_i 分别为预测与真值掩码，F 为轮廓相似度（基于边界像素的 precision&#x2F;recall）。</p>
+<h4 id="代码对应-1"><a href="#代码对应-1" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: 无官方代码</span><br><span class="line">Class: 基准数据（项目页发布）</span><br><span class="line">Function: —</span><br></pre></td></tr></table></figure>
+
+<h4 id="我的理解-1"><a href="#我的理解-1" class="headerlink" title="我的理解"></a>我的理解</h4><p>这个 benchmark 的价值被低估了：现有鲁棒性 benchmark（如 ImageNet-C 类）都是同分布内退化，而这里首次把”退化”与”多目标 + 时间一致性”结合——退化强度在帧间变化 + 对象间影响不同，这正是真实场景（车辆行驶穿过雾区）的核心矛盾。合成退化用 Fourier 时域调制让强度平滑变化（而非逐帧独立随机加噪），这比现有 RobustSAM 等的数据生成更贴近物理退化过程。真实数据集的手工实例级跨帧标注工作量大，也是后续工作绕不开的门槛——这是本文最持久的贡献。</p>
+<hr>
+<h3 id="3-4-论文与代码对照"><a href="#3-4-论文与代码对照" class="headerlink" title="3.4 论文与代码对照"></a>3.4 论文与代码对照</h3><table>
+<thead>
+<tr>
+<th>Paper Module</th>
+<th>Code File</th>
+<th>Class &#x2F; Function</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MoGA 低秩适配器 + 门控</td>
+<td>—</td>
+<td>—</td>
+<td>无官方代码，无法对照</td>
+</tr>
+<tr>
+<td>SAM2 主干（冻结）</td>
+<td>—</td>
+<td>—</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Memory Bank &#x2F; Object Pointer</td>
+<td>—</td>
+<td>—</td>
+<td>同上</td>
+</tr>
+</tbody></table>
+<h4 id="论文和代码不一致的地方"><a href="#论文和代码不一致的地方" class="headerlink" title="论文和代码不一致的地方"></a>论文和代码不一致的地方</h4><p>无官方代码，Paper ↔ Code 对照暂缺。作者承诺 benchmark 数据在项目页公开，后续可关注 <a target="_blank" rel="noopener" href="https://sohyun-l.github.io/RobustPVOS_project_page/">https://sohyun-l.github.io/RobustPVOS_project_page/</a> 是否补充代码。</p>
+<hr>
+<h3 id="3-5-训练与推理"><a href="#3-5-训练与推理" class="headerlink" title="3.5 训练与推理"></a>3.5 训练与推理</h3><h4 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Dataset:</span> <span class="string">MOSE-C</span> <span class="string">+</span> <span class="string">DAVIS-C</span> <span class="string">+</span> <span class="string">YouTube-VOS-C（8</span> <span class="string">种时变退化）</span></span><br><span class="line"><span class="attr">Resolution:</span> <span class="string">未报告（SAM2</span> <span class="string">标准输入）</span></span><br><span class="line"><span class="attr">Epoch:</span> <span class="string">未报告（论文未给迭代数）</span></span><br><span class="line"><span class="attr">Batch Size:</span> <span class="number">4</span></span><br><span class="line"><span class="attr">Optimizer:</span> <span class="string">AdamW</span></span><br><span class="line"><span class="attr">Learning Rate:</span> <span class="number">5e-6</span></span><br><span class="line"><span class="attr">Weight Decay:</span> <span class="number">0.1</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="string">未报告</span></span><br><span class="line"><span class="attr">Training Time:</span> <span class="string">未报告</span></span><br><span class="line"><span class="comment"># 其他：adapter rank R=128；Gumbel 温度 τ=0.3 且线性退火；</span></span><br><span class="line"><span class="comment"># 每 clip 最多 3 对象；只训练 MoGA 模块 + LayerNorm，冻结 SAM2 其余参数</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Input（退化视频帧 + 首帧 prompts）</span><br><span class="line">→ SAM2 Image Encoder（冻结）</span><br><span class="line">→ Memory Attention（Q/K/V 投影挂 MoGA 适配器，门控由 object pointer 决定）</span><br><span class="line">→ Mask Decoder（冻结）</span><br><span class="line">→ 每对象掩码输出</span><br></pre></td></tr></table></figure>
+
+<h4 id="Complexity"><a href="#Complexity" class="headerlink" title="Complexity"></a>Complexity</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Params: 新增可训练参数 1.1M（SAM2 全模型 80.9M，仅 1.4%）</span><br><span class="line">FLOPs: 论文未报告</span><br><span class="line">FPS / Latency: 论文未报告</span><br><span class="line">Hardware: 训练显存 22GB（全微调需 25GB）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h2><h3 id="数据集与指标"><a href="#数据集与指标" class="headerlink" title="数据集与指标"></a>数据集与指标</h3><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Metric</th>
+<th>Setting</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MVSeg-adv（真实，低照度&#x2F;雨&#x2F;雪&#x2F;噪声&#x2F;运动模糊）</td>
+<td>J, F, J&amp;F</td>
+<td>零样本，首帧 prompt 全部对象</td>
+</tr>
+<tr>
+<td>ACDC-Video（真实，雾&#x2F;雪&#x2F;雨&#x2F;夜晚）</td>
+<td>J, F, J&amp;F</td>
+<td>零样本，首帧 prompt 全部对象</td>
+</tr>
+<tr>
+<td>YouTube-VOS-C（合成评测，507 片段）</td>
+<td>J, F, J&amp;F</td>
+<td>零样本，退化测试集</td>
+</tr>
+<tr>
+<td>YouTube-VOS（干净评测）</td>
+<td>J, F, J&amp;F</td>
+<td>对照，验证干净视频不掉点</td>
+</tr>
+</tbody></table>
+<h3 id="主要结果"><a href="#主要结果" class="headerlink" title="主要结果"></a>主要结果</h3><blockquote>
+<p>最值得关注的结果：MoGA+SAM2 在<strong>所有</strong>退化集上一致超过逐帧鲁棒化方法（URIE&#x2F;AirNet&#x2F;GaRA），且在干净视频上不掉点（82.6 vs SAM2 82.2）。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>MVSeg-adv J&amp;F</th>
+<th>ACDC-Video J&amp;F</th>
+<th>YouTube-VOS-C J&amp;F</th>
+<th>YouTube-VOS J&amp;F</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SAM2 (baseline)</td>
+<td>69.6</td>
+<td>63.5</td>
+<td>78.7</td>
+<td>82.2</td>
+</tr>
+<tr>
+<td>URIE+SAM2</td>
+<td>69.6</td>
+<td>60.9</td>
+<td>78.6</td>
+<td>-</td>
+</tr>
+<tr>
+<td>AirNet+SAM2</td>
+<td>69.1</td>
+<td>59.8</td>
+<td>78.6</td>
+<td>-</td>
+</tr>
+<tr>
+<td>GaRA+SAM2（帧级门控）</td>
+<td>69.7</td>
+<td>61.3</td>
+<td>78.1</td>
+<td>79.8</td>
+</tr>
+<tr>
+<td>MoGA+SAM2</td>
+<td><strong>71.8</strong></td>
+<td><strong>64.5</strong></td>
+<td><strong>79.9</strong></td>
+<td><strong>82.6</strong></td>
+</tr>
+</tbody></table>
+<ul>
+<li>参数效率：全微调 SAM2（80.9M 参数，25GB 显存）→ 71.5 J&amp;F；MoGA（1.1M 参数，22GB）→ 71.8 J&amp;F，参数少 98.6% 且效果更好</li>
+<li>LoRA 对照：LoRA+SAM2 70.9 &lt; MoGA+SAM2 71.8（LoRA 对所有权重统一更新，无对象&#x2F;记忆感知）</li>
+<li>长视频：拼接为 ~42s 序列后 SAM2 掉到 52.3，MoGA 仍有 56.2，差距保持</li>
+</ul>
+<h3 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h3><blockquote>
+<p>哪个模块贡献最大？<strong>对象级门控（object-conditioning）</strong>——从 70.9（仅 memory-conditioning）到 71.8（完整 MoGA）的 +0.9 是全 pipeline 中最大的单步增益；无任何门控为 69.6。rank 消融显示 R&#x3D;128 最优（32&#x2F;64 略低，256&#x2F;512 反而下降）；Gumbel 温度 τ 在 0.1–0.7 范围内不敏感（门控决策主要由记忆提供强先验）。</p>
+</blockquote>
+<h3 id="失败案例"><a href="#失败案例" class="headerlink" title="失败案例"></a>失败案例</h3><ul>
+<li>论文未设专门 failure case 章节，但定性分析指出：恢复类方法（URIE+SAM2）在严重退化下只产生部分掩码（只抓到对象碎片）；GaRA+SAM2 掩码跨帧抖动。MoGA 在短视频上的增益（+2.2）明显大于长视频（+3.9 相对 SAM2 的 52.3→56.2，绝对水平仍低）；合成退化（YouTube-VOS-C）上增益（+1.2）小于真实退化集（+2.2 &#x2F; +1.0），说明合成与真实退化存在 domain gap</li>
+</ul>
+<h4 id="我认为失败的原因"><a href="#我认为失败的原因" class="headerlink" title="我认为失败的原因"></a>我认为失败的原因</h4><p>长视频掉点（56.2 J&amp;F）可能源于 object pointer 的累积漂移：门控依赖的 object 表示本身在长序列中会累积错误，门控决策随之恶化——论文用渐进的 memory 积累解释正向增益，但同一机制在长视频中也放大了漂移风险。合成集增益小则因为 8 种退化无法覆盖真实场景中更复杂的耦合退化（雾+雨+运动模糊叠加、夜间眩光等）。</p>
+<hr>
+<h3 id="论文图示（截图）"><a href="#论文图示（截图）" class="headerlink" title="论文图示（截图）"></a>论文图示（截图）</h3><p><img src="https://20020730.xyz/images/tracking/robustpvos/fig2.webp" alt="Figure 2: Example images and annotated object masks of the real-world evaluation dataset." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/robustpvos/fig4.webp" alt="Figure 4: Qualitative results on the real-world corrupted sequences of our benchmark. Each color indicates tracked objects: red for vehic..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/robustpvos/fig5.webp" alt="Figure 5: Visualization of gating masks over time. Left: input video frames from a nighttime driving sequence. Right: cor- responding bin..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/robustpvos/fig6.webp" alt="Figure 6: Quantitative and qualitative results during inference. Top: J &amp;F scores across real-world nighttime frames. Bottom: qualitative..." loading="lazy"></p>
+<h2 id="5-复现指南"><a href="#5-复现指南" class="headerlink" title="5. 复现指南"></a>5. 复现指南</h2><p><strong>Repository</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">GitHub: 无官方代码</span><br><span class="line">Commit: 无</span><br><span class="line">Checkpoint: 无（benchmark 数据集在项目页发布）</span><br></pre></td></tr></table></figure>
+
+<p><strong>Environment</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Python:</span> <span class="string">未提供</span></span><br><span class="line"><span class="attr">PyTorch:</span> <span class="string">未提供（基于</span> <span class="string">SAM2</span> <span class="string">官方代码库）</span></span><br><span class="line"><span class="attr">CUDA:</span> <span class="string">未提供</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="string">训练需</span> <span class="string">22GB</span> <span class="string">显存（MoGA</span> <span class="string">版）</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键运行命令</strong></p>
+<p>无官方代码，无法复现训练。替代信息：</p>
+<ul>
+<li>项目页：<a target="_blank" rel="noopener" href="https://sohyun-l.github.io/RobustPVOS_project_page/%EF%BC%88benchmark">https://sohyun-l.github.io/RobustPVOS_project_page/（benchmark</a> 数据、标注工具可获取）</li>
+<li>单位：POSTECH（韩国浦项科技大学，Suha Kwak 组）+ Google + ETH Zürich（Christos Sakaridis）</li>
+<li>最接近的可复现基座：GaRA-SAM（NeurIPS 2025，同一团队）有代码，可作为门控适配器的复现起点</li>
+</ul>
+<h4 id="复现结果"><a href="#复现结果" class="headerlink" title="复现结果"></a>复现结果</h4><p>未复现（无代码）。</p>
+<h4 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h4><p>无代码仓库是本笔记复现部分的最大阻碍；若后续项目页放出代码，需重点核对：object pointer 的提取位置（SAM2 memory bank 中 m_o 的具体构造）、门控 MLP 的隐藏层维度、rank-1 分量初始化方式。</p>
+<hr>
+<h2 id="6-批判性思考"><a href="#6-批判性思考" class="headerlink" title="6. 批判性思考"></a>6. 批判性思考</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>首次把”鲁棒性”引入 PVOS 领域，benchmark 设计严谨（真实标注 + 时变合成退化 + 标准协议），贡献可长期复用</li>
+<li>MoGA 思路优雅：复用架构内已有的 object 表示做门控，1.1M 参数、22GB 显存即超越全微调，参数效率极高</li>
+<li>实验设计全面：对逐帧方法（恢复、门控）的对照、对全微调&#x2F;LoRA 的对比、长视频与消融都做了</li>
+</ul>
+<h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><ul>
+<li>无官方代码，可复现性差（论文未承诺开源代码，只公开数据）</li>
+<li>增益幅度有限：真实集上 J&amp;F 提升 +1.9~+2.2，属于”有效但不大”的水平；合成集只有 +1.2</li>
+<li>门控训练无直接监督，依赖分割 loss 隐式学习，训练不稳定风险与调参成本未充分讨论</li>
+<li>只在 SAM2 上验证，未验证在其他 memory-based VOS 架构（Cutie、SAM-I2V）上的泛化</li>
+</ul>
+<h3 id="我最关心的问题"><a href="#我最关心的问题" class="headerlink" title="我最关心的问题"></a>我最关心的问题</h3><ol>
+<li>object pointer m_o 的表示质量退化时（长视频、严重遮挡），门控是否会选错适配器分量？论文没有对 gate 错误的显式鲁棒性分析</li>
+<li>Gumbel-Sigmoid 的硬门控在 0.5 阈值附近的决策在退化剧烈变化时是否稳定？</li>
+<li>MoGA 与测试时适配（TTA）类方法能否叠加？</li>
+</ol>
+<h3 id="可以迁移到我的研究中的部分"><a href="#可以迁移到我的研究中的部分" class="headerlink" title="可以迁移到我的研究中的部分"></a>可以迁移到我的研究中的部分</h3><p>对 DAM4SAM（SAM2 基座的带干扰物记忆视频分割）有三个直接可迁移点：</p>
+<ul>
+<li><strong>按对象路由适配器</strong>：跨视角中无人机目标从大变小时特征尺度剧变，可在 SAM2 的 memory attention 投影上挂 rank-1 适配器集合，用对象级记忆（而非退化类型）做路由——为”小目标”自动激活细粒度适配分量</li>
+<li><strong>记忆即条件</strong>：MoGA 证明 memory bank 的 object 表示可直接作为”条件信号”（门控输入）——干扰物记忆不仅能存储，还能反过来控制 decoder&#x2F;适配器行为，形成闭环</li>
+<li><strong>基准构建方法论</strong>：用”时变退化 + 真实困难片段手工标注”的套路给 cross_view_vtuav 建鲁棒性评测子集，量化 DAM4SAM 在雨雾、低照度下的退化曲线</li>
+</ul>
+<h3 id="新想法"><a href="#新想法" class="headerlink" title="新想法"></a>新想法</h3><ol>
+<li><strong>门控与目标尺度解耦</strong>：门控输入扩展为”object pointer + 尺度描述符（bbox 大小&#x2F;分辨率）”，让适配器显式编码”大目标→全局分量、小目标→高频分量”，直指跨视角从大变小的失效点</li>
+<li><strong>门控遗忘机制</strong>：MoGA 的门控只做”激活&#x2F;不激活”，可加显式遗忘分支——对象连续多帧不可见（被干扰物遮挡）时自动停用其适配器并进入”记忆冻结”，防干扰物记忆污染</li>
+<li><strong>合成退化即数据增强</strong>：把 Fourier 时域调制退化作为 DAM4SAM 训练的在线增强，与 MoGA 互补（一个教”按对象适应退化”，一个教”见过退化”）</li>
+<li><strong>轻量化组合</strong>：MoGA（1.1M 参数）与 LiVOS 式线性匹配&#x2F;量化结合，可在边缘设备上同时获得鲁棒性与效率</li>
+</ol>
+<hr>
+<h2 id="7-深度阅读标注"><a href="#7-深度阅读标注" class="headerlink" title="7. 深度阅读标注"></a>7. 深度阅读标注</h2><p>本节暂无额外阅读标注。</p>
+<hr>
+<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h2><h3 id="三句话总结"><a href="#三句话总结" class="headerlink" title="三句话总结"></a>三句话总结</h3><ol>
+<li><strong>Problem：</strong> SAM2 等 PVOS 模型在噪声&#x2F;模糊&#x2F;低照度&#x2F;恶劣天气等真实退化下性能大幅下降，且现有鲁棒化方法逐帧处理、无视视频的时间一致性与对象间差异</li>
+<li><strong>Method：</strong> 构建首个 RobustPVOS benchmark（真实标注 + 时变合成退化），并提出 MoGA——用 memory bank 中的 object pointer 门控低秩适配器的 rank-1 分量，实现对象专属、时间一致的鲁棒化</li>
+<li><strong>Result：</strong> MoGA+SAM2 在真实退化集（MVSeg-adv 71.8、ACDC-Video 64.5 J&amp;F）与合成集（79.9）上一致超过逐帧方法，干净视频不掉点，且仅 1.1M 参数、22GB 显存即超越全微调（80.9M &#x2F; 25GB &#x2F; 71.5）</li>
+</ol>
+<h3 id="一句话评价"><a href="#一句话评价" class="headerlink" title="一句话评价"></a>一句话评价</h3><p>一个”思路优雅、工程扎实”的 benchmark + baseline 论文：记忆条件化门控的想法有启发性且参数效率惊艳，但增益幅度有限、无开源代码，更适合作为方法学参考而非直接复现对象。</p>
+<h3 id="是否值得复现？"><a href="#是否值得复现？" class="headerlink" title="是否值得复现？"></a>是否值得复现？</h3><ul>
+<li><p>⭐ 仅了解</p>
+</li>
+<li><p>⭐⭐ 一般</p>
+</li>
+<li><p>⭐⭐⭐ 值得作为 Baseline</p>
+</li>
+<li><p>⭐⭐⭐⭐ 值得复现</p>
+</li>
+<li><p>⭐⭐⭐⭐⭐ 与我的研究高度相关</p>
+</li>
+</ul>
+<p><strong>复现星级：⭐⭐⭐（值得作为 Baseline）。</strong> 理由：benchmark 数据公开、评测协议标准，可作为我 RobustPVOS 能力的评估基线；但方法无官方代码，且其”对象级记忆条件化门控”思路已被本文完整公开（复现难度中等），更值得做的是把其思想迁移到 DAM4SAM 的干扰物记忆管理上，而非照搬复现。</p>
+<hr>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/6ceb3d59/" title="论文阅读｜Robust Promptable Video Object Segmentation">https://20020730.xyz/posts/6ceb3d59/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/545293dc/" rel="prev" title="论文阅读｜Segment Anything Across Shots: A Method and Benchmark"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">论文阅读｜Segment Anything Across Shots: A Method and Benchmark</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/c4b9bce1/" rel="next" title="论文阅读｜RMem: Restricted Memory Banks Improve Video Object Segmentation"><span class="post-nav-text">论文阅读｜RMem: Restricted Memory Banks Improve Video Object Segmentation</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
+  display: none;
+}</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
+  //- hide all
+  document.querySelectorAll('.toggle-comment-btn').forEach((btn) => {
+    const container = document.querySelector(btn.dataset.target);
+    if (container) {
+      container.style.display = "none";
+    }
+  });
+}
+function showComment(target) {
+  hideAllComment();
+  //- show target
+  const targetContainer = document.querySelector(target);
+  if (targetContainer) {
+    targetContainer.style.display = "block";
+  }
+}
+</script></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/posts/6ceb3d59/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="Wanglihan954/disscussion" issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async></script></div></main><aside class="right-sidebar"><div id="post-toc-wrap" style="display:block; opacity:1; visibility:visible;"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">论文信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">摘要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E8%B5%84%E6%BA%90"><span class="toc-number">2.</span> <span class="toc-text">论文资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%A0%94%E7%A9%B6%E5%8A%A8%E6%9C%BA"><span class="toc-number">3.</span> <span class="toc-text">1. 研究动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">要解决什么问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">现有方法的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E8%80%85%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">3.3.</span> <span class="toc-text">作者的核心思路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="toc-number">4.</span> <span class="toc-text">2. 主要贡献</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E7%9C%9F%E6%AD%A3%E7%9A%84%E6%96%B0%E6%84%8F"><span class="toc-number">4.1.</span> <span class="toc-text">我认为真正的新意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">3. 方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%95%B4%E4%BD%93%E6%A1%86%E6%9E%B6"><span class="toc-number">5.1.</span> <span class="toc-text">3.1 整体框架</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">整体流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Core-Module-1-%E2%80%94-MoGA-%E9%97%A8%E6%8E%A7%E6%9C%BA%E5%88%B6-Memory-object-conditioned-Gating"><span class="toc-number">5.2.</span> <span class="toc-text">3.2 Core Module 1 — MoGA 门控机制 (Memory-object-conditioned Gating)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F"><span class="toc-number">5.2.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95"><span class="toc-number">5.2.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F"><span class="toc-number">5.2.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AF%B9%E5%BA%94"><span class="toc-number">5.2.4.</span> <span class="toc-text">代码对应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.5.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Core-Module-2-%E2%80%94-Benchmark-%E6%9E%84%E9%80%A0%EF%BC%9A%E7%9C%9F%E5%AE%9E%E6%A0%87%E6%B3%A8-%E6%97%B6%E5%8F%98%E5%90%88%E6%88%90%E9%80%80%E5%8C%96"><span class="toc-number">5.3.</span> <span class="toc-text">3.3 Core Module 2 — Benchmark 构造：真实标注 + 时变合成退化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95-1"><span class="toc-number">5.3.1.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F-1"><span class="toc-number">5.3.2.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AF%B9%E5%BA%94-1"><span class="toc-number">5.3.3.</span> <span class="toc-text">代码对应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3-1"><span class="toc-number">5.3.4.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E8%AE%BA%E6%96%87%E4%B8%8E%E4%BB%A3%E7%A0%81%E5%AF%B9%E7%85%A7"><span class="toc-number">5.4.</span> <span class="toc-text">3.4 论文与代码对照</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%92%8C%E4%BB%A3%E7%A0%81%E4%B8%8D%E4%B8%80%E8%87%B4%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="toc-number">5.4.1.</span> <span class="toc-text">论文和代码不一致的地方</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="toc-number">5.5.</span> <span class="toc-text">3.5 训练与推理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Training"><span class="toc-number">5.5.1.</span> <span class="toc-text">Training</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Inference"><span class="toc-number">5.5.2.</span> <span class="toc-text">Inference</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Complexity"><span class="toc-number">5.5.3.</span> <span class="toc-text">Complexity</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.</span> <span class="toc-text">4. 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8E%E6%8C%87%E6%A0%87"><span class="toc-number">6.1.</span> <span class="toc-text">数据集与指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="toc-number">6.2.</span> <span class="toc-text">主要结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.3.</span> <span class="toc-text">消融实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E8%B4%A5%E6%A1%88%E4%BE%8B"><span class="toc-number">6.4.</span> <span class="toc-text">失败案例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E5%A4%B1%E8%B4%A5%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">6.4.1.</span> <span class="toc-text">我认为失败的原因</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%9B%BE%E7%A4%BA%EF%BC%88%E6%88%AA%E5%9B%BE%EF%BC%89"><span class="toc-number">6.5.</span> <span class="toc-text">论文图示（截图）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A4%8D%E7%8E%B0%E6%8C%87%E5%8D%97"><span class="toc-number">7.</span> <span class="toc-text">5. 复现指南</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">7.1.</span> <span class="toc-text">复现结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">7.2.</span> <span class="toc-text">遇到的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%89%B9%E5%88%A4%E6%80%A7%E6%80%9D%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">6. 批判性思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">8.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%80%E9%99%90"><span class="toc-number">8.2.</span> <span class="toc-text">局限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E6%9C%80%E5%85%B3%E5%BF%83%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">8.3.</span> <span class="toc-text">我最关心的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E8%BF%81%E7%A7%BB%E5%88%B0%E6%88%91%E7%9A%84%E7%A0%94%E7%A9%B6%E4%B8%AD%E7%9A%84%E9%83%A8%E5%88%86"><span class="toc-number">8.4.</span> <span class="toc-text">可以迁移到我的研究中的部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E6%83%B3%E6%B3%95"><span class="toc-number">8.5.</span> <span class="toc-text">新想法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%B7%B1%E5%BA%A6%E9%98%85%E8%AF%BB%E6%A0%87%E6%B3%A8"><span class="toc-number">9.</span> <span class="toc-text">7. 深度阅读标注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">8. 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%8F%A5%E8%AF%9D%E6%80%BB%E7%BB%93"><span class="toc-number">10.1.</span> <span class="toc-text">三句话总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AF%84%E4%BB%B7"><span class="toc-number">10.2.</span> <span class="toc-text">一句话评价</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%AF%E5%90%A6%E5%80%BC%E5%BE%97%E5%A4%8D%E7%8E%B0%EF%BC%9F"><span class="toc-number">10.3.</span> <span class="toc-text">是否值得复现？</span></a></li></ol></li></ol></div></div></div></aside><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 – 2026 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> 宁翰</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-04-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><!-- hexo injector body_end start --><script src="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/js/index.js"></script><script src="/js/nav-title-fit.js" defer></script><!-- hexo injector body_end end --></body></html>

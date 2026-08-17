@@ -1,0 +1,563 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="宁翰"><meta name="copyright" content="宁翰"><meta name="generator" content="Hexo 8.1.1"><meta name="theme" content="hexo-theme-yun"><title>论文阅读｜Adaptive Depth Lightweight RGB-T Tracking with Holistic Token Routing | Seventh Knot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{"renderMathInElement":true,"strict":"ignore","output":"htmlAndMathml","displayMode":true,"trust":true},
+    ...undefined?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"20020730.xyz","root":"/","title":"世界需要七休日","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.xml"},"localsearch":{"enable":"fasle","trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://comment.20020730.xyz","comment":true,"visitor":true,"emoji":["//unpkg.com/@waline/emojis@1.1.0/weibo",{"name":"嗯呢漫布","folder":"/images/zzz-stickers","prefix":"bangboo-","type":"jpg","icon":"/images/zzz-stickers/bangboo-thanks.jpg","items":["gift","thanks","rest"]},{"name":"丽都漫步","folder":"/images/zzz-stickers","prefix":"lidu-","type":"png","icon":"/images/zzz-stickers/lidu-anby.png","items":["anby","nekomata","lycaon","rina","soldier11","wise"]}],"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="Seventh Knot" type="application/atom+xml"><link rel="stylesheet" href="/css/custom_theme.css?v=20260812-3"><link rel="stylesheet" href="/css/projects.css?v=20260817-1"><script src="/js/web-pet.js" defer></script><script src="/js/mobile-navigation.js" defer></script><script src="/js/home-intro.js?v=20260810-6" defer></script><meta name="description" content="RGB-T 跟踪的价值在于：夜间、眩光、雾、部分遮挡下 RGB 失效时热红外仍可用。但近期架构强调深融合与大参数量，推高 FLOPs 与带宽，实时性被限制在高端 GPU。本文提出 ADTrack 平衡精度与效率：(1) Adaptive Early-Exit (AEE) ：给 backbone 挂 anytime heads，配一个置信度校准的早退策略，在最早的可信层停止推理，跳过冗余计算；…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读｜Adaptive Depth Lightweight RGB-T Tracking with Holistic Token Routing">
+<meta property="og:url" content="https://20020730.xyz/posts/23d67125/index.html">
+<meta property="og:site_name" content="Seventh Knot">
+<meta property="og:description" content="RGB-T 跟踪的价值在于：夜间、眩光、雾、部分遮挡下 RGB 失效时热红外仍可用。但近期架构强调深融合与大参数量，推高 FLOPs 与带宽，实时性被限制在高端 GPU。本文提出 ADTrack 平衡精度与效率：(1) Adaptive Early-Exit (AEE) ：给 backbone 挂 anytime heads，配一个置信度校准的早退策略，在最早的可信层停止推理，跳过冗余计算；…">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/token-routing/fig1.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/token-routing/fig2.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/token-routing/fig5.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/token-routing/fig3.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/token-routing/fig4.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/token-routing/fig7.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/token-routing/fig6.webp">
+<meta property="article:published_time" content="2026-08-16T12:20:00.000Z">
+<meta property="article:modified_time" content="2026-08-16T15:00:00.000Z">
+<meta property="article:author" content="宁翰">
+<meta property="article:tag" content="AI论文">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="RGB-T">
+<meta property="article:tag" content="Tracking">
+<meta property="article:tag" content="文献笔记">
+<meta property="article:tag" content="视频目标跟踪">
+<meta property="article:tag" content="追踪">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://20020730.xyz/images/tracking/token-routing/fig1.webp"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><span class="nav-badge">INTER-KNOT // 20020730</span><div class="nav-left"><button class="nav-item" id="mobile-menu-btn" type="button" title="菜单" aria-label="打开菜单" aria-controls="site-overview-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:menu-line"></span></button><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="代理人档案"><span class="nav-mask-icon" style="--nav-mask-image: url('/images/bangboo-nav.png')" aria-hidden="true"></span></a><a class="nav-item desktop-only-icon" href="/projects/" title="项目终端"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">Seventh Knot</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">论文阅读｜Adaptive Depth Lightweight RGB-T Tracking with Holistic Token Routing</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" aria-hidden="true"></div><button id="mobile-toc-btn" type="button" title="文章目录" aria-label="打开文章目录" aria-controls="post-toc-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:list-unordered"></span></button><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
+  const navCenter = document.getElementById('nav-center');
+  if (navCenter && document.querySelector('.article-title')) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
+    });
+  }
+});
+</script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
+.search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.search-header { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(150,150,150,0.1); }
+.search-header input { flex: 1; border: none; background: transparent; outline: none; font-size: 1.1rem; color: var(--hty-text-color); margin: 0 15px; }
+.search-header .close-btn { cursor: pointer; font-size: 1.4rem; opacity: 0.6; transition: all 0.2s; }
+.search-header .close-btn:hover { opacity: 1; color: var(--hty-primary-color); transform: rotate(90deg); }
+.search-results { overflow-y: auto; padding: 10px 24px 20px; }
+.search-result-item { display: block; padding: 15px 0; border-bottom: 1px dashed rgba(150,150,150,0.1); text-decoration: none; color: var(--hty-text-color); transition: all 0.2s; }
+.search-result-item:hover { transform: translateX(5px); }
+.search-result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--hty-primary-color); }
+.search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
+.search-keyword { color: #ff5252; font-weight: bold; }
+</style><script>let mySearchData = null;
+window.openMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('my-search-input').focus(), 100);
+  if (!mySearchData) {
+    fetch('/search.xml').then(res => res.text()).then(str => {
+      const parser = new DOMParser();
+      const entries = parser.parseFromString(str, "text/xml").getElementsByTagName("entry");
+      mySearchData = Array.from(entries).map(entry => ({
+        title: entry.getElementsByTagName('title')[0]?.textContent || '',
+        content: entry.getElementsByTagName('content')[0]?.textContent.replace(/<[^>]+>/g, '') || '',
+        url: entry.getElementsByTagName('url')[0]?.textContent || ''
+      }));
+    }).catch(err => console.error("搜索数据加载失败:", err));
+  }
+};
+window.closeMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'none';
+  document.getElementById('my-search-input').value = '';
+  document.getElementById('my-search-results').innerHTML = '';
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('my-search-input');
+  if(input) {
+    input.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+      const results = document.getElementById('my-search-results');
+      if (!keyword) { results.innerHTML = ''; return; }
+      if (!mySearchData) return;
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
+      results.innerHTML = matched.map(item => {
+        const reg = new RegExp(keyword, 'gi');
+        const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        let content = item.content;
+        const index = content.toLowerCase().indexOf(keyword);
+        if (index > -1) {
+          let start = Math.max(0, index - 30);
+          let end = Math.min(content.length, index + 30);
+          content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+          content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        } else { content = content.substring(0, 60) + '...'; }
+        return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
+      }).join('');
+    });
+  }
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">57</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">78</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/23d67125/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">论文阅读｜Adaptive Depth Lightweight RGB-T Tracking with Holistic Token Routing</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-08-16 20:20:00" itemprop="dateCreated datePublished" datetime="2026-08-16T20:20:00+08:00">2026-08-16</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">7.3k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">29m</span></span></span><span class="leancloud_visitors" id="/posts/23d67125/" data-flag-title="论文阅读｜Adaptive Depth Lightweight RGB-T Tracking with Holistic Token Routing"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/23d67125/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">文献阅读</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/Tracking/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Tracking</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%96%87%E7%8C%AE%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">文献笔记</span></a><a class="tag-item" href="/tags/AI%E8%AE%BA%E6%96%87/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">AI论文</span></a><a class="tag-item" href="/tags/Tracking/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Tracking</span></a><a class="tag-item" href="/tags/%E8%BF%BD%E8%B8%AA/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">追踪</span></a><a class="tag-item" href="/tags/RGB-T/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">RGB-T</span></a><a class="tag-item" href="/tags/CVPR/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">CVPR</span></a><a class="tag-item" href="/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">视频目标跟踪</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p>本文基于论文、补充材料与公开代码整理。文中的“我的理解”和“批判性思考”属于个人分析；<br>论文插图均来自原论文或补充材料，仅用于学习与讨论。</p>
+</blockquote>
+<h2 id="论文信息"><a href="#论文信息" class="headerlink" title="论文信息"></a>论文信息</h2><p><strong>Title:</strong> Adaptive Depth Lightweight RGB-T Tracking with Holistic Token Routing<br><strong>Authors:</strong> Tian Ding（南京大学）、Hongtao Yang（广西师范大学）、Liangtao Shi（合肥工业大学）、Jun Li、Xiantao Hu（南京理工大学）、Jian Yang、Ying Tai（南京大学）<br><strong>Venue:</strong> CVPR 2026<br><strong>GitHub:</strong> 未开源（截至 2026-08-16 检索未发现官方仓库）<br><strong>IF &#x2F; CCF:</strong> — | A类</p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>RGB-T 跟踪的价值在于：夜间、眩光、雾、部分遮挡下 RGB 失效时热红外仍可用。但近期架构强调深融合与大参数量，推高 FLOPs 与带宽，实时性被限制在高端 GPU。本文提出 ADTrack 平衡精度与效率：(1) <strong>Adaptive Early-Exit (AEE)</strong>：给 backbone 挂 anytime heads，配一个置信度校准的早退策略，在最早的可信层停止推理，跳过冗余计算；(2) <strong>Holistic-Token-Guided Interaction (HTGI)</strong>：把每个模态压缩成紧凑的 holistic state tokens 注入另一模态建模流，无需逐层对齐，以极低代价实现定向信息交换。在 LasHeR 上达到 70.2% precision 与 56.3% success，GPU 148.3 FPS、CPU 50.2 FPS、边缘设备 28.7 FPS。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="论文资源"><a href="#论文资源" class="headerlink" title="论文资源"></a>论文资源</h2><ul>
+<li><strong>Zotero:</strong> 未导入</li>
+<li><strong>PDF:</strong> <a href=".papers/token-routing.pdf">本地 PDF</a></li>
+<li><strong>Paper:</strong> <a target="_blank" rel="noopener" href="https://openaccess.thecvf.com/content/CVPR2026/html/Ding_Adaptive_Depth_Lightweight_RGB-T_Tracking_with_Holistic_Token_Routing_CVPR_2026_paper.html">CVF Open Access</a></li>
+<li><strong>GitHub:</strong> 未开源（WebSearch 确认无官方仓库，状态 to be confirmed）</li>
+</ul>
+<hr>
+<h2 id="1-研究动机"><a href="#1-研究动机" class="headerlink" title="1. 研究动机"></a>1. 研究动机</h2><h3 id="要解决什么问题？"><a href="#要解决什么问题？" class="headerlink" title="要解决什么问题？"></a>要解决什么问题？</h3><blockquote>
+<p>让 RGB-T 跟踪在<strong>不牺牲精度的前提下真正实时、可部署到边缘平台</strong>（UAV、移动机器人、便携监控）。当前 RGB-T 架构的精度提升靠”深融合 + 大参数”换来的，而双模态输入本身就使原始计算量是单模态的两倍，重融合&#x2F;对齐模块再叠加巨额开销——实时性只能在高端 GPU 上实现。</p>
+</blockquote>
+<h3 id="现有方法的问题"><a href="#现有方法的问题" class="headerlink" title="现有方法的问题"></a>现有方法的问题</h3><ul>
+<li><strong>Prompt 式弱引导路线</strong>（TIR 当辅助先验&#x2F;文本式条件）无法充分利用热红外的独特信号，只提供弱条件与粗糙先验，性能次优。</li>
+<li><strong>显式跨模态建模路线</strong>（TBSI、BAT、STTrack、XTrack 等）成为主流，但依赖重型骨干与全局 cross-attention &#x2F; adapter 堆叠，参数、FLOPs、内存占用大幅上升，不利于资源受限设备部署。</li>
+<li><strong>轻量方案</strong>（CMD 蒸馏、EMTrack、MFJA、LightFC-X、CAFormer 等）普遍采用<strong>静态计算图</strong>：网络深度、融合模式、推理路径一旦部署即固定，<strong>每帧开销几乎相同，与帧难度无关</strong>。</li>
+<li>收窄骨干宽度（现有主流轻量化手段）控制的是计算量，但<strong>深度仍被当作固定超参数</strong>；而 RGB-T 这类先验清晰的任务中，深度增加的边际收益递减——冗余层只增延迟与能耗，还可能加剧过拟合。</li>
+</ul>
+<h3 id="作者的核心思路"><a href="#作者的核心思路" class="headerlink" title="作者的核心思路"></a>作者的核心思路</h3><blockquote>
+<p>把<strong>深度当作可优化的计算资源</strong>（而非固定超参），且<strong>不用 teacher 蒸馏</strong>：用 anytime heads + 置信度自校准的早退策略（AEE），让跟踪器学会”感知预测已可靠并提前停止”；跨模态交互则用<strong>低秩假设</strong>——少量 holistic token 就能承载模态间全局依赖，注入对方自注意力流即完成隐式对齐（HTGI），无新增 cross-attention 参数。</p>
+</blockquote>
+<p><strong>两个关键观察（论文的核心证据）</strong></p>
+<ul>
+<li>Fig. 3：RGB-T 数据上 score map 随层深快速收敛——简单序列 Layer 3 就空间紧致稳定，难序列（遮挡&#x2F;杂乱）才需深层；右侧定量：SSIM、Peak Alignment、Cosine 三个相似度指标在深层中间层均 <strong>&gt;0.95</strong>，接近收敛。</li>
+<li>Fig. 4：但<strong>不能静态删层</strong>——从 12 层 ViT 中移除任意单层都在 LasHeR 上显著掉点（原始 PR 67.0 &#x2F; SR 53.2）。说明每层虽有推理冗余，但结构性必需；只能<strong>逐帧动态跳过</strong>而非永久改深度。</li>
+</ul>
+<hr>
+<!-- 配图占位：Fig. 1 速度对比（×4.0 / ×6.3 Faster）由脚本自动插入 -->
+
+
+<p><strong>论文图示</strong></p>
+<p><img src="https://20020730.xyz/images/tracking/token-routing/fig1.webp" alt="Figure 1: Figure 1. Comparison of our proposed ADTrack and state-of-the- art trackers under different attributes in the LasHeR dataset." loading="lazy"></p>
+<h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2. 主要贡献"></a>2. 主要贡献</h2><ol>
+<li><strong>Contribution 1：</strong> 提出 <strong>AEE（Adaptive Early-Exit）</strong>：把网络深度当作动态计算预算，以轻微精度损失换取大幅计算削减；通过多头自监督校准（多出口共享解码器参数 + 自校准损失）让早退从启发式规则变成学到的过程。</li>
+<li><strong>Contribution 2：</strong> 提出 <strong>HTGI（Holistic-Token-Guided Interaction）</strong>：从源模态蒸馏少量紧凑 holistic token，经轻量投影融合注入另一模态的 Transformer 流，复用现成 self-attention 完成跨模态对齐，整个模块仅 <strong>37.3K×3 参数（&lt; 模型总参数 0.2%）</strong>，且保持各分支表示完整性、防止单模态压过另一模态。</li>
+<li><strong>Contribution 3：</strong> 在 LasHeR &#x2F; RGBT234 &#x2F; GTOT &#x2F; RGBT210 &#x2F; VTUAV 五个 benchmark 上取得有竞争力的精度，同时成为<strong>唯一在 GPU（148.3 FPS）、CPU（50.2 FPS）、边缘设备（Jetson Orin NX 8GB，28.7 FPS）三平台全部实时</strong>的 RGB-T tracker，在轻量 RGB-T 跟踪器中取得最佳 accuracy-efficiency 权衡。</li>
+</ol>
+<h4 id="我认为真正的新意"><a href="#我认为真正的新意" class="headerlink" title="我认为真正的新意"></a>我认为真正的新意</h4><blockquote>
+<p><strong>早退不是 heuristic 而是被学出来的</strong>：AEE 的 margin 损失给”过早自信”与”过晚自信”都设置了软惩罚，让每一层内化”收敛”与”停止边界”的语义，且完全无需外部 stop 监督；置信度 r 直接定义在 score map 上（max&#x2F;sum 紧致度），不引入额外置信分支。<strong>HTGI 用”模板侧全局 token 注入对方搜索流自注意力”这一单操作同时完成了跨模态对齐与引导</strong>，把 heavy cross-attention 变成”零新增 attention 参数”——低秩假设（跨模态依赖可由少量全局描述子承载）为其提供了理论支点。这个”全局描述子路由”思想与 CamSAM2 的 OPG 原型记忆、我 DAM4SAM 的记忆管理有直接呼应。</p>
+</blockquote>
+<hr>
+<h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><blockquote>
+<p><strong>阅读说明</strong><br>论文未开源代码（GitHub 检索无官方仓库），Method 部分仅按论文正文与图表整理；3.4 的 Paper↔Code 表改为”模块 ↔ 论文实现要点”，代码行号均无法提供。</p>
+</blockquote>
+<h3 id="3-1-整体框架"><a href="#3-1-整体框架" class="headerlink" title="3.1 整体框架"></a>3.1 整体框架</h3><!-- 配图占位：Fig. 2 整体架构（左：HTGI；右：AEE）由脚本自动插入 -->
+
+<p><strong>核心架构图</strong></p>
+<blockquote>
+<p>论文 Figure 2：双流冻结轻量 ViT 骨干 + HTGI（层 3&#x2F;6&#x2F;9 插入）+ AEE（多深度 anytime heads + 阈值早停）</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Input: 模板对 (z, c) + 搜索帧</span><br><span class="line">RGB stream: z_rgb, c_rgb（patch tokens，N×D）──┐</span><br><span class="line">TIR stream: z_tir, c_tir（patch tokens，N×D）──┤ 双流独立 ViT-T 骨干编码</span><br><span class="line">Layer 1..12（12 层 ViT，删除任意一层都会显著掉点 → Fig. 4）</span><br><span class="line">  ├─ HTGI @ Layer 3 / 6 / 9：RGB↔TIR 双向 holistic token 注入</span><br><span class="line">  │    （模板侧 K 个 holistic token 拼入对方搜索 token 序列 → TransformerBlock</span><br><span class="line">  │     → 丢弃前 K 个 token，保留 N 个精炼 token）</span><br><span class="line">  └─ AEE anytime heads @ 多个深度（共享主解码器参数）：</span><br><span class="line">       每层产生临时 score map S_l → 置信度 r_l = max(S_l) / Σ_i S_&#123;l,i&#125;</span><br><span class="line">推理: 逐层计算 r_l，一旦 r_l &gt; 预校准阈值 τ = 0.75 → 提前终止，输出当前预测</span><br><span class="line">最终 score map → 回归目标 bounding box 与 confidence</span><br></pre></td></tr></table></figure>
+
+<h4 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h4><p>ADTrack 是双流架构：RGB 与热红外各走一条轻量 ViT 骨干（Method 表述为 frozen，但与训练细节存在出入，见 3.5 注释）。HTGI 在骨干的<strong>关键层（3&#x2F;6&#x2F;9）<strong>而非每一层插入，避免逐层对齐开销：从一个模态的</strong>模板特征</strong>提取 K 个 holistic token，与另一模态的<strong>搜索特征</strong>拼接后共同过一个 Transformer block，靠原有 self-attention 把全局先验传播到空间各位置，随后删除注入的 K 个 token；RGB→TIR 与 TIR→RGB 双向执行。融合之后，AEE 在多个深度挂轻量预测头，推理时用 score map 的 max&#x2F;sum 比值作为置信度，超过校准阈值 τ 即早停——简单帧浅层出结果，难帧走完全程。</p>
+<hr>
+<h3 id="3-2-Core-Module-1-—-AEE：自适应早退（Adaptive-Early-Exit）"><a href="#3-2-Core-Module-1-—-AEE：自适应早退（Adaptive-Early-Exit）" class="headerlink" title="3.2 Core Module 1 — AEE：自适应早退（Adaptive Early-Exit）"></a>3.2 Core Module 1 — AEE：自适应早退（Adaptive Early-Exit）</h3><h4 id="为什么需要？"><a href="#为什么需要？" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><ul>
+<li>静态计算图下<strong>每帧开销相同</strong>，但 Fig. 3 表明简单序列 Layer 3 的 score map 就已空间紧致稳定，深层计算是冗余的；三指标（SSIM &#x2F; Peak Alignment &#x2F; Cosine）在深层中间层均 &gt;0.95，说明决策信息早已饱和。</li>
+<li>但 Fig. 4 证明<strong>层不能静态删</strong>：移除 12 层 ViT 的任意单层，LasHeR PR&#x2F;SR 都明显下降（原始 PR 67.0 &#x2F; SR 53.2）。层是结构性必需，冗余只存在于”特定帧的推理路径”上。</li>
+<li>因此需要<strong>保留完整模型容量、逐帧跳过冗余计算</strong>的动态推理策略——深度应随样本难度自适应，而非固定。</li>
+</ul>
+<h4 id="核心做法"><a href="#核心做法" class="headerlink" title="核心做法"></a>核心做法</h4><ol>
+<li><strong>多出口自监督校准</strong>：在骨干多个深度挂轻量预测头（与主解码器共享参数），每个头生成临时 score map S_l。</li>
+<li><strong>置信度度量</strong>：<code>r_l = max(S_l) / Σ_i S_{l,i}</code>——score map 的峰值占比，越紧致（单峰）越高，是天然的定位可信度信号，<strong>不需要额外置信分支</strong>。</li>
+<li><strong>自校准损失</strong>：每层的预测都要独立定位准确（L_pred）；|r_l − r*| 项强制各层置信度随深度单调递增地逼近最终层 r*；margin 项 M(r_l, r*, τ) 围绕停止阈值 τ 建立软边界——最终层收敛（r* &gt; τ）时惩罚欠自信层（τ − r_l)₊，最终层不确定时惩罚过度自信层（r_l − τ)₊。</li>
+<li><strong>推理确定性早停</strong>：每层计算同一置信度，一旦超过 τ 立即停止输出当前预测，无需任何外部监督决定何时停。</li>
+</ol>
+<h4 id="关键公式"><a href="#关键公式" class="headerlink" title="关键公式"></a>关键公式</h4><p>$$<br>r_l &#x3D; \frac{\max(S_l)}{\sum_i S_{l,i}}, \qquad r^{*} &#x3D; \frac{\max(S_L)}{\sum_i S_{L,i}} \tag{1}<br>$$</p>
+<p>$$<br>\mathcal{L}<em>{AEE} &#x3D; \sum_l \left[ \mathcal{L}</em>{pred}(S_l, y) + |r_l - r^{<em>}| + M(r_l, r^{</em>}, \tau) \right] \tag{2}<br>$$</p>
+<p>$$<br>M(r_l, r^{<em>}, \tau) &#x3D;<br>\begin{cases}<br>(\tau - r_l)_+, &amp; \text{if } r^{</em>} &gt; \tau \<br>(r_l - \tau)_+, &amp; \text{otherwise}<br>\end{cases}<br>$$</p>
+<p>其中 S_L 是最深层的最终 score map；<code>(·)₊ = max(·, 0)</code>。第一个 term 保证每个中间头能独立定位；第二个 term 对齐置信度随深度演化的单调性；第三个 term 定义停止边界的软惩罚。训练时还配合<strong>随机深度截断</strong>（random depth truncation），鼓励模型在多种深度下都稳健，而非只依赖最深配置。</p>
+<h4 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h4><blockquote>
+<p>AEE 本质是<strong>把”早退”从工程启发式升级为端到端可学的能力</strong>：margin 损失同时教每一层”什么时候该自信”和”什么时候不该自信”——最终层都收敛（r* &gt; τ）时，浅层还犹豫就受罚；最终层都不确定（r* ≤ τ）时，浅层乱自信也受罚。这样停止行为不是阈值触发（heuristic），而是表示饱和的自然涌现（learned）。值得注意的是它<strong>绕开了 teacher 蒸馏</strong>（论文明确 dispense with teacher-based distillation）：多出口共享解码器 + 自校准即隐式完成”浅层对齐深层”。</p>
+</blockquote>
+<hr>
+<h3 id="3-3-Core-Module-2-—-HTGI：Holistic-Token-Guided-Interaction"><a href="#3-3-Core-Module-2-—-HTGI：Holistic-Token-Guided-Interaction" class="headerlink" title="3.3 Core Module 2 — HTGI：Holistic-Token-Guided Interaction"></a>3.3 Core Module 2 — HTGI：Holistic-Token-Guided Interaction</h3><h4 id="为什么需要？-1"><a href="#为什么需要？-1" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><ul>
+<li>显式跨模态融合（cross-attention &#x2F; adapter 堆叠）参数量与延迟开销大；而<strong>跨模态依赖通常是低秩的</strong>，可以由少数信息量大的全局描述子承载。</li>
+<li>需要一种轻量交互：既不引入额外 cross-attention 参数，又能保持各分支表示完整性（防止一模态淹没另一模态），且对硬件友好。</li>
+</ul>
+<h4 id="核心做法-1"><a href="#核心做法-1" class="headerlink" title="核心做法"></a>核心做法</h4><p><strong>Holistic Token Generator (HTG，Fig. 5)</strong>：给定模板特征 X_t ∈ R^{B×N_t×C}，学习 K 个 holistic tokens H &#x3D; [h_1,…,h_K] ∈ R^{B×K×C} 捕捉互补全局线索。不同于简单求和的池化，每个 token 配一个 <strong>Token Router</strong>（轻量 MLP f_k），先为每个 patch 生成自适应权重，再逐元素乘到原特征上做全局求和——每个 token 学会代表一个不同的语义成分（如目标结构、轮廓、热信号），紧凑且可解释。注意是<strong>模板侧</strong>特征被压缩成 token。</p>
+<p><strong>Feature Interaction</strong>：把模态 n 的 K 个模板 holistic tokens 拼到模态 m 的搜索特征序列前面，一起过一个 Transformer block；自注意力把全局先验从 token 传播到所有空间位置，之后<strong>丢弃前 K 个 token</strong>，剩下 N 个即精炼后的特征。RGB→TIR 与 TIR→RGB <strong>双向</strong>执行，互为 primary&#x2F;auxiliary。</p>
+<p><strong>放置位置</strong>：HTGI 只插在骨干的关键层（消融证明层 3&#x2F;6&#x2F;9 全部插入最优），非逐层。总参数 37.3K×3，&lt; 模型总参数 0.2%。</p>
+<h4 id="关键公式-1"><a href="#关键公式-1" class="headerlink" title="关键公式"></a>关键公式</h4><p>$$<br>h_k &#x3D; \sum_{i&#x3D;1}^{N_t} \left( f_k(x_i) \odot x_i \right), \qquad k &#x3D; 1, \dots, K \tag{3}<br>$$</p>
+<p>$$<br>Z &#x3D; \text{TransformerBlock}([H_n : X_m]) \tag{4}<br>$$</p>
+<p>其中 f_k(·) 是生成第 k 个 token 自适应权重的轻量 MLP；H_n 是模态 n 的 K 个 holistic tokens（源），X_m 是模态 m 的 N 个特征 tokens（目标）；传播后前 K 个位置被删除，剩余 N 个构成精炼序列 X_m’。</p>
+<h4 id="我的理解-1"><a href="#我的理解-1" class="headerlink" title="我的理解"></a>我的理解</h4><blockquote>
+<p>HTGI 用一个操作同时完成了”抽象”与”引导”：<strong>Token Router 的加权求和</strong> &#x3D; 可学习的全局池化（相比平均池化保留更多信息）；<strong>token 拼接进对方搜索流</strong> &#x3D; 用现成 self-attention 免费实现 cross-modal attention——注入 token 相当于给对方流”植入”了源模态的全局语义锚，attention 自动把这些先验扩散到对应空间位置。这种”以模板为锚、向搜索流扩散”的模式比双向逐层 cross-attention 轻得多，且天然可插拔。与我的研究呼应：这个”全局描述子”与 CamSAM2 OPG 的目标原型（k-means 簇均值）在信息压缩意图上同构，但 HTG 的权重是<strong>可学习的软加权</strong>而非聚类均值——一个值得对照的设计选择。</p>
+</blockquote>
+<hr>
+<!-- 配图占位：Fig. 3 score map 随层深演化、Fig. 4 删层掉点实验、Fig. 5 HTG 结构 由脚本自动插入 -->
+
+
+<p><strong>论文机制图</strong></p>
+<p><img src="https://20020730.xyz/images/tracking/token-routing/fig2.webp" alt="Figure 2: Figure 2. The tracker includes two main components. Left: the Holistic-Token-Guided Interaction Module, where compact holistic tokens fro..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/token-routing/fig5.webp" alt="Figure 5: Figure 5. Structure of the Holistic Token Generator module. Holistic tokens extracted from one modality guide the refinement of the other..." loading="lazy"></p>
+<h3 id="3-4-论文与代码对照"><a href="#3-4-论文与代码对照" class="headerlink" title="3.4 论文与代码对照"></a>3.4 论文与代码对照</h3><blockquote>
+<p>论文<strong>未提供官方代码</strong>，无法给出代码定位；下表将论文模块与论文正文描述的实现要点对应，供日后复现参考。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Paper Module</th>
+<th>论文中的实现要点</th>
+<th>Code 状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AEE anytime heads</td>
+<td>多深度挂轻量预测头，与主解码器共享参数；置信度 r_l &#x3D; max(S_l)&#x2F;ΣS_l</td>
+<td>未开源</td>
+</tr>
+<tr>
+<td>AEE 自校准损失</td>
+<td>L_pred + 单调对齐 |r_l−r*| + margin 软边界 M(r_l, r*, τ)；随机深度截断训练</td>
+<td>未开源</td>
+</tr>
+<tr>
+<td>AEE 推理早停</td>
+<td>逐层确定性判断 r_l &gt; τ（τ&#x3D;0.75）即停止输出</td>
+<td>未开源</td>
+</tr>
+<tr>
+<td>HTG Token Router</td>
+<td>K 个可学习 holistic tokens，每 token 一个轻量 MLP f_k 生成 per-patch 权重（公式 3）</td>
+<td>未开源</td>
+</tr>
+<tr>
+<td>HTGI 特征交互</td>
+<td>模板 holistic tokens 拼接对方搜索 tokens → TransformerBlock → 丢弃前 K token（公式 4）；层 3&#x2F;6&#x2F;9 插入、双向</td>
+<td>未开源</td>
+</tr>
+<tr>
+<td>双模板更新</td>
+<td>一个稳定长期模板 + 一个自适应更新模板，推理用两个 128×128 模板</td>
+<td>未开源</td>
+</tr>
+</tbody></table>
+<h4 id="论文中未说明的实现细节"><a href="#论文中未说明的实现细节" class="headerlink" title="论文中未说明的实现细节"></a>论文中未说明的实现细节</h4><ul>
+<li>K（holistic token 数量）的具体取值、anytime heads 挂载的具体层集合：<strong>论文未说明</strong>。</li>
+<li>L_pred 的具体形式（BCE &#x2F; IoU 损失）、数据增强策略：<strong>论文未说明</strong>。</li>
+<li>总参数量与总 FLOPs：<strong>论文未报告</strong>（仅给出 HTGI 37.3K×3 &lt; 0.2%，可反推总参数 &gt; 约 55.9M）。</li>
+</ul>
+<hr>
+<h3 id="3-5-训练与推理"><a href="#3-5-训练与推理" class="headerlink" title="3.5 训练与推理"></a>3.5 训练与推理</h3><h4 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Dataset:</span> <span class="string">VTUAV</span> <span class="string">+</span> <span class="string">LasHeR</span> <span class="string">训练集（采样比</span> <span class="number">1</span><span class="string">:2）</span></span><br><span class="line"><span class="attr">Input:</span> <span class="number">2</span> <span class="string">张</span> <span class="number">128</span><span class="string">×128</span> <span class="string">模板</span> <span class="string">+</span> <span class="number">1</span> <span class="string">张</span> <span class="number">256</span><span class="string">×256</span> <span class="string">搜索图</span></span><br><span class="line"><span class="attr">Epoch:</span> <span class="number">15</span><span class="string">（每</span> <span class="string">epoch</span> <span class="string">60K</span> <span class="string">配对样本）</span></span><br><span class="line"><span class="attr">Batch Size:</span> <span class="number">32</span></span><br><span class="line"><span class="attr">Optimizer:</span> <span class="string">AdamW（weight</span> <span class="string">decay</span> <span class="number">1e-4</span><span class="string">）</span></span><br><span class="line"><span class="attr">Learning Rate:</span> <span class="string">backbone</span> <span class="number">1e-5</span><span class="string">，其他参数</span> <span class="number">1e-4</span><span class="string">；第</span> <span class="number">10</span> <span class="string">epoch</span> <span class="string">后</span> <span class="string">×0.1</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="number">8</span><span class="string">×</span> <span class="string">NVIDIA</span> <span class="string">RTX</span> <span class="number">4090</span></span><br><span class="line"><span class="string">注意:</span> <span class="string">论文</span> <span class="string">Method</span> <span class="string">称</span> <span class="string">backbone</span> <span class="string">&quot;frozen&quot;</span><span class="string">，但训练细节给出</span> <span class="string">ViT</span> <span class="string">backbone</span> <span class="number">1e-5</span> <span class="string">学习率</span></span><br><span class="line">      <span class="string">——</span> <span class="string">存在表述与实现的不一致（疑点</span> <span class="number">1</span><span class="string">，见第</span> <span class="number">6</span> <span class="string">节）</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">双模板（一长期稳定 + 一自适应更新）→ 双流 ViT 骨干（层 3/6/9 经 HTGI 交互）</span><br><span class="line">→ AEE 逐层计算置信度 r_l → r_l &gt; 0.75 提前停止 → 输出当前 score map</span><br><span class="line">→ score map 回归 bbox 与 confidence</span><br><span class="line">FPS（PyTorch 测量，排除预处理）:</span><br><span class="line">  NVIDIA RTX 4090 GPU: 148.3 FPS</span><br><span class="line">  Intel Xeon Silver 4314 CPU: 50.2 FPS</span><br><span class="line">  Jetson Orin NX 8GB 边缘设备: 28.7 FPS</span><br><span class="line">  另在 CMDTrack 报告平台 Intel Core i7-13700H CPU 上: 45.5 FPS（超 CMDTrack-S12/T12）</span><br></pre></td></tr></table></figure>
+
+<h4 id="Complexity"><a href="#Complexity" class="headerlink" title="Complexity"></a>Complexity</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">HTGI 新增参数: 37.3K × 3 ≈ 112K（&lt; 模型总参数 0.2%）</span><br><span class="line">总参数量 / 总 FLOPs: 论文未报告</span><br><span class="line">早退收益: τ=1.0（完全关闭早退）比 τ=0.75 速度下降 40%+（GPU 148.3→84.3 FPS）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h2><h3 id="数据集与指标"><a href="#数据集与指标" class="headerlink" title="数据集与指标"></a>数据集与指标</h3><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>规模</th>
+<th>Metric</th>
+<th>关键点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LasHeR</td>
+<td>245 条长时测试序列</td>
+<td>PR &#x2F; NPR &#x2F; SR</td>
+<td>挑战性大、属性多样；同时参与训练（1:2）</td>
+</tr>
+<tr>
+<td>RGBT234</td>
+<td>234 条测试序列</td>
+<td>PR &#x2F; SR</td>
+<td>RGB-T 经典 benchmark</td>
+</tr>
+<tr>
+<td>GTOT</td>
+<td>50 条短时序列</td>
+<td>PR &#x2F; SR</td>
+<td>短时基准</td>
+</tr>
+<tr>
+<td>RGBT210</td>
+<td>210 条测试序列</td>
+<td>MPR &#x2F; MSR</td>
+<td>大规模 RGB-T 基准</td>
+</tr>
+<tr>
+<td>VTUAV</td>
+<td>170 万 RGB-T 图像对、500 条视频</td>
+<td>MPR &#x2F; MSR</td>
+<td>无人机视角，分 ST &#x2F; LT 子集；参与训练</td>
+</tr>
+</tbody></table>
+<h3 id="主要结果"><a href="#主要结果" class="headerlink" title="主要结果"></a>主要结果</h3><blockquote>
+<p>最值得关注的结果：</p>
+<ul>
+<li><strong>LasHeR（ViT-T）</strong>：PR <strong>70.2</strong> &#x2F; NPR 66.3 &#x2F; SR <strong>56.3</strong>。超过非实时方法 TBSI（ViT-B）<strong>+1.0 PR &#x2F; +0.6 NPR &#x2F; +0.7 SR</strong>，且 CPU 上快 10 倍以上、骨干更轻；与当前精度最高梯队（GMMT 70.7&#x2F;56.6）仅差 0.5 PR &#x2F; 0.3 SR，但速度是几何级差距。</li>
+<li><strong>效率对比（同一三平台实测）</strong>：ADTrack <strong>148.3 &#x2F; 50.2 &#x2F; 28.7</strong>（GPU&#x2F;CPU&#x2F;NX），对比 LightFC-T 35.2&#x2F;7.9&#x2F;7.1、SUTrack-Tiny 102.4&#x2F;26.6&#x2F;15.6、TBSI-Tiny 48.9&#x2F;19.3&#x2F;8.8、CAFormer（ViT-B）63.5&#x2F;8.7&#x2F;7.5——<strong>唯一三平台全部实时</strong>的 RGB-T tracker（Fig. 1：比 SUTrack-Tiny CPU 快 ×4.0，比 CAFormer 快 ×6.3）。</li>
+<li><strong>RGBT234</strong>：PR 88.6 &#x2F; SR 66.1，超 SUTrack-Tiny <strong>+2.7 PR &#x2F; +2.3 SR</strong>；<strong>GTOT</strong> 93.0&#x2F;77.6、<strong>RGBT210</strong> 87.8&#x2F;65.2（超 CAFormer +2.2&#x2F;+2.0）均刷新；<strong>VTUAV-ST</strong> MPR 87.6 &#x2F; MSR 75.4，<strong>VTUAV-LT</strong> 66.1&#x2F;56.5，超 USTrack 与 AINet。</li>
+</ul>
+</blockquote>
+<p><strong>轻量级对比（Table 1 节选）</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Source</th>
+<th>Backbone</th>
+<th>LasHeR PR</th>
+<th>LasHeR SR</th>
+<th>RGBT234 PR&#x2F;SR</th>
+<th>GPU</th>
+<th>CPU</th>
+<th>NX</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ADTrack</strong></td>
+<td>Ours</td>
+<td>ViT-T</td>
+<td><strong>70.2</strong></td>
+<td><strong>56.3</strong></td>
+<td>88.6&#x2F;66.1</td>
+<td><strong>148.3</strong></td>
+<td><strong>50.2</strong></td>
+<td><strong>28.7</strong></td>
+</tr>
+<tr>
+<td>CMDTrack-S12</td>
+<td>TPAMI25</td>
+<td>ViT-S</td>
+<td>68.8</td>
+<td>56.6</td>
+<td>85.9&#x2F;61.8</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>CMDTrack-T12</td>
+<td>TPAMI25</td>
+<td>ViT-T</td>
+<td>67.5</td>
+<td>55.3</td>
+<td>84.5&#x2F;60.9</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>SUTrack-Tiny</td>
+<td>AAAI25</td>
+<td>HIViT-T</td>
+<td>66.7</td>
+<td>53.9</td>
+<td>85.9&#x2F;63.8</td>
+<td>102.4</td>
+<td>26.6</td>
+<td>15.6</td>
+</tr>
+<tr>
+<td>LightFC-T</td>
+<td>ARXIV25</td>
+<td>ViT-T</td>
+<td>64.7</td>
+<td>50.7</td>
+<td>83.4&#x2F;60.3</td>
+<td>35.2</td>
+<td>7.9</td>
+<td>7.1</td>
+</tr>
+<tr>
+<td>TBSI-Tiny</td>
+<td>CVPR23</td>
+<td>ViT-T</td>
+<td>61.7</td>
+<td>48.9</td>
+<td>-</td>
+<td>-</td>
+<td>48.9</td>
+<td>19.3</td>
+</tr>
+<tr>
+<td>CAFormer（对照）</td>
+<td>AAAI25</td>
+<td>ViT-B</td>
+<td>70.0</td>
+<td>55.6</td>
+<td>88.3&#x2F;66.4</td>
+<td>63.5</td>
+<td>8.7</td>
+<td>7.5</td>
+</tr>
+</tbody></table>
+<h3 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h3><blockquote>
+<p>哪个模块贡献最大？</p>
+<ul>
+<li><strong>HTGI 组件（Table 4，LasHeR）</strong>：w&#x2F;o HTGI（仅晚期特征拼接）66.9&#x2F;63.0&#x2F;53.2 → 单向 RGB→TIR 68.2&#x2F;64.5&#x2F;54.3 → <strong>双向 Full Model 70.2&#x2F;66.3&#x2F;56.3</strong>。双向 &gt; 单向 &gt; 无交互；两方向各捕捉互补信息。同时验证<strong>双模板</strong>必要性：单静态模板基线 66.3 PR vs 双模板 66.9 PR（无 HTGI 时）。</li>
+<li><strong>HTGI 放置层（Table 5）</strong>：不插 66.9&#x2F;63.0&#x2F;53.2 → 仅层 3：68.5&#x2F;64.5&#x2F;54.7 → 层 3+6：69.7&#x2F;65.8&#x2F;55.8 → 层 3+6+9：<strong>70.2&#x2F;66.3&#x2F;56.3</strong>。跨语义层级的多阶段分层融合收益最大。</li>
+<li><strong>早退阈值 τ（Table 6，本文关键超参）</strong>：τ 0.65→0.75，LasHeR PR 68.6→<strong>70.2</strong>、GPU FPS 192.0→148.3；τ 继续升到 1.0（完全关闭早退）SR 仅 56.3→56.4（<strong>+0.1 几乎无损</strong>），但速度下降 <strong>40%+</strong>（GPU 148.3→84.3，CPU 50.2→27.1）。τ&#x3D;0.75 是精度-速度最佳平衡点。</li>
+</ul>
+</blockquote>
+<h3 id="失败案例"><a href="#失败案例" class="headerlink" title="失败案例"></a>失败案例</h3><blockquote>
+<p>论文<strong>没有专门的失败案例分析章节</strong>——这一点本身是一个弱点（评测完整度略打折扣）。从已有信息可推断的边界：</p>
+<ul>
+<li><strong>早退的校准风险</strong>：早退决策完全依赖单帧 score map 紧致度 r_l，若某帧目标被完全遮挡导致 score map 呈现假性”紧致”（如响应塌缩到干扰物上），r_l 可能虚高而过早停止，输出错误定位。论文未讨论此类”过自信”失败的应对。</li>
+<li><strong>LR（低分辨率）与 DEF（形变）属性</strong>：Fig. 6 显示 ADTrack 在 SA（相似外观）、LR、DEF 上优于 SOTA，但具体在哪些属性上仍弱于非轻量方法（如 GMMT）<strong>论文未逐属性给出完整对比</strong>。</li>
+<li><strong>长时跟踪&#x2F;目标完全消失</strong>：VTUAV-LT 上 MSR 56.5 明显低于 ST 的 75.4——长时场景（目标消失再出现）仍是短板，且论文没有专门的重检测&#x2F;记忆机制（与本文早退的”单帧决策”设计相关，时序记忆缺失）。</li>
+</ul>
+</blockquote>
+<h4 id="我认为失败的原因"><a href="#我认为失败的原因" class="headerlink" title="我认为失败的原因"></a>我认为失败的原因</h4><ul>
+<li>早退是<strong>无记忆的单帧决策</strong>：置信度 r_l 只看当前帧 score map，不看时序一致性；连续遮挡时”峰值占比”可能保持虚高，导致在错误帧提前停止。AEE 的 margin 训练只校准了”层间置信度单调性”，未校准”跨帧置信度可靠性”。</li>
+<li>HTGI 只做<strong>模板→搜索</strong>的单向信息流（双向指 RGB↔TIR 两个方向），搜索侧的新外观不会聚合回模板；长时目标外观漂移只能靠”自适应更新模板”承担，机制上偏弱。</li>
+</ul>
+<hr>
+<!-- 配图占位：Fig. 6 属性级对比、Fig. 7 定性对比（密集人群/相似干扰物/遮挡）由脚本自动插入 -->
+
+
+<h3 id="论文图示（截图）"><a href="#论文图示（截图）" class="headerlink" title="论文图示（截图）"></a>论文图示（截图）</h3><p><img src="https://20020730.xyz/images/tracking/token-routing/fig3.webp" alt="Figure 3: Figure 3. Score map evolution across layers. Left: Qualitative score maps for three sequences at Layers 1, 3, 6, 9, and 12, showing incre..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/token-routing/fig4.webp" alt="Figure 4: Figure 4. Performance degradation on LasHeR when individual layers are removed from the 12-layer ViT backbone. The results show that even..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/token-routing/fig7.webp" alt="Figure 7: Figure 7. Qualitative comparison between our method and other RGB-T trackers on four representative sequences from the LasHeR dataset." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/token-routing/fig6.webp" alt="Figure 6: Figure 6. Comparison of ADTrack and SOTA trackers under dif- ferent attributes in the LasHeR dataset." loading="lazy"></p>
+<h2 id="5-复现指南"><a href="#5-复现指南" class="headerlink" title="5. 复现指南"></a>5. 复现指南</h2><p><strong>Repository</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">GitHub: 未开源（2026-08-16 WebSearch 未发现官方仓库；仅 CVF Open Access 全文与第三方解读页）</span><br><span class="line">Checkpoint: 未提供</span><br></pre></td></tr></table></figure>
+
+<p><strong>Environment</strong>（仅论文可推断的信息）</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">框架:</span> <span class="string">PyTorch（速度均为</span> <span class="string">PyTorch</span> <span class="string">测量，排除预处理）</span></span><br><span class="line"><span class="string">训练硬件:</span> <span class="number">8</span><span class="string">×</span> <span class="string">NVIDIA</span> <span class="string">RTX</span> <span class="number">4090</span></span><br><span class="line"><span class="string">推理硬件:</span> <span class="string">RTX</span> <span class="number">4090</span> <span class="string">/</span> <span class="string">Intel</span> <span class="string">Xeon</span> <span class="string">Silver</span> <span class="number">4314 </span><span class="string">CPU</span> <span class="string">/</span> <span class="string">Jetson</span> <span class="string">Orin</span> <span class="string">NX</span> <span class="string">8GB</span> <span class="string">/</span> <span class="string">Intel</span> <span class="string">Core</span> <span class="string">i7-13700H</span></span><br><span class="line"><span class="string">数据:</span> <span class="string">VTUAV</span> <span class="string">+</span> <span class="string">LasHeR（采样比</span> <span class="number">1</span><span class="string">:2）</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键运行命令</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">论文未提供任何训练/评测命令（未开源），无可复现命令；工程复现需自行按 3.5 配置搭建双流 ViT-T + HTGI + AEE 管线。</span><br></pre></td></tr></table></figure>
+
+<h4 id="复现结果"><a href="#复现结果" class="headerlink" title="复现结果"></a>复现结果</h4><ul>
+<li><strong>未运行（本次仅阅读）</strong>。</li>
+</ul>
+<h4 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h4><ul>
+<li>无代码、无 checkpoint、无命令，复现需完全自建；K 值、anytime heads 挂载层、L_pred 形式等关键超参论文未给出，只能自行补全——本笔记在 3.4 已列出这些”论文未说明”项。</li>
+</ul>
+<hr>
+<h2 id="6-批判性思考"><a href="#6-批判性思考" class="headerlink" title="6. 批判性思考"></a>6. 批判性思考</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li><strong>AEE 设计干净</strong>：置信度 r 直接定义在 score map 上（零额外分支），margin 损失把”什么时候该停”学进每一层，完全不需要 stop 监督或 teacher 蒸馏；τ 是推理时唯一旋钮，Table 6 给出了完整的精度-速度连续谱（192→84 FPS），部署者可自由取舍。</li>
+<li><strong>Fig. 4 删层实验说服力强</strong>：先证明”层不能删”，再论证”只能动态跳过”——逻辑闭环严谨，这是很多 early-exit 工作没有做到的证据链。</li>
+<li><strong>HTGI 极其轻量</strong>：37.3K×3 参数（&lt;0.2%）复用现成 self-attention，零新增 cross-attention；消融完整（方向性、放置层、模板策略全做了）。</li>
+<li><strong>评测全面</strong>：5 个 benchmark + 3 个统一硬件平台实测 + 与未开源 CMDTrack 的公平复测（同平台 i7-13700H）。</li>
+</ul>
+<h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><ul>
+<li><strong>总参数量与 FLOPs 未报告</strong>——论文主打轻量，却不给总开销，说服力打折；只能从”37.3K×3 &lt; 0.2%”反推总参数 &gt; 约 55.9M。</li>
+<li><strong>无 failure case 分析</strong>、无完整属性级对比；速度”排除预处理”的 PyTorch 测量与实际工程部署（含预处理、后处理、框架开销）有 gap。</li>
+<li><strong>backbone “frozen” 表述与训练细节矛盾</strong>（lr 1e-5 的 ViT backbone 显然在训练）；K 值、head 挂载层未公开，复现门槛偏高。</li>
+<li><strong>早退风险</strong>：单帧、无记忆、无时序的置信度在遮挡&#x2F;相似干扰物下可能虚高误停；阈值 τ 需按数据集人工重校准，泛化性未验证（只在 LasHeR&#x2F;RGBT234 上消融过）。</li>
+</ul>
+<h3 id="我最关心的问题"><a href="#我最关心的问题" class="headerlink" title="我最关心的问题"></a>我最关心的问题</h3><ol>
+<li><strong>早退置信度在遮挡下的可靠性</strong>：r_l &#x3D; max&#x2F;sum 衡量的是”score map 紧致度”，不是”定位正确性”。目标被遮挡时响应常常<strong>更紧致</strong>（缩到遮挡物或干扰物上）——此时早退恰好输出错误结果，且因为跳过了深层计算，连纠正机会都没有。论文没有遮挡条件下的早退行为分析。</li>
+<li><strong>holistic token 与目标外观漂移</strong>：HTGI 的 token 只从<strong>模板</strong>（首帧静态语义）生成，搜索侧外观变化不会回流到 token；在 VTUAV-LT 这类长时序列上，模板侧全局描述子会不会逐渐”过时”？双模板机制能在多大程度上补偿？</li>
+<li><strong>τ 的跨数据集泛化</strong>：Table 6 只在 LasHeR&#x2F;RGBT234 消融；若换数据集&#x2F;分辨率，0.75 还是不是最优？AEE 的 margin 损失训练出的置信度分布是否在域外数据上保持校准？</li>
+</ol>
+<h3 id="可以迁移到我的研究中的部分"><a href="#可以迁移到我的研究中的部分" class="headerlink" title="可以迁移到我的研究中的部分"></a>可以迁移到我的研究中的部分</h3><ul>
+<li><strong>DAM4SAM 记忆更新开销控制</strong>：AEE 的置信度校准思想可以原样搬到记忆侧——用类似 r 的紧致度&#x2F;可信度度量决定”<strong>这一帧值不值得触发记忆写入&#x2F;原型刷新</strong>“：高置信度帧跳过记忆更新（省开销），低置信度帧才更新（保质量）。这正好把 DAM4SAM 里固定频率的记忆写操作变成<strong>可校准的动态预算</strong>，机制挂钩点明确：r 定义在 score map 上、τ 作唯一旋钮、margin 训练校准。</li>
+<li><strong>跨视角无人机追踪（cross_view_vtuav）</strong>：VTUAV 正是本文的训练集之一，Table 3 的 ST&#x2F;LT 结果（87.6&#x2F;75.4 与 66.1&#x2F;56.5）可作为我跨视角实验的<strong>直接 baseline 参照</strong>；更关键的是，跨视角剧变帧（视角切换瞬间目标外观剧烈变化）就是天然的”难帧”——AEE 的逐帧动态深度恰好反制”简单帧过度计算、难帧欠计算”，可在我的 UAV 场景验证早退的收益边界。</li>
+<li><strong>RGB-T 双流融合</strong>：HTGI 的 holistic-token 轻量交互（模板全局 token 注入对方搜索流自注意力、低秩假设）是比 cross-attention &#x2F; adapter 更轻的融合原语，可直接替换&#x2F;对照我双流 RGB-T 融合中的 dense 交互；”低秩跨模态依赖”也为轻量融合提供了理论依据。</li>
+<li><strong>原型记忆的软加权对照</strong>：HTG 的可学习 Token Router（f_k(x_i)⊙x_i 加权和）与 CamSAM2 OPG 的 k-means 簇均值都是”目标区域→紧凑描述子”的压缩，但前者权重可学、后者是无参数聚类——在 DAM4SAM 的记忆原型上对照这两种压缩方式，是低成本高信息量的实验。</li>
+</ul>
+<h3 id="新想法"><a href="#新想法" class="headerlink" title="新想法"></a>新想法</h3><ol>
+<li><strong>置信度门控记忆（Confidence-Gated Memory）</strong>：在 DAM4SAM 中把 AEE 的 max&#x2F;sum 置信度用于记忆侧——r 高于阈值 τ_mem 则跳过本轮记忆写入，低于阈值才更新；配合 AEE 式 margin 训练校准记忆写决策，把”记忆维护开销”变成可控预算（直接挂钩：r 定义、τ 旋钮、margin 校准三项全部复用）。</li>
+<li><strong>遮挡感知早退修正</strong>：针对”遮挡时 score map 假紧致”的失效模式，给 AEE 加一个时序一致性检查——若早停层的 bbox 与上一帧 IoU 骤降，则强制走深层重算（晚退）。这给 cross_view_vtuav 中目标消失&#x2F;视角剧变场景提供了低成本容错。</li>
+<li><strong>holistic-token 记忆路由</strong>：把记忆 bank 中的目标外观先经 Token Router 压缩成 K 个 holistic tokens，跨帧只需路由这 K 个 token 参与匹配，天然控制记忆带宽——把 HTGI 的”可学加权压缩”与 DAM4SAM 的原型记忆合流，缓解长视频记忆上限。</li>
+<li><strong>早退-蒸馏混合</strong>：论文明确放弃 teacher 蒸馏，但 AEE 的 L_pred + |r_l−r*| 多出口对齐本身就是一种 self-distillation；可对照 CMD 的跨模态蒸馏：让早退出口对齐”教师深层出口”而非”自身最终层”，可能在校准与精度上双赢。</li>
+</ol>
+<hr>
+<h2 id="7-深度阅读标注"><a href="#7-深度阅读标注" class="headerlink" title="7. 深度阅读标注"></a>7. 深度阅读标注</h2><p>本节暂无额外阅读标注。</p>
+<hr>
+<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h2><h3 id="三句话总结"><a href="#三句话总结" class="headerlink" title="三句话总结"></a>三句话总结</h3><ol>
+<li><strong>Problem：</strong> RGB-T 跟踪的精度提升建立在”深融合 + 大参数”上，双模态 2× 基础开销 + 重交互模块使实时性被锁死在高端 GPU；现有轻量方法全是静态计算图，每帧开销与难度无关。</li>
+<li><strong>Method：</strong> AEE 把深度变成动态计算预算——多深度 anytime heads + 基于 score map 紧致度（max&#x2F;sum）的自校准置信度，超过阈值 τ&#x3D;0.75 即早停；HTGI 用 37.3K×3 参数的模板侧 holistic tokens 双向注入对方搜索流自注意力，复用现成 attention 完成零新增参数的跨模态对齐。</li>
+<li><strong>Result：</strong> LasHeR PR 70.2 &#x2F; SR 56.3，GPU 148.3 &#x2F; CPU 50.2 &#x2F; 边缘 28.7 FPS——唯一三平台全实时的 RGB-T tracker；τ&#x3D;1.0 关早退精度仅 +0.1 SR 而速度掉 40%+，证明早退几乎无损。</li>
+</ol>
+<h3 id="一句话评价"><a href="#一句话评价" class="headerlink" title="一句话评价"></a>一句话评价</h3><p>把”早退”与”轻量跨模态交互”都做成了可学习、可校准的机制（而非启发式&#x2F;静态结构），证据链（Fig. 3&#x2F;4）与效率评测完整，是 RGB-T 轻量化路线上的扎实标杆工作。</p>
+<h3 id="是否值得复现？"><a href="#是否值得复现？" class="headerlink" title="是否值得复现？"></a>是否值得复现？</h3><p><strong>复现理由：</strong> 三星。思想与消融扎实，但<strong>无代码、无 checkpoint、无命令</strong>，且 K 值、head 层、损失形式等关键细节未公开，自建复现成本较高；对 DAM4SAM 的迁移价值主要在”置信度门控”与”原型软加权”两个机制级借鉴（不依赖完整复现即可验证），故给三星而非四星。</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/23d67125/" title="论文阅读｜Adaptive Depth Lightweight RGB-T Tracking with Holistic Token Routing">https://20020730.xyz/posts/23d67125/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/d33a56e4/" rel="prev" title="论文阅读｜UETrack: A Unified and Efficient Framework for Single Object Tracking"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">论文阅读｜UETrack: A Unified and Efficient Framework for Single Object Tracking</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/d3c3087/" rel="next" title="论文阅读｜Spatio-Temporal Conditional Denoising Transformer for Modality-Missing RGBT Tracking"><span class="post-nav-text">论文阅读｜Spatio-Temporal Conditional Denoising Transformer for Modality-Missing RGBT Tracking</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
+  display: none;
+}</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
+  //- hide all
+  document.querySelectorAll('.toggle-comment-btn').forEach((btn) => {
+    const container = document.querySelector(btn.dataset.target);
+    if (container) {
+      container.style.display = "none";
+    }
+  });
+}
+function showComment(target) {
+  hideAllComment();
+  //- show target
+  const targetContainer = document.querySelector(target);
+  if (targetContainer) {
+    targetContainer.style.display = "block";
+  }
+}
+</script></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/posts/23d67125/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="Wanglihan954/disscussion" issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async></script></div></main><aside class="right-sidebar"><div id="post-toc-wrap" style="display:block; opacity:1; visibility:visible;"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">论文信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">摘要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E8%B5%84%E6%BA%90"><span class="toc-number">2.</span> <span class="toc-text">论文资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%A0%94%E7%A9%B6%E5%8A%A8%E6%9C%BA"><span class="toc-number">3.</span> <span class="toc-text">1. 研究动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">要解决什么问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">现有方法的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E8%80%85%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">3.3.</span> <span class="toc-text">作者的核心思路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="toc-number">4.</span> <span class="toc-text">2. 主要贡献</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E7%9C%9F%E6%AD%A3%E7%9A%84%E6%96%B0%E6%84%8F"><span class="toc-number">4.1.</span> <span class="toc-text">我认为真正的新意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">3. 方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%95%B4%E4%BD%93%E6%A1%86%E6%9E%B6"><span class="toc-number">5.1.</span> <span class="toc-text">3.1 整体框架</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">整体流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Core-Module-1-%E2%80%94-AEE%EF%BC%9A%E8%87%AA%E9%80%82%E5%BA%94%E6%97%A9%E9%80%80%EF%BC%88Adaptive-Early-Exit%EF%BC%89"><span class="toc-number">5.2.</span> <span class="toc-text">3.2 Core Module 1 — AEE：自适应早退（Adaptive Early-Exit）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F"><span class="toc-number">5.2.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95"><span class="toc-number">5.2.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F"><span class="toc-number">5.2.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.4.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Core-Module-2-%E2%80%94-HTGI%EF%BC%9AHolistic-Token-Guided-Interaction"><span class="toc-number">5.3.</span> <span class="toc-text">3.3 Core Module 2 — HTGI：Holistic-Token-Guided Interaction</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F-1"><span class="toc-number">5.3.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95-1"><span class="toc-number">5.3.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F-1"><span class="toc-number">5.3.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3-1"><span class="toc-number">5.3.4.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E8%AE%BA%E6%96%87%E4%B8%8E%E4%BB%A3%E7%A0%81%E5%AF%B9%E7%85%A7"><span class="toc-number">5.4.</span> <span class="toc-text">3.4 论文与代码对照</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E4%B8%AD%E6%9C%AA%E8%AF%B4%E6%98%8E%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-number">5.4.1.</span> <span class="toc-text">论文中未说明的实现细节</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="toc-number">5.5.</span> <span class="toc-text">3.5 训练与推理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Training"><span class="toc-number">5.5.1.</span> <span class="toc-text">Training</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Inference"><span class="toc-number">5.5.2.</span> <span class="toc-text">Inference</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Complexity"><span class="toc-number">5.5.3.</span> <span class="toc-text">Complexity</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.</span> <span class="toc-text">4. 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8E%E6%8C%87%E6%A0%87"><span class="toc-number">6.1.</span> <span class="toc-text">数据集与指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="toc-number">6.2.</span> <span class="toc-text">主要结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.3.</span> <span class="toc-text">消融实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E8%B4%A5%E6%A1%88%E4%BE%8B"><span class="toc-number">6.4.</span> <span class="toc-text">失败案例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E5%A4%B1%E8%B4%A5%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">6.4.1.</span> <span class="toc-text">我认为失败的原因</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%9B%BE%E7%A4%BA%EF%BC%88%E6%88%AA%E5%9B%BE%EF%BC%89"><span class="toc-number">6.5.</span> <span class="toc-text">论文图示（截图）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A4%8D%E7%8E%B0%E6%8C%87%E5%8D%97"><span class="toc-number">7.</span> <span class="toc-text">5. 复现指南</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">7.1.</span> <span class="toc-text">复现结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">7.2.</span> <span class="toc-text">遇到的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%89%B9%E5%88%A4%E6%80%A7%E6%80%9D%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">6. 批判性思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">8.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%80%E9%99%90"><span class="toc-number">8.2.</span> <span class="toc-text">局限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E6%9C%80%E5%85%B3%E5%BF%83%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">8.3.</span> <span class="toc-text">我最关心的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E8%BF%81%E7%A7%BB%E5%88%B0%E6%88%91%E7%9A%84%E7%A0%94%E7%A9%B6%E4%B8%AD%E7%9A%84%E9%83%A8%E5%88%86"><span class="toc-number">8.4.</span> <span class="toc-text">可以迁移到我的研究中的部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E6%83%B3%E6%B3%95"><span class="toc-number">8.5.</span> <span class="toc-text">新想法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%B7%B1%E5%BA%A6%E9%98%85%E8%AF%BB%E6%A0%87%E6%B3%A8"><span class="toc-number">9.</span> <span class="toc-text">7. 深度阅读标注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">8. 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%8F%A5%E8%AF%9D%E6%80%BB%E7%BB%93"><span class="toc-number">10.1.</span> <span class="toc-text">三句话总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AF%84%E4%BB%B7"><span class="toc-number">10.2.</span> <span class="toc-text">一句话评价</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%AF%E5%90%A6%E5%80%BC%E5%BE%97%E5%A4%8D%E7%8E%B0%EF%BC%9F"><span class="toc-number">10.3.</span> <span class="toc-text">是否值得复现？</span></a></li></ol></li></ol></div></div></div></aside><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 – 2026 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> 宁翰</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-04-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><!-- hexo injector body_end start --><script src="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/js/index.js"></script><script src="/js/nav-title-fit.js" defer></script><!-- hexo injector body_end end --></body></html>

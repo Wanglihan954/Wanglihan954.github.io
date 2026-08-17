@@ -1,0 +1,491 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="宁翰"><meta name="copyright" content="宁翰"><meta name="generator" content="Hexo 8.1.1"><meta name="theme" content="hexo-theme-yun"><title>论文阅读｜LiVOS: Light Video Object Segmentation with Gated Linear Matching | Seventh Knot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{"renderMathInElement":true,"strict":"ignore","output":"htmlAndMathml","displayMode":true,"trust":true},
+    ...undefined?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"20020730.xyz","root":"/","title":"世界需要七休日","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.xml"},"localsearch":{"enable":"fasle","trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://comment.20020730.xyz","comment":true,"visitor":true,"emoji":["//unpkg.com/@waline/emojis@1.1.0/weibo",{"name":"嗯呢漫布","folder":"/images/zzz-stickers","prefix":"bangboo-","type":"jpg","icon":"/images/zzz-stickers/bangboo-thanks.jpg","items":["gift","thanks","rest"]},{"name":"丽都漫步","folder":"/images/zzz-stickers","prefix":"lidu-","type":"png","icon":"/images/zzz-stickers/lidu-anby.png","items":["anby","nekomata","lycaon","rina","soldier11","wise"]}],"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="Seventh Knot" type="application/atom+xml"><link rel="stylesheet" href="/css/custom_theme.css?v=20260812-3"><link rel="stylesheet" href="/css/projects.css?v=20260817-1"><script src="/js/web-pet.js" defer></script><script src="/js/mobile-navigation.js" defer></script><script src="/js/home-intro.js?v=20260810-6" defer></script><meta name="description" content="半监督 VOS 主要由 space-time memory (STM) 网络驱动，它把过去帧特征存为时空记忆，通过 softmax attention 分割当前帧。但 softmax 匹配的二次复杂度带来显存瓶颈，限制了视频长度与分辨率扩展。LiVOS 提出轻量记忆网络：用 linear attention 把记忆匹配重写为递归过程，将二次大小的注意力矩阵压缩为常数大小的时空无关 2D state">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读｜LiVOS: Light Video Object Segmentation with Gated Linear Matching">
+<meta property="og:url" content="https://20020730.xyz/posts/b7f6f8ca/index.html">
+<meta property="og:site_name" content="Seventh Knot">
+<meta property="og:description" content="半监督 VOS 主要由 space-time memory (STM) 网络驱动，它把过去帧特征存为时空记忆，通过 softmax attention 分割当前帧。但 softmax 匹配的二次复杂度带来显存瓶颈，限制了视频长度与分辨率扩展。LiVOS 提出轻量记忆网络：用 linear attention 把记忆匹配重写为递归过程，将二次大小的注意力矩阵压缩为常数大小的时空无关 2D state">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/livos/fig1.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/livos/fig4.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/livos/fig3.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/livos/fig2.webp">
+<meta property="article:published_time" content="2026-08-15T12:25:00.000Z">
+<meta property="article:modified_time" content="2026-08-15T15:00:00.000Z">
+<meta property="article:author" content="宁翰">
+<meta property="article:tag" content="AI论文">
+<meta property="article:tag" content="SAM2">
+<meta property="article:tag" content="Tracking">
+<meta property="article:tag" content="文献笔记">
+<meta property="article:tag" content="视频目标分割">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://20020730.xyz/images/tracking/livos/fig1.webp"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><span class="nav-badge">INTER-KNOT // 20020730</span><div class="nav-left"><button class="nav-item" id="mobile-menu-btn" type="button" title="菜单" aria-label="打开菜单" aria-controls="site-overview-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:menu-line"></span></button><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="代理人档案"><span class="nav-mask-icon" style="--nav-mask-image: url('/images/bangboo-nav.png')" aria-hidden="true"></span></a><a class="nav-item desktop-only-icon" href="/projects/" title="项目终端"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">Seventh Knot</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">论文阅读｜LiVOS: Light Video Object Segmentation with Gated Linear Matching</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" aria-hidden="true"></div><button id="mobile-toc-btn" type="button" title="文章目录" aria-label="打开文章目录" aria-controls="post-toc-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:list-unordered"></span></button><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
+  const navCenter = document.getElementById('nav-center');
+  if (navCenter && document.querySelector('.article-title')) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
+    });
+  }
+});
+</script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
+.search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.search-header { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(150,150,150,0.1); }
+.search-header input { flex: 1; border: none; background: transparent; outline: none; font-size: 1.1rem; color: var(--hty-text-color); margin: 0 15px; }
+.search-header .close-btn { cursor: pointer; font-size: 1.4rem; opacity: 0.6; transition: all 0.2s; }
+.search-header .close-btn:hover { opacity: 1; color: var(--hty-primary-color); transform: rotate(90deg); }
+.search-results { overflow-y: auto; padding: 10px 24px 20px; }
+.search-result-item { display: block; padding: 15px 0; border-bottom: 1px dashed rgba(150,150,150,0.1); text-decoration: none; color: var(--hty-text-color); transition: all 0.2s; }
+.search-result-item:hover { transform: translateX(5px); }
+.search-result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--hty-primary-color); }
+.search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
+.search-keyword { color: #ff5252; font-weight: bold; }
+</style><script>let mySearchData = null;
+window.openMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('my-search-input').focus(), 100);
+  if (!mySearchData) {
+    fetch('/search.xml').then(res => res.text()).then(str => {
+      const parser = new DOMParser();
+      const entries = parser.parseFromString(str, "text/xml").getElementsByTagName("entry");
+      mySearchData = Array.from(entries).map(entry => ({
+        title: entry.getElementsByTagName('title')[0]?.textContent || '',
+        content: entry.getElementsByTagName('content')[0]?.textContent.replace(/<[^>]+>/g, '') || '',
+        url: entry.getElementsByTagName('url')[0]?.textContent || ''
+      }));
+    }).catch(err => console.error("搜索数据加载失败:", err));
+  }
+};
+window.closeMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'none';
+  document.getElementById('my-search-input').value = '';
+  document.getElementById('my-search-results').innerHTML = '';
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('my-search-input');
+  if(input) {
+    input.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+      const results = document.getElementById('my-search-results');
+      if (!keyword) { results.innerHTML = ''; return; }
+      if (!mySearchData) return;
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
+      results.innerHTML = matched.map(item => {
+        const reg = new RegExp(keyword, 'gi');
+        const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        let content = item.content;
+        const index = content.toLowerCase().indexOf(keyword);
+        if (index > -1) {
+          let start = Math.max(0, index - 30);
+          let end = Math.min(content.length, index + 30);
+          content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+          content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        } else { content = content.substring(0, 60) + '...'; }
+        return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
+      }).join('');
+    });
+  }
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">57</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">78</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/b7f6f8ca/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">论文阅读｜LiVOS: Light Video Object Segmentation with Gated Linear Matching</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-08-15 20:25:00" itemprop="dateCreated datePublished" datetime="2026-08-15T20:25:00+08:00">2026-08-15</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">4.8k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">21m</span></span></span><span class="leancloud_visitors" id="/posts/b7f6f8ca/" data-flag-title="论文阅读｜LiVOS: Light Video Object Segmentation with Gated Linear Matching"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/b7f6f8ca/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">文献阅读</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/Tracking/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Tracking</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%96%87%E7%8C%AE%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">文献笔记</span></a><a class="tag-item" href="/tags/AI%E8%AE%BA%E6%96%87/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">AI论文</span></a><a class="tag-item" href="/tags/SAM2/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">SAM2</span></a><a class="tag-item" href="/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">视频目标分割</span></a><a class="tag-item" href="/tags/Tracking/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Tracking</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p>本文基于论文、补充材料与公开代码整理。文中的“我的理解”和“批判性思考”属于个人分析；<br>论文插图均来自原论文或补充材料，仅用于学习与讨论。</p>
+</blockquote>
+<h2 id="论文信息"><a href="#论文信息" class="headerlink" title="论文信息"></a>论文信息</h2><p><strong>Title:</strong> LiVOS: Light Video Object Segmentation with Gated Linear Matching<br><strong>Authors:</strong> Qin Liu, Jianfeng Wang, Zhengyuan Yang, Linjie Li, Kevin Lin, Marc Niethammer, Lijuan Wang<br><strong>Venue:</strong> CVPR 2025<br><strong>DOI:</strong> 10.1109&#x2F;CVPR52734.2025.00810<br><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/uncbiag/LiVOS">https://github.com/uncbiag/LiVOS</a><br><strong>Project Page:</strong> 无（GitHub 仓库含权重与文档）<br><strong>IF &#x2F; CCF:</strong> CCF-A</p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>半监督 VOS 主要由 space-time memory (STM) 网络驱动，它把过去帧特征存为时空记忆，通过 softmax attention 分割当前帧。但 softmax 匹配的二次复杂度带来显存瓶颈，限制了视频长度与分辨率扩展。LiVOS 提出轻量记忆网络：用 linear attention 把记忆匹配重写为递归过程，将二次大小的注意力矩阵压缩为常数大小的时空无关 2D state；并引入 gated linear matching，用数据相关的门控矩阵与 state 逐元素相乘，控制信息的保留&#x2F;丢弃。在 MOSE 达 64.8 J&amp;F、DAVIS 达 85.1 J&amp;F，超过所有非 STM 方法并逼近 STM 方法；长视频&#x2F;高分辨率下比 STM 方法省 53% 显存，支持 32G 消费级 GPU 上 4096p 推理。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="论文资源"><a href="#论文资源" class="headerlink" title="论文资源"></a>论文资源</h2><ul>
+<li><strong>PDF:</strong> 已导入 Zotero</li>
+<li><strong>Paper:</strong> <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2411.02818">https://arxiv.org/abs/2411.02818</a></li>
+<li><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/uncbiag/LiVOS">https://github.com/uncbiag/LiVOS</a></li>
+</ul>
+<hr>
+<h2 id="1-研究动机"><a href="#1-研究动机" class="headerlink" title="1. 研究动机"></a>1. 研究动机</h2><h3 id="要解决什么问题？"><a href="#要解决什么问题？" class="headerlink" title="要解决什么问题？"></a>要解决什么问题？</h3><blockquote>
+<p>STM 网络的记忆匹配依赖 softmax attention，注意力矩阵大小为 O(HW × THW)，时间上线性、空间分辨率上二次增长——视频变长、分辨率变高时计算缓慢且直接 OOM，无法支撑长视频与高分辨率视频分割。</p>
+</blockquote>
+<h3 id="现有方法的问题"><a href="#现有方法的问题" class="headerlink" title="现有方法的问题"></a>现有方法的问题</h3><ul>
+<li>softmax 匹配的注意力矩阵必须显式存储，复杂度 O(HW×THW×N)，视频越长、分辨率越高越不可行（2048p 时 Cutie-base 需约 150GB 显存）</li>
+<li>缓解手段（限制记忆帧数、下采样）都有硬伤：固定记忆在遮挡&#x2F;快速运动场景失效；下采样丢失细结构（480p 薄结构断裂，Figure 3）；轻量替代（RDE、蒸馏）<strong>仍依赖 softmax 匹配</strong>，未触及核心瓶颈</li>
+</ul>
+<h3 id="作者的核心思路"><a href="#作者的核心思路" class="headerlink" title="作者的核心思路"></a>作者的核心思路</h3><blockquote>
+<p>用线性注意力重写 STM 匹配：借结合律把大注意力矩阵折叠成常数大小 2D 递归 state（S_t ∈ R^{Ck×Cv}），加数据相关 forget gate 控制保留&#x2F;丢弃，复杂度降到 O(HW)，长视频与高分辨率下保持常数显存。</p>
+</blockquote>
+<hr>
+<p><strong>论文图示</strong></p>
+<p><img src="https://20020730.xyz/images/tracking/livos/fig1.webp" alt="Figure 1: Top: Conceptual comparison of softmax vs. linear matching in video object segmentation. Bottom: Softmax match- ing suffers from..." loading="lazy"></p>
+<h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2. 主要贡献"></a>2. 主要贡献</h2><ol>
+<li><strong>Contribution 1：</strong> 提出第一个 light memory network——linear matching 取代 softmax 匹配，把 O(T·HW×HW) 注意力矩阵压缩为常数大小 2D state，复杂度降至 O(HW)</li>
+<li><strong>Contribution 2：</strong> 提出 gated linear matching——数据相关 forget gate（低秩参数化 α_t 1^T）与 state 逐元素相乘，控制信息保留&#x2F;丢弃，弥补线性注意力缺乏选择机制</li>
+<li><strong>Contribution 3：</strong> 验证效率-精度权衡——长视频匹配 STM 方法（省 53% 显存），支持 4096p 高分辨率推理（32G 消费级 GPU，此前不可行）</li>
+</ol>
+<h4 id="我认为真正的新意"><a href="#我认为真正的新意" class="headerlink" title="我认为真正的新意"></a>我认为真正的新意</h4><blockquote>
+<p>把 GLA 移植到 VOS 记忆匹配本身不算独创；真正的新意是识别出”核心瓶颈是匹配复杂度而非记忆管理策略”，并用<strong>每新对象只需新建一个 state（O(1) 成本）<strong>让”常数显存”在</strong>多对象</strong>场景下依然成立——这是视频语义分割&#x2F;单对象方法做不到的。门控低秩参数化（G_t &#x3D; α_t 1^T，仅 Ck 维）极节俭，几乎不增参数。但它没解决线性注意力精度固有劣势（对比 Cutie 仍低 3.5 J&amp;F），卖的是”效率换精度的权衡”。</p>
+</blockquote>
+<hr>
+<h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><blockquote>
+<p><strong>阅读说明</strong><br>有官方代码（GitHub: uncbiag&#x2F;LiVOS），本节结合源码理解。</p>
+</blockquote>
+<h3 id="3-1-整体框架"><a href="#3-1-整体框架" class="headerlink" title="3.1 整体框架"></a>3.1 整体框架</h3><p><img src="https://20020730.xyz/images/tracking/livos/fig4.webp" alt="Figure 4: LiVOS Overview. Given a query frame, we first extract its key using an image encoder and retrieve its value via gated linear ma..." loading="lazy"></p>
+<p><strong>核心架构图</strong></p>
+<blockquote>
+<p>论文 Figure 4（docs&#x2F;livos_framework.png）：key encoder 特征被复用给 value encoder 与 decoder；gated linear matching 从常数大小 state 读出 value，依次经 sensory memory（逐元素加）与 object memory（cross-attention）增强后由轻量 decoder 出掩码。</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Input: query frame + memory masks</span><br><span class="line">  ↓</span><br><span class="line">Image Encoder (ResNet-50)          Mask Encoder (ResNet-18, 复用 image 特征)</span><br><span class="line">  ├─ f16/f8/f4 多尺度特征            └─ value V ∈ R^&#123;Cv=256&#125;</span><br><span class="line">  └─ key K ∈ R^&#123;Ck=64&#125; (KeyProj)</span><br><span class="line">  ↓</span><br><span class="line">Gated Linear Matching (核心)</span><br><span class="line">  ├─ state S_t = G_t ⊙ S_&#123;t-1&#125; + φ(K_t)^T V_t   （常数大小 R^&#123;Ck×Cv&#125;）</span><br><span class="line">  ├─ gate G_t = α_t 1^T，α_t 来自最后一帧特征 (GateProj)</span><br><span class="line">  └─ readout V_&#123;t+1&#125; = φ(K_&#123;t+1&#125;) S_t / (φ(K_&#123;t+1&#125;) Z_t)</span><br><span class="line">  ↓</span><br><span class="line">Sensory Memory 融合（PixelFuser）→ Object Memory 增强（QueryTransformer）</span><br><span class="line">  ↓</span><br><span class="line">Mask Decoder（16→8→4 上采样 + skip）→ Output: query 帧掩码</span><br></pre></td></tr></table></figure>
+
+<h4 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h4><ol>
+<li>记忆帧 key（image encoder）+ value（mask encoder）经 softmax 映射 φ(·) 外积累加到 state（Eq. 6-7）；query 帧 key 映射为 φ(K_{t+1}) 从 state 读出 readout，经归一化因子（Z_t 累积和）归一化</li>
+<li>gate 由最后一帧最粗特征（conv + 空间求和 + sigmoid）得 α_t，以 α_t 1^T 与旧 state 逐元素相乘（forget）后加新记忆</li>
+<li>readout 经 sensory 融合与 object transformer 增强后由轻量 decoder 出掩码；逐帧更新 state&#x2F;gate，新对象只需新建零 state</li>
+</ol>
+<hr>
+<h3 id="3-2-Core-Module-1-—-Gated-Linear-Matching"><a href="#3-2-Core-Module-1-—-Gated-Linear-Matching" class="headerlink" title="3.2 Core Module 1 — Gated Linear Matching"></a>3.2 Core Module 1 — <code>Gated Linear Matching</code></h3><h4 id="为什么需要？"><a href="#为什么需要？" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>softmax 匹配需存储 T·HW × HW 的注意力矩阵（OOM 根源）；线性注意力用结合律把”先算注意力再乘 value”重排为”先累积 state 再读出”，矩阵消失。但纯线性注意力没有选择机制（遗忘旧信息的能力），长序列信息无限累积——所以需要数据相关的门控。</p>
+<h4 id="核心做法"><a href="#核心做法" class="headerlink" title="核心做法"></a>核心做法</h4><ul>
+<li>把 softmax attention 重写为通用相似度形式，用核函数 φ(·)（按行 softmax）线性化，借结合律变成递归</li>
+<li>state S_t ∈ R^{Ck×Cv} 是常数大小 2D 隐藏状态，与时间 T 和空间 HW 无关</li>
+<li>门控：G_t &#x3D; α_t 1^T（低秩外积），α_t 从最后一帧最粗特征生成（conv 投影到 Ck 维 + 空间求和 + sigmoid）</li>
+<li>多对象：每对象一个独立 state（B,N,Ck,Cv），对象数线性增加 state 数，每对象成本仍为 O(HW)</li>
+</ul>
+<h4 id="关键公式"><a href="#关键公式" class="headerlink" title="关键公式"></a>关键公式</h4><p>Softmax 匹配经核函数 φ(·) 线性化（结合律）：</p>
+<p>$$<br>V_{t+1} &#x3D; \frac{\varphi(K_{t+1}) \sum_{i&#x3D;1}^{t} \varphi(K_i)^{\top} V_i}<br>              {\varphi(K_{t+1}) \sum_{i&#x3D;1}^{t} \varphi(K_i)^{\top} \mathbf{1}}<br>$$</p>
+<p>递归形式（常数大小 state，核心）：</p>
+<p>$$<br>S_t &#x3D; S_{t-1} + \varphi(K_t)^{\top} V_t, \qquad<br>Z_t &#x3D; Z_{t-1} + \varphi(K_t)^{\top} \mathbf{1}, \qquad<br>V_{t+1} &#x3D; \frac{\varphi(K_{t+1}) S_t}{\varphi(K_{t+1}) Z_t}<br>$$</p>
+<p>Gated linear matching（门控，核心创新）：</p>
+<p>$$<br>S_t &#x3D; G_t \odot S_{t-1} + \varphi(K_t)^{\top} V_t, \qquad<br>G_t &#x3D; \alpha_t \mathbf{1}^{\top},; \alpha_t \in (0,1)^{C_k}<br>$$</p>
+<h4 id="代码对应"><a href="#代码对应" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: livos/model/livos_wrapper.py → LIVOS (466) / GateProj (39) / KeyProj (18)</span><br><span class="line">Function: LIVOS.forward（state 初始化 666；readout 678-682；gate 更新 711-714）</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">state_BNCC = torch.einsum(<span class="string">&#x27;bkhw,bnvhw-&gt;bnkv&#x27;</span>, key_BCHW, value_BNCHW)        <span class="comment"># state 初始化</span></span><br><span class="line">this_readout_BNCHW = torch.einsum(<span class="string">&#x27;bkhw,bnkv-&gt;bnvhw&#x27;</span>, this_key_BCHW, state_BNCC.clone())</span><br><span class="line">normalizer_B = torch.einsum(<span class="string">&#x27;bkhw,bkhw-&gt;b&#x27;</span>, this_key_BCHW, key_sum_BCHW)    <span class="comment"># Z_t 累积和</span></span><br><span class="line">this_readout_BNCHW = this_readout_BNCHW / normalizer_B.view(B, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>) <span class="comment"># 读出归一化</span></span><br><span class="line">this_gate_BCC = torch.diag_embed(gate_BTC[:, i])                            <span class="comment"># α_t 对角化</span></span><br><span class="line">state_gated_BNCC = torch.einsum(<span class="string">&#x27;bnkv,bvv-&gt;bnkv&#x27;</span>, state_BNCC, this_gate_BCC)</span><br><span class="line">state_BNCC = state_gated_BNCC + this_state_BNCC    <span class="comment"># S_t = G_t ⊙ S_&#123;t-1&#125; + φ(K)^T V</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h4><p>实现与公式严格对应：(1) gate 用 <code>diag_embed</code> 对角化后 einsum 矩阵乘，等价于论文逐元素乘（gate 是 per-key-channel 向量），推理侧 <code>InferenceCore.step</code>（eval.py line 165-171）与训练完全一致；(2) 归一化分母 <code>key_sum_BCHW</code> 即 Z_t 累积和，新对象按 <code>(start_id, end_id, key_sum)</code> 分组归一化（eval.py line 97-111），避免被旧对象累积和错误归一化；(3) gate 只依赖最后一帧特征（<code>GateProj</code> 中 <code>mean(sigmoid(conv(x)), dim=[2,3])</code>），是”内容感知的遗忘门”。</p>
+<hr>
+<h3 id="3-3-Core-Module-2-—-外部记忆融合（Sensory-Object-Memory）"><a href="#3-3-Core-Module-2-—-外部记忆融合（Sensory-Object-Memory）" class="headerlink" title="3.3 Core Module 2 — 外部记忆融合（Sensory + Object Memory）"></a>3.3 Core Module 2 — <code>外部记忆融合（Sensory + Object Memory）</code></h3><h4 id="核心做法-1"><a href="#核心做法-1" class="headerlink" title="核心做法"></a>核心做法</h4><ul>
+<li>直接沿用 Cutie 的两级记忆（论文声明不贡献，但消融证明它们贡献最大——去 sensory 掉 5.3 J&amp;F、去 object memory 掉 4.0 J&amp;F）</li>
+<li>Sensory memory：低层物体信息（边缘、纹理），与 readout 逐元素相加（PixelFuser），GRU 式 <code>recurrent_update</code> 更新（<code>livos/model/livos_wrapper.py</code> line 160-173）</li>
+<li>Object memory：高层物体语义，<code>ObjectSummarizer</code> 从掩码+value 生成 object queries，经 <code>QueryTransformer</code>（cross-attention）增强 readout</li>
+<li>图像编码器多尺度特征（f16&#x2F;f8&#x2F;f4）复用给 mask encoder 与 decoder（feature reuse），是参数高效关键之一</li>
+</ul>
+<h4 id="关键公式-1"><a href="#关键公式-1" class="headerlink" title="关键公式"></a>关键公式</h4><p>Sensory 更新（GRU 式 forget&#x2F;update gate）：</p>
+<p>$$<br>h^{\text{new}} &#x3D; f_g \odot h \odot (1 - u_g) + u_g \odot \tanh(v_{\text{new}})<br>$$</p>
+<h4 id="代码对应-1"><a href="#代码对应-1" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: livos/model/livos_wrapper.py → PixelFuser (116) / MaskEncoder (295) / MaskDecoder (410) / recurrent_update (160)</span><br><span class="line">File: livos/model/transformer/object_transformer.py → QueryTransformer (74) / QueryTransformerBlock (10)</span><br><span class="line">File: livos/model/transformer/object_summarizer.py → ObjectSummarizer</span><br></pre></td></tr></table></figure>
+
+<h4 id="我的理解-1"><a href="#我的理解-1" class="headerlink" title="我的理解"></a>我的理解</h4><p>LiVOS 对这两个外部记忆是”拿来主义”——它们与线性匹配正交，弥补纯像素级 state 匹配缺失的高层语义。系统层面 LiVOS 把记忆拆成三层：像素级线性 state（高效率）、sensory（低层）、object（高层），各司其职。对记忆管理研究的参照是：<strong>线性 state 负责”记得住”，外部记忆负责”理解得了”</strong>。</p>
+<hr>
+<p><strong>论文机制图</strong></p>
+<p><img src="https://20020730.xyz/images/tracking/livos/fig3.webp" alt="Figure 3: Masks of thin structures at different resolutions. Thin structures may lose fine details at 480p, the standard resolution for V..." loading="lazy"></p>
+<h3 id="3-4-论文与代码对照"><a href="#3-4-论文与代码对照" class="headerlink" title="3.4 论文与代码对照"></a>3.4 论文与代码对照</h3><table>
+<thead>
+<tr>
+<th>Paper Module</th>
+<th>Code File</th>
+<th>Class &#x2F; Function</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Image Encoder &#x2F; Key</td>
+<td><code>livos/model/livos_wrapper.py</code></td>
+<td><code>ImageEncoder</code> (259) &#x2F; <code>KeyProj</code> (18)</td>
+<td>多尺度特征 f16&#x2F;f8&#x2F;f4 + key K（Ck&#x3D;64）</td>
+</tr>
+<tr>
+<td>Mask Encoder &#x2F; Value</td>
+<td><code>livos/model/livos_wrapper.py</code></td>
+<td><code>MaskEncoder</code> (295)</td>
+<td>mask+image → value V（Cv&#x3D;256），feature reuse</td>
+</tr>
+<tr>
+<td>Gated Linear Matching</td>
+<td><code>livos/model/livos_wrapper.py</code></td>
+<td><code>LIVOS.forward</code> (666-714)</td>
+<td>state 初始化&#x2F;读出&#x2F;门控更新（einsum）</td>
+</tr>
+<tr>
+<td>Gate 生成 (α_t)</td>
+<td><code>livos/model/livos_wrapper.py</code></td>
+<td><code>GateProj</code> (39)</td>
+<td>1×1 conv → sigmoid → 空间均值 → α_t</td>
+</tr>
+<tr>
+<td>Sensory Memory 融合</td>
+<td><code>livos/model/livos_wrapper.py</code></td>
+<td><code>PixelFuser</code> (116) &#x2F; <code>recurrent_update</code> (160)</td>
+<td>readout 与低层 sensory 融合，GRU 式更新</td>
+</tr>
+<tr>
+<td>Object Memory 增强</td>
+<td><code>livos/model/transformer/object_transformer.py</code></td>
+<td><code>QueryTransformer</code> (74) &#x2F; <code>ObjectSummarizer</code></td>
+<td>cross-attention 增强 readout</td>
+</tr>
+<tr>
+<td>Mask Decoder</td>
+<td><code>livos/model/livos_wrapper.py</code></td>
+<td><code>MaskDecoder</code> (410)</td>
+<td>16→8→4 上采样 + skip，输出掩码</td>
+</tr>
+<tr>
+<td>推理时 state 更新</td>
+<td><code>livos/eval.py</code></td>
+<td><code>InferenceCore</code> (25) &#x2F; <code>step</code> (36)</td>
+<td>推理门控更新（165-171）与对象分组归一化</td>
+</tr>
+<tr>
+<td>训练流程</td>
+<td><code>livos/model/trainer.py</code></td>
+<td><code>Trainer</code> (24) &#x2F; <code>do_pass</code> (108)</td>
+<td>训练循环、loss 计算</td>
+</tr>
+</tbody></table>
+<h4 id="论文和代码不一致的地方"><a href="#论文和代码不一致的地方" class="headerlink" title="论文和代码不一致的地方"></a>论文和代码不一致的地方</h4><ul>
+<li>论文公式用逐元素乘 G_t ⊙ S_{t-1}；代码用 <code>diag_embed(gate) + einsum(&#39;bnkv,bvv-&gt;bnkv&#39;)</code> 矩阵乘——数学等价（gate 按 key 通道），读代码时易混淆</li>
+<li>论文写 gate 由 depthwise conv 生成；代码 <code>GateProj</code> 是 1×1 conv + sigmoid + 空间均值（等价于对 Ck 通道各取均值）</li>
+<li>README 训练命令 <code>torchrun ... livos/train.py exp_id=first_try model=base data=base</code>，配置在 <code>livos/config/train_config.yaml</code>（与论文 125K 迭代一致）</li>
+</ul>
+<hr>
+<h3 id="3-5-训练与推理"><a href="#3-5-训练与推理" class="headerlink" title="3.5 训练与推理"></a>3.5 训练与推理</h3><h4 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Dataset:</span> <span class="string">YouTube-VOS</span> <span class="number">2019</span> <span class="string">+</span> <span class="string">DAVIS</span> <span class="number">2017</span><span class="string">（可加</span> <span class="string">MOSE）；仅</span> <span class="string">ImageNet</span> <span class="string">预训练，无</span> <span class="string">BL30K</span></span><br><span class="line"><span class="attr">Resolution:</span> <span class="number">480</span> <span class="string">×</span> <span class="number">480</span><span class="string">（每</span> <span class="string">batch</span> <span class="number">8</span> <span class="string">帧随机采样自同一视频）</span></span><br><span class="line"><span class="attr">Epoch:</span> <span class="string">无（125,000</span> <span class="string">iterations，lr</span> <span class="string">在</span> <span class="string">100K/115K</span> <span class="string">各</span> <span class="string">×0.1）</span></span><br><span class="line"><span class="attr">Batch Size:</span> <span class="number">16</span></span><br><span class="line"><span class="attr">Optimizer:</span> <span class="string">AdamW（lr</span> <span class="number">1e-4</span><span class="string">，backbone</span> <span class="number">0.1</span> <span class="string">倍率；wd</span> <span class="number">0.001</span><span class="string">，embed</span> <span class="string">层</span> <span class="number">0</span><span class="string">）</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="number">4</span> <span class="string">×</span> <span class="string">NVIDIA</span> <span class="string">A6000</span> <span class="string">(48GB)；Training</span> <span class="attr">Time:</span> <span class="string">~90h（无</span> <span class="string">MOSE；+30K</span> <span class="string">为</span> <span class="string">ft</span> <span class="string">版本）</span></span><br><span class="line"><span class="comment"># 其他：CE+soft dice 等权；point supervision K=12544；grad clip τ=3；</span></span><br><span class="line"><span class="comment"># train_config.yaml: num_ref_frames=3, seq_length=8, num_objects=3, amp=True</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Input（视频帧，短边 ≤ 480；逐帧）→ Image Encoder 提取 key（+ gate 特征）</span><br><span class="line">→ Gated Linear Matching 读出 readout → Sensory + Object Memory 增强 → Mask Decoder</span><br><span class="line">→ 掩码（soft-aggregation）→ 更新 state/gate；新对象新建零 state（InferenceCore.step）</span><br></pre></td></tr></table></figure>
+
+<h4 id="Complexity"><a href="#Complexity" class="headerlink" title="Complexity"></a>Complexity</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Params: 论文未报告（README 权重约 135MB，远小于 Cutie-base 的 ~600MB 级）</span><br><span class="line">FLOPs: 论文未报告</span><br><span class="line">FPS / Latency: LVOS 480p 47.3（val）/ 45.2（test）；DAVIS val 40.3；高分辨率 12.8/3.5/1.5/0.8 FPS（1024p→4096p）</span><br><span class="line">Hardware: 推理显存 LVOS 503MB/575MB；1024p 2.0GB, 2048p 7.7GB, 4096p 30.4GB（A6000）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h2><h3 id="数据集与指标"><a href="#数据集与指标" class="headerlink" title="数据集与指标"></a>数据集与指标</h3><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Metric</th>
+<th>Setting</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MOSE val（多对象复杂场景）</td>
+<td>J, F, J&amp;F</td>
+<td>训练含 MOSE 的版本 (wmose)</td>
+</tr>
+<tr>
+<td>DAVIS 2017 val &#x2F; test</td>
+<td>J, F, J&amp;F</td>
+<td>480p</td>
+</tr>
+<tr>
+<td>YouTube-VOS 2019 val</td>
+<td>G, Js, Fs, Ju, Fu</td>
+<td>480p，seen&#x2F;unseen 类别</td>
+</tr>
+<tr>
+<td>LVOS val&#x2F;test（长视频）· DAVIS 高分辨率（1024p-4096p）</td>
+<td>J&amp;F, Mem, FPS</td>
+<td>不训练直接评测 &#x2F; 480p 上采样</td>
+</tr>
+</tbody></table>
+<h3 id="主要结果"><a href="#主要结果" class="headerlink" title="主要结果"></a>主要结果</h3><blockquote>
+<p>最值得关注：<strong>MOSE 64.8 J&amp;F</strong>（超越所有非 STM 方法，仅落后 Cutie-base 3.5）；<strong>DAVIS test 81.0</strong>（wmose 版）；LVOS 以最低显存（503MB）取非 STM 最优（51.2）；<strong>4096p 推理唯一可行者</strong>（所有 STM 方法 2048p 即 OOM）。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>方法 (MOSE 训练版)</th>
+<th>MOSE</th>
+<th>DAVIS val</th>
+<th>LVOS val</th>
+<th>LVOS Mem&#x2F;FPS</th>
+<th>1024p Mem&#x2F;FPS</th>
+<th>2048p Mem&#x2F;FPS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cutie-base (STM)</td>
+<td>68.3</td>
+<td>88.8</td>
+<td>63.5</td>
+<td>1092M&#x2F;30.1</td>
+<td>9.9G&#x2F;6.6</td>
+<td>150G‡ OOM</td>
+</tr>
+<tr>
+<td>Cutie-base† (1 帧)</td>
+<td>52.6</td>
+<td>77.5</td>
+<td>46.8</td>
+<td>668M&#x2F;45.5</td>
+<td>2.6G&#x2F;10.2</td>
+<td>31.1G&#x2F;1.9</td>
+</tr>
+<tr>
+<td>RDE (非 STM)</td>
+<td>46.8</td>
+<td>84.2</td>
+<td>47.2</td>
+<td>9.0G‡&#x2F;40.6</td>
+<td>14.4G&#x2F;10.6</td>
+<td>OOM</td>
+</tr>
+<tr>
+<td>LiVOS (Ours)</td>
+<td><strong>64.8</strong></td>
+<td>84.0</td>
+<td><strong>51.2</strong></td>
+<td><strong>503M&#x2F;47.3</strong></td>
+<td><strong>2.0G&#x2F;12.8</strong></td>
+<td><strong>7.7G&#x2F;3.5</strong></td>
+</tr>
+</tbody></table>
+<p>其余 STM 方法（STCN&#x2F;AOT&#x2F;XMem&#x2F;DeAOT&#x2F;DEVA）2048p 全部 OOM；LiVOS 唯一支持 3072p（17.2G&#x2F;1.5&#x2F;73.4）与 4096p（30.4G&#x2F;0.8&#x2F;61.5）。</p>
+<h3 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h3><blockquote>
+<p>哪个模块贡献最大？<strong>Sensory memory（+5.3 J&amp;F）&gt; Object memory（+4.0）&gt; Gate（+1.4）</strong>（DAVIS val，Full&#x3D;84.4；No gate&#x3D;83.0；No object memory&#x3D;80.4；No sensory memory&#x3D;79.1）。门控贡献最小但几乎不增加成本（574M vs 573M 显存，40.3 vs 40.8 FPS）；外部记忆贡献最大、代价是 FPS 显著下降（70.5&#x2F;52.6 → 40.3）。</p>
+</blockquote>
+<h3 id="失败案例"><a href="#失败案例" class="headerlink" title="失败案例"></a>失败案例</h3><ul>
+<li>论文 Limitation 自述：<strong>单一递归 state 对长视频、高分辨率视频次优</strong>——4096p 下 J&amp;F 掉到 61.5（vs 1024p 的 85.0），LVOS 长视频只有 51.2（Cutie 63.5）</li>
+<li>定性来看：核近似（按行 softmax 内积）不如 softmax 注意力”尖锐”，多对象遮挡、外观相似（MOSE 场景）时匹配选择性弱，是 64.8 vs 68.3 差距的主因</li>
+</ul>
+<h4 id="我认为失败的原因"><a href="#我认为失败的原因" class="headerlink" title="我认为失败的原因"></a>我认为失败的原因</h4><p>高分辨率掉点不是显存问题（显存线性增长良好），而是<strong>信息容量问题</strong>：单个 Ck×Cv state 要把整段视频的时空信息压进固定大小矩阵，分辨率升高后每个像素获得的记忆带宽变小，4096p 时匹配变得”稀释”。这与跨视角小目标问题同源——小目标占用的 state 容量份额更小，匹配更易失败。缓解方向论文自己也提了：多尺度线性注意力（EfficientViT 式）与更高级的 state（Mamba 式选择性扫描）。</p>
+<hr>
+<h3 id="论文图示（截图）"><a href="#论文图示（截图）" class="headerlink" title="论文图示（截图）"></a>论文图示（截图）</h3><p><img src="https://20020730.xyz/images/tracking/livos/fig2.webp" alt="Figure 2: CPU latency comparison between softmax matching and linear matching. Softmax attention scales linearly over time (i.e., the num..." loading="lazy"></p>
+<h2 id="5-复现指南"><a href="#5-复现指南" class="headerlink" title="5. 复现指南"></a>5. 复现指南</h2><p><strong>Repository</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">GitHub: https://github.com/uncbiag/LiVOS</span><br><span class="line">Commit: 8c26cb03f570942a0c9a26f5bf7a8d378fc9ac60 (2025-08-31)</span><br><span class="line">Checkpoint: ./weights/livos-&#123;nomose,nomose-ft,wmose&#125;-480p.pth（download.py 自动下载，各 135MB）</span><br></pre></td></tr></table></figure>
+
+<p><strong>Environment</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Python / PyTorch / CUDA:</span> <span class="number">3.10</span> <span class="string">/</span> <span class="number">2.4</span><span class="number">.0</span> <span class="string">/</span> <span class="number">12.1</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="number">4</span> <span class="string">×</span> <span class="string">A6000</span> <span class="string">48GB（训练）；A6000</span> <span class="string">单卡即可推理</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键运行命令</strong>（README 原文）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装</span></span><br><span class="line">conda create -n livos python=3.10 &amp;&amp; conda activate livos</span><br><span class="line">conda install pytorch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 pytorch-cuda=12.1 -c pytorch -c nvidia</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/uncbiag/LiVOS &amp;&amp; <span class="built_in">cd</span> LiVOS &amp;&amp; pip install -e . &amp;&amp; python ./download.py  <span class="comment"># 权重</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 评估（更多数据集选项见 livos/config/eval_config.yaml）</span></span><br><span class="line">python livos/eval.py dataset=d17-val weights=./weights/livos-nomose-480p.pth</span><br><span class="line">python ./vos-benchmark/benchmark.py -g ../DAVIS/2017/trainval/Annotations/480p -m ./results/d17-val/Annotations</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练</span></span><br><span class="line">OMP_NUM_THREADS=4 torchrun --master_port 25350 --nproc_per_node=4 livos/train.py exp_id=first_try model=base data=base</span><br></pre></td></tr></table></figure>
+
+<h4 id="复现结果"><a href="#复现结果" class="headerlink" title="复现结果"></a>复现结果</h4><p>未复现。README 声明官方权重应复现：nomose-480p（MOSE 59.2 &#x2F; DAVIS val 84.4 &#x2F; DAVIS test 78.2 &#x2F; YTVOS-19 79.9 &#x2F; LVOS val 50.6 &#x2F; LVOS test 44.6）、nomose-ft-480p（85.1 &#x2F; 81.0 &#x2F; 81.3 &#x2F; 51.2 &#x2F; 50.9）、wmose-480p（64.8 &#x2F; 84.0 &#x2F; 79.6 &#x2F; 82.6 &#x2F; 51.2 &#x2F; 47.0）。</p>
+<h4 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h4><ul>
+<li>数据准备繁琐：LVOS 需先跑 <code>scripts/data/preprocess_lvos.py</code> 只保留首帧标注；目录结构有严格约定（README 图示）；YTVOS val、MOSE、DAVIS test 需提交 CodaLab，本地只能复现 DAVIS val 与 LVOS val</li>
+</ul>
+<hr>
+<h2 id="6-批判性思考"><a href="#6-批判性思考" class="headerlink" title="6. 批判性思考"></a>6. 批判性思考</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>问题定位精准：直击 STM 匹配复杂度瓶颈，论证清晰（O(HW×THW) → O(HW)），高分辨率实验（2048p 全体 STM OOM vs LiVOS 7.7GB）极有说服力</li>
+<li>实现干净：训练&#x2F;推理 state 更新一致、代码开源可复现，GateProj 极简（单卷积 + sigmoid + 空间均值）；取舍诚实，消融清楚区分”我的贡献”与”继承的贡献”（Cutie 组件）</li>
+</ul>
+<h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><ul>
+<li>精度天花板受限：MOSE 落后 Cutie-base 3.5 J&amp;F，4096p 掉到 61.5（核近似固有缺陷）；单 state 容量有限（自述 Limitation）；多对象”每对象一个 state”，显存随对象数线性增长，无压力测试</li>
+<li>与 SAM2 这类基础模型无关（ResNet 架构），”高分辨率基础模型”远景需新适配</li>
+</ul>
+<h3 id="我最关心的问题"><a href="#我最关心的问题" class="headerlink" title="我最关心的问题"></a>我最关心的问题</h3><ol>
+<li>state 的 Ck×Cv 容量由什么决定？能否按场景复杂度动态扩展通道？</li>
+<li>gate 只有 Ck 维，同帧内不同对象共享 α_t——遮挡切换时对象级选择性受限，是否因此丢分？归一化（Z_t 累积和）在超长视频中数值稳定性如何？</li>
+</ol>
+<h3 id="可以迁移到我的研究中的部分"><a href="#可以迁移到我的研究中的部分" class="headerlink" title="可以迁移到我的研究中的部分"></a>可以迁移到我的研究中的部分</h3><p>对 DAM4SAM（SAM2 基座、带干扰物记忆、跨视角无人机目标从大变小的失效问题）的迁移点：</p>
+<ul>
+<li><strong>常数显存记忆 &#x3D; 长视频部署前提</strong>：SAM2 的 memory bank 显存随帧数线性涨；state 折叠（或”gate 遗忘旧干扰物记忆”的 forget 门）可直接解决记忆膨胀</li>
+<li><strong>门控即干扰物遗忘</strong>：α_t 门控是内容感知遗忘门——干扰物与目标外观相似度下降时自动衰减其记忆强度，正是”干扰物记忆管理”所需</li>
+<li><strong>低秩门控参数化</strong>：G_t &#x3D; α_t 1^T 只花 Ck 个标量实现数据相关遗忘；干扰物&#x2F;目标可各维护一个 state 用门控控制权重</li>
+<li><strong>复杂度视角</strong>：目标从大变小时像素数减少、softmax 匹配信噪比下降，而线性匹配对像素数量不敏感——值得在 cross_view_vtuav 上做对照实验</li>
+</ul>
+<h3 id="新想法"><a href="#新想法" class="headerlink" title="新想法"></a>新想法</h3><ol>
+<li><strong>对象级门控的线性匹配</strong>：帧级 α_t 升级为对象级（gate 由 object memory 生成），融合 MoGA 的 object-conditioned 门控，解决”同帧共享 gate”局限，服务干扰物&#x2F;目标差异化记忆</li>
+<li><strong>多尺度 state</strong>：维护 coarse&#x2F;fine 两个 state（EfficientViT 式），小目标读 fine、大目标读 coarse——直指大→小目标失效</li>
+<li><strong>SAM2 特征 + LiVOS 记忆</strong>：保留 SAM2 image encoder，把 memory matching 换成 gated linear——兼顾精度与显存，对应轻量化部署诉求</li>
+<li><strong>gate 显式语义监督</strong>：给 gate 加”遗忘干扰物”辅助监督（物体消失时强制 gate→0），使记忆管理可控</li>
+</ol>
+<hr>
+<h2 id="7-深度阅读标注"><a href="#7-深度阅读标注" class="headerlink" title="7. 深度阅读标注"></a>7. 深度阅读标注</h2><p>本节暂无额外阅读标注。</p>
+<hr>
+<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h2><h3 id="三句话总结"><a href="#三句话总结" class="headerlink" title="三句话总结"></a>三句话总结</h3><ol>
+<li><strong>Problem：</strong> STM 的 softmax 记忆匹配复杂度 O(HW×THW)，视频变长&#x2F;分辨率升高即 OOM（2048p 全体 STM 方法失败），是长视频与高分辨率 VOS 的核心瓶颈</li>
+<li><strong>Method：</strong> gated linear matching 把注意力矩阵折叠为常数大小 2D 递归 state（S_t &#x3D; G_t ⊙ S_{t-1} + φ(K_t)^T V_t，G_t &#x3D; α_t 1^T），配合 Cutie 式外部记忆，复杂度降至 O(HW)</li>
+<li><strong>Result：</strong> MOSE 64.8、DAVIS 85.1 J&amp;F，全面超越非 STM 方法并逼近 STM 方法；长视频省 53% 显存，4096p 推理唯一可行者（32G 消费级 GPU）</li>
+</ol>
+<h3 id="一句话评价"><a href="#一句话评价" class="headerlink" title="一句话评价"></a>一句话评价</h3><p>“效率优先、工程完整”的 VOS 系统论文：复杂度论证与实验设计（2048p 全体 OOM 对照）极具说服力，但精度天花板（核近似 + 单 state 容量）限制了它取代 STM 方法的可能。</p>
+<h3 id="是否值得复现？"><a href="#是否值得复现？" class="headerlink" title="是否值得复现？"></a>是否值得复现？</h3><ul>
+<li>⭐ 仅了解 ｜ ⭐⭐ 一般 ｜ ⭐⭐⭐ 值得作为 Baseline ｜ ⭐⭐⭐⭐ 值得复现 ｜ ⭐⭐⭐⭐⭐ 与我的研究高度相关</li>
+</ul>
+<p><strong>复现星级：⭐⭐⭐⭐（值得复现）。</strong> 官方代码完备（命令齐全、权重 135MB 自动下载、commit 可复现），复现成本低；”常数显存记忆 + 内容感知门控”对 DAM4SAM 的干扰物记忆管理与跨视角长视频部署是直接可用的技术基座。唯一保留：精度相对 Cutie 有 3.5 J&amp;F 差距，作为”记忆机制改造”参照的价值大于作为最终模型的价值。</p>
+<hr>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/b7f6f8ca/" title="论文阅读｜LiVOS: Light Video Object Segmentation with Gated Linear Matching">https://20020730.xyz/posts/b7f6f8ca/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/f09a6a41/" rel="prev" title="论文阅读｜Mix-QSAM2: Mixed-Precision Quantization for High Fidelity Segmentation in Resource Constrained Scenarios"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">论文阅读｜Mix-QSAM2: Mixed-Precision Quantization for High Fidelity Segmentation in Resource Constrained Scenarios</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/a17d3727/" rel="next" title="论文阅读｜Robust Ego-Exo Correspondence with Long-Term Memory"><span class="post-nav-text">论文阅读｜Robust Ego-Exo Correspondence with Long-Term Memory</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
+  display: none;
+}</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
+  //- hide all
+  document.querySelectorAll('.toggle-comment-btn').forEach((btn) => {
+    const container = document.querySelector(btn.dataset.target);
+    if (container) {
+      container.style.display = "none";
+    }
+  });
+}
+function showComment(target) {
+  hideAllComment();
+  //- show target
+  const targetContainer = document.querySelector(target);
+  if (targetContainer) {
+    targetContainer.style.display = "block";
+  }
+}
+</script></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/posts/b7f6f8ca/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="Wanglihan954/disscussion" issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async></script></div></main><aside class="right-sidebar"><div id="post-toc-wrap" style="display:block; opacity:1; visibility:visible;"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">论文信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">摘要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E8%B5%84%E6%BA%90"><span class="toc-number">2.</span> <span class="toc-text">论文资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%A0%94%E7%A9%B6%E5%8A%A8%E6%9C%BA"><span class="toc-number">3.</span> <span class="toc-text">1. 研究动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">要解决什么问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">现有方法的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E8%80%85%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">3.3.</span> <span class="toc-text">作者的核心思路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="toc-number">4.</span> <span class="toc-text">2. 主要贡献</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E7%9C%9F%E6%AD%A3%E7%9A%84%E6%96%B0%E6%84%8F"><span class="toc-number">4.1.</span> <span class="toc-text">我认为真正的新意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">3. 方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%95%B4%E4%BD%93%E6%A1%86%E6%9E%B6"><span class="toc-number">5.1.</span> <span class="toc-text">3.1 整体框架</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">整体流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Core-Module-1-%E2%80%94-Gated-Linear-Matching"><span class="toc-number">5.2.</span> <span class="toc-text">3.2 Core Module 1 — Gated Linear Matching</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F"><span class="toc-number">5.2.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95"><span class="toc-number">5.2.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F"><span class="toc-number">5.2.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AF%B9%E5%BA%94"><span class="toc-number">5.2.4.</span> <span class="toc-text">代码对应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.5.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Core-Module-2-%E2%80%94-%E5%A4%96%E9%83%A8%E8%AE%B0%E5%BF%86%E8%9E%8D%E5%90%88%EF%BC%88Sensory-Object-Memory%EF%BC%89"><span class="toc-number">5.3.</span> <span class="toc-text">3.3 Core Module 2 — 外部记忆融合（Sensory + Object Memory）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95-1"><span class="toc-number">5.3.1.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F-1"><span class="toc-number">5.3.2.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AF%B9%E5%BA%94-1"><span class="toc-number">5.3.3.</span> <span class="toc-text">代码对应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3-1"><span class="toc-number">5.3.4.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E8%AE%BA%E6%96%87%E4%B8%8E%E4%BB%A3%E7%A0%81%E5%AF%B9%E7%85%A7"><span class="toc-number">5.4.</span> <span class="toc-text">3.4 论文与代码对照</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%92%8C%E4%BB%A3%E7%A0%81%E4%B8%8D%E4%B8%80%E8%87%B4%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="toc-number">5.4.1.</span> <span class="toc-text">论文和代码不一致的地方</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="toc-number">5.5.</span> <span class="toc-text">3.5 训练与推理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Training"><span class="toc-number">5.5.1.</span> <span class="toc-text">Training</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Inference"><span class="toc-number">5.5.2.</span> <span class="toc-text">Inference</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Complexity"><span class="toc-number">5.5.3.</span> <span class="toc-text">Complexity</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.</span> <span class="toc-text">4. 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8E%E6%8C%87%E6%A0%87"><span class="toc-number">6.1.</span> <span class="toc-text">数据集与指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="toc-number">6.2.</span> <span class="toc-text">主要结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.3.</span> <span class="toc-text">消融实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E8%B4%A5%E6%A1%88%E4%BE%8B"><span class="toc-number">6.4.</span> <span class="toc-text">失败案例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E5%A4%B1%E8%B4%A5%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">6.4.1.</span> <span class="toc-text">我认为失败的原因</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%9B%BE%E7%A4%BA%EF%BC%88%E6%88%AA%E5%9B%BE%EF%BC%89"><span class="toc-number">6.5.</span> <span class="toc-text">论文图示（截图）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A4%8D%E7%8E%B0%E6%8C%87%E5%8D%97"><span class="toc-number">7.</span> <span class="toc-text">5. 复现指南</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">7.1.</span> <span class="toc-text">复现结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">7.2.</span> <span class="toc-text">遇到的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%89%B9%E5%88%A4%E6%80%A7%E6%80%9D%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">6. 批判性思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">8.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%80%E9%99%90"><span class="toc-number">8.2.</span> <span class="toc-text">局限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E6%9C%80%E5%85%B3%E5%BF%83%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">8.3.</span> <span class="toc-text">我最关心的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E8%BF%81%E7%A7%BB%E5%88%B0%E6%88%91%E7%9A%84%E7%A0%94%E7%A9%B6%E4%B8%AD%E7%9A%84%E9%83%A8%E5%88%86"><span class="toc-number">8.4.</span> <span class="toc-text">可以迁移到我的研究中的部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E6%83%B3%E6%B3%95"><span class="toc-number">8.5.</span> <span class="toc-text">新想法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%B7%B1%E5%BA%A6%E9%98%85%E8%AF%BB%E6%A0%87%E6%B3%A8"><span class="toc-number">9.</span> <span class="toc-text">7. 深度阅读标注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">8. 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%8F%A5%E8%AF%9D%E6%80%BB%E7%BB%93"><span class="toc-number">10.1.</span> <span class="toc-text">三句话总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AF%84%E4%BB%B7"><span class="toc-number">10.2.</span> <span class="toc-text">一句话评价</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%AF%E5%90%A6%E5%80%BC%E5%BE%97%E5%A4%8D%E7%8E%B0%EF%BC%9F"><span class="toc-number">10.3.</span> <span class="toc-text">是否值得复现？</span></a></li></ol></li></ol></div></div></div></aside><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 – 2026 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> 宁翰</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-04-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><!-- hexo injector body_end start --><script src="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/js/index.js"></script><script src="/js/nav-title-fit.js" defer></script><!-- hexo injector body_end end --></body></html>

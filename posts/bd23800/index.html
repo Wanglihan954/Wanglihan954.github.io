@@ -1,0 +1,459 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="宁翰"><meta name="copyright" content="宁翰"><meta name="generator" content="Hexo 8.1.1"><meta name="theme" content="hexo-theme-yun"><title>论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction | Seventh Knot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{"renderMathInElement":true,"strict":"ignore","output":"htmlAndMathml","displayMode":true,"trust":true},
+    ...undefined?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"20020730.xyz","root":"/","title":"世界需要七休日","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.xml"},"localsearch":{"enable":"fasle","trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://comment.20020730.xyz","comment":true,"visitor":true,"emoji":["//unpkg.com/@waline/emojis@1.1.0/weibo",{"name":"嗯呢漫布","folder":"/images/zzz-stickers","prefix":"bangboo-","type":"jpg","icon":"/images/zzz-stickers/bangboo-thanks.jpg","items":["gift","thanks","rest"]},{"name":"丽都漫步","folder":"/images/zzz-stickers","prefix":"lidu-","type":"png","icon":"/images/zzz-stickers/lidu-anby.png","items":["anby","nekomata","lycaon","rina","soldier11","wise"]}],"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="Seventh Knot" type="application/atom+xml"><link rel="stylesheet" href="/css/custom_theme.css?v=20260812-3"><link rel="stylesheet" href="/css/projects.css?v=20260817-1"><script src="/js/web-pet.js" defer></script><script src="/js/mobile-navigation.js" defer></script><script src="/js/home-intro.js?v=20260810-6" defer></script><meta name="description" content="研究视频中跨视角（ego↔exo）的物体级视觉对应。提出一个基于条件二值分割的简单有效框架：把查询视图的物体 mask 编码成潜在表示（单一条件 token CDT），引导目标视频中对应物体的定位。引入循环一致性训练目标：目标视图预测的 mask 被投影回源视图以重建原始查询 mask，无需 GT 标注即可提供强自监督信号，并支撑推理时的 test-time training (TTT)。…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction">
+<meta property="og:url" content="https://20020730.xyz/posts/bd23800/index.html">
+<meta property="og:site_name" content="Seventh Knot">
+<meta property="og:description" content="研究视频中跨视角（ego↔exo）的物体级视觉对应。提出一个基于条件二值分割的简单有效框架：把查询视图的物体 mask 编码成潜在表示（单一条件 token CDT），引导目标视频中对应物体的定位。引入循环一致性训练目标：目标视图预测的 mask 被投影回源视图以重建原始查询 mask，无需 GT 标注即可提供强自监督信号，并支撑推理时的 test-time training (TTT)。…">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/cyclemask/fig1.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/cyclemask/fig2.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/cyclemask/fig3.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/cyclemask/fig4.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/cyclemask/fig5.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/cyclemask/fig6.webp">
+<meta property="article:published_time" content="2026-08-15T12:15:00.000Z">
+<meta property="article:modified_time" content="2026-08-15T15:00:00.000Z">
+<meta property="article:author" content="宁翰">
+<meta property="article:tag" content="AI论文">
+<meta property="article:tag" content="SAM2">
+<meta property="article:tag" content="Test-Time Training">
+<meta property="article:tag" content="Tracking">
+<meta property="article:tag" content="循环一致性">
+<meta property="article:tag" content="文献笔记">
+<meta property="article:tag" content="跨视角">
+<meta property="article:tag" content="跨视角目标对应">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://20020730.xyz/images/tracking/cyclemask/fig1.webp"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><span class="nav-badge">INTER-KNOT // 20020730</span><div class="nav-left"><button class="nav-item" id="mobile-menu-btn" type="button" title="菜单" aria-label="打开菜单" aria-controls="site-overview-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:menu-line"></span></button><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="代理人档案"><span class="nav-mask-icon" style="--nav-mask-image: url('/images/bangboo-nav.png')" aria-hidden="true"></span></a><a class="nav-item desktop-only-icon" href="/projects/" title="项目终端"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">Seventh Knot</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" aria-hidden="true"></div><button id="mobile-toc-btn" type="button" title="文章目录" aria-label="打开文章目录" aria-controls="post-toc-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:list-unordered"></span></button><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
+  const navCenter = document.getElementById('nav-center');
+  if (navCenter && document.querySelector('.article-title')) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
+    });
+  }
+});
+</script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
+.search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.search-header { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(150,150,150,0.1); }
+.search-header input { flex: 1; border: none; background: transparent; outline: none; font-size: 1.1rem; color: var(--hty-text-color); margin: 0 15px; }
+.search-header .close-btn { cursor: pointer; font-size: 1.4rem; opacity: 0.6; transition: all 0.2s; }
+.search-header .close-btn:hover { opacity: 1; color: var(--hty-primary-color); transform: rotate(90deg); }
+.search-results { overflow-y: auto; padding: 10px 24px 20px; }
+.search-result-item { display: block; padding: 15px 0; border-bottom: 1px dashed rgba(150,150,150,0.1); text-decoration: none; color: var(--hty-text-color); transition: all 0.2s; }
+.search-result-item:hover { transform: translateX(5px); }
+.search-result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--hty-primary-color); }
+.search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
+.search-keyword { color: #ff5252; font-weight: bold; }
+</style><script>let mySearchData = null;
+window.openMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('my-search-input').focus(), 100);
+  if (!mySearchData) {
+    fetch('/search.xml').then(res => res.text()).then(str => {
+      const parser = new DOMParser();
+      const entries = parser.parseFromString(str, "text/xml").getElementsByTagName("entry");
+      mySearchData = Array.from(entries).map(entry => ({
+        title: entry.getElementsByTagName('title')[0]?.textContent || '',
+        content: entry.getElementsByTagName('content')[0]?.textContent.replace(/<[^>]+>/g, '') || '',
+        url: entry.getElementsByTagName('url')[0]?.textContent || ''
+      }));
+    }).catch(err => console.error("搜索数据加载失败:", err));
+  }
+};
+window.closeMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'none';
+  document.getElementById('my-search-input').value = '';
+  document.getElementById('my-search-results').innerHTML = '';
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('my-search-input');
+  if(input) {
+    input.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+      const results = document.getElementById('my-search-results');
+      if (!keyword) { results.innerHTML = ''; return; }
+      if (!mySearchData) return;
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
+      results.innerHTML = matched.map(item => {
+        const reg = new RegExp(keyword, 'gi');
+        const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        let content = item.content;
+        const index = content.toLowerCase().indexOf(keyword);
+        if (index > -1) {
+          let start = Math.max(0, index - 30);
+          let end = Math.min(content.length, index + 30);
+          content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+          content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        } else { content = content.substring(0, 60) + '...'; }
+        return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
+      }).join('');
+    });
+  }
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">57</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">78</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/bd23800/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-08-15 20:15:00" itemprop="dateCreated datePublished" datetime="2026-08-15T20:15:00+08:00">2026-08-15</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">6.3k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">26m</span></span></span><span class="leancloud_visitors" id="/posts/bd23800/" data-flag-title="论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/bd23800/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">文献阅读</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/Tracking/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Tracking</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%96%87%E7%8C%AE%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">文献笔记</span></a><a class="tag-item" href="/tags/AI%E8%AE%BA%E6%96%87/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">AI论文</span></a><a class="tag-item" href="/tags/SAM2/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">SAM2</span></a><a class="tag-item" href="/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">跨视角</span></a><a class="tag-item" href="/tags/Tracking/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Tracking</span></a><a class="tag-item" href="/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%AF%B9%E5%BA%94/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">跨视角目标对应</span></a><a class="tag-item" href="/tags/%E5%BE%AA%E7%8E%AF%E4%B8%80%E8%87%B4%E6%80%A7/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">循环一致性</span></a><a class="tag-item" href="/tags/Test-Time-Training/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Test-Time Training</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p>本文基于论文、补充材料与公开代码整理。文中的“我的理解”和“批判性思考”属于个人分析；<br>论文插图均来自原论文或补充材料，仅用于学习与讨论。</p>
+</blockquote>
+<h2 id="论文信息"><a href="#论文信息" class="headerlink" title="论文信息"></a>论文信息</h2><p><strong>Title:</strong> Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction<br><strong>Authors:</strong> Shannan Yan, Leqi Zheng, Keyu Lv, Jingchen Ni, Hongyang Wei, Jiajun Zhang, Guangting Wang, Jing Lyu, Chun Yuan, Fengyun Rao（清华深圳 &#x2F; 腾讯 WeChat Vision &#x2F; USTC）<br><strong>Venue:</strong> CVPR 2026<br><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/shannany0606/CCMP">https://github.com/shannany0606/CCMP</a><br><strong>Project Page:</strong> 无（arXiv 2602.18996）  </p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>研究视频中跨视角（ego↔exo）的物体级视觉对应。提出一个基于条件二值分割的简单有效框架：把查询视图的物体 mask 编码成潜在表示（单一条件 token CDT），引导目标视频中对应物体的定位。引入循环一致性训练目标：目标视图预测的 mask 被投影回源视图以重建原始查询 mask，无需 GT 标注即可提供强自监督信号，并支撑推理时的 test-time training (TTT)。在 Ego-Exo4D 与 HANDAL-X 上取得 SOTA。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="论文资源"><a href="#论文资源" class="headerlink" title="论文资源"></a>论文资源</h2><ul>
+<li><strong>Paper:</strong> <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2602.18996">https://arxiv.org/abs/2602.18996</a></li>
+<li><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/shannany0606/CCMP">https://github.com/shannany0606/CCMP</a></li>
+<li><strong>本地代码:</strong> <code>F:\Code\Projects\Tracking\CCMP</code></li>
+</ul>
+<hr>
+<h2 id="1-研究动机"><a href="#1-研究动机" class="headerlink" title="1. 研究动机"></a>1. 研究动机</h2><h3 id="要解决什么问题？"><a href="#要解决什么问题？" class="headerlink" title="要解决什么问题？"></a>要解决什么问题？</h3><blockquote>
+<p>在 egocentric（第一人称，晃动&#x2F;杂乱&#x2F;运动模糊）与 exocentric（第三人称，稳定但细节少）视角之间建立物体级对应：给源视图一个物体 mask，在目标视图中分割出同一个物体。视角差异、外观变化、遮挡、空间布局不一致，以及”需要结合时间动态推理”都让传统外观匹配&#x2F;跟踪方法失效——如何用尽量小的架构改动获得鲁棒的视图不变表示？</p>
+</blockquote>
+<h3 id="现有方法的问题"><a href="#现有方法的问题" class="headerlink" title="现有方法的问题"></a>现有方法的问题</h3><ul>
+<li><strong>传统对应模型</strong>多在共视（co-visible）或静态场景训练，无法处理 ego–exo 的剧烈视角差异与不相交的空间参照。</li>
+<li><strong>既有的跨视角方法都不够”简”</strong>：<ul>
+<li>Baade et al. 的 predictive cycle consistency 需要从原始分割合成配对 mask 并迭代伪标注；</li>
+<li>ObjectRelator 在 1.3B 的 PSALM 上挂辅助模块做视图不变对齐，重且贵；</li>
+<li>O-MaMa 把任务转成 FastSAM 候选 mask 的后验匹配，学习与泛化受限（Ego 查询只有 42.57 IoU）。</li>
+</ul>
+</li>
+<li><strong>外观匹配的两难</strong>：纯外观表示被视角光照&#x2F;分辨率差异打乱；纯几何&#x2F;背景线索在不相交空间布局下不可用；还要处理”目标是否可见”（遮挡&#x2F;出画）与时间动态（物体运动&#x2F;形变不同步）。</li>
+<li>现有方法都没有利用”往返重建”这个天然的自监督信号，也没有人在此任务上做 test-time training。</li>
+</ul>
+<h3 id="作者的核心思路"><a href="#作者的核心思路" class="headerlink" title="作者的核心思路"></a>作者的核心思路</h3><blockquote>
+<p>用 DINOv3（ConvNeXt-L 提取器 + ViT-L 编码器）做条件二值分割：源视图 mask 池化成一个条件 token（CDT）注入目标视图的 ViT，训练时用”预测 mask 往返投影回源视图重建原 mask”的循环一致性损失（Lcycle）提供无标注自监督，推理时把 Lcycle 直接复用作 TTT 目标——架构改动最小，却把自监督用到极致。</p>
+</blockquote>
+<hr>
+<h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2. 主要贡献"></a>2. 主要贡献</h2><ol>
+<li><strong>Contribution 1：极简端到端框架</strong>。基于 DINOv3 的条件二值分割（conditional binary segmentation），一个 CDT 条件 token 注入 ViT 编码器即完成跨视图条件化，与预训练 backbone 完全兼容，无辅助模块、无额外数据。</li>
+<li><strong>Contribution 2：循环一致性目标</strong>。Lcycle 强制源 mask 往返重建，无需目标视图 GT 即可学习视图不变表示；并且这个自监督目标在推理时可复用于 test-time training (TTT)，是该任务上第一个成功的 TTT 应用。</li>
+<li><strong>Contribution 3：训练数据设计</strong>。统一 Ego2Exo&#x2F;Exo2Ego 双方向、同视图样本合成（Ego2Ego&#x2F;Exo2Exo）、时间松弛配对（RTA）三种预处理协同。</li>
+<li><strong>Contribution 4：实验</strong>。Ego-Exo4D v2 测试集 mIoU 44.57（超 O-MaMa 43.32）；Exo Query 47.18（超此前最优 44.08 达 +3.10）；HANDAL-X 零样本 78.8（超 ObjectRelator 42.8，相对提升 84.1%）；微调后 85.0。</li>
+</ol>
+<h4 id="我认为真正的新意"><a href="#我认为真正的新意" class="headerlink" title="我认为真正的新意"></a>我认为真正的新意</h4><blockquote>
+<p>新意在于<strong>把”循环一致性”从训练目标升级为推理工具</strong>：多数工作（含 V2-SAM 的 PCCS）把循环一致性当选择器&#x2F;正则器用，CCMP 则把它变成 TTT 的优化目标——测试时不需要任何 GT，只需让”往返重建损失”在测试对上再下降几步，模型就自适应了这组视角。第二个值得注意的点是<strong>极简性本身是贡献</strong>：CDT 单 token 条件化（对比 V2-SAM 的双 prompt 生成器 + 三专家）证明在强 backbone（DINOv3）上，架构复杂度不是必需的。另外论文诚实地暴露了一个反直觉发现：Dice loss 加入 Lcycle 会<strong>损害</strong> TTT（40.20 vs 44.57），说明自监督目标的”软硬程度”需要与 TTT 步数匹配。</p>
+</blockquote>
+<hr>
+<h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><blockquote>
+<p><strong>阅读说明</strong><br>官方代码完整（基于 Ego-Exo4D 官方 SegSwap&#x2F;XSegTx 基线改造）。核心在 <code>SegSwap/train/</code>：<code>csegmentor.py</code>（模型）、<code>train.py</code>（训练 + 循环一致性 + 梯度累积）、<code>losses.py</code>、<code>posttrain.py</code>（CLS head 微调）、<code>eval_segswap_visttt.py</code>（TTT 推理）。</p>
+</blockquote>
+<h3 id="3-1-整体框架"><a href="#3-1-整体框架" class="headerlink" title="3.1 整体框架"></a>3.1 整体框架</h3><p><img src="https://20020730.xyz/images/tracking/cyclemask/fig1.webp" alt="Figure 1: Cycle-Consistent Visual Correspondence with Test- Time Training. Our framework learns object-level correspon- dences by enforci..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/cyclemask/fig2.webp" alt="Figure 2: Model overview. \mathit {CLS} denotes class tokens, and \mathit {CDT} denotes condition tokens. The CLS head determines whether..." loading="lazy"></p>
+<p><strong>核心架构图</strong></p>
+<blockquote>
+<p>论文 Figure 2：Source Feature Extractor（ConvNeXt DINOv3-L）mask 加权池化 → CDT token → Transformer Encoder（DINOv3 ViT-L，[CLS, CDT, patch tokens]）→ 双头解码器（Mask Head + CLS Head）。训练时反向再跑一次得到 M̂s，与 Ms 计算 Lcycle。</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Source (Is, Ms) + Target (It)</span><br><span class="line">  ↓</span><br><span class="line">Source Feature Extractor: ConvNeXt DINOv3-L → Fs → mask 归一化加权池化 → 条件特征 zs</span><br><span class="line">  ↓  线性投影</span><br><span class="line">Condition Token (CDT)</span><br><span class="line">  ↓</span><br><span class="line">Transformer Encoder: DINOv3 ViT-L，输入 [CLS, CDT, x1..xn]（CDT 经 cross-token attention 条件化）</span><br><span class="line">  ↓</span><br><span class="line">Multi-task Decoder</span><br><span class="line">  ├── Mask Head: 2 层卷积 → M̂t（目标视图 mask）</span><br><span class="line">  └── CLS Head: CLS token → 可见性二分类（是否可见）</span><br><span class="line">  ↓</span><br><span class="line">Cycle: 用 M̂t 作为源 mask，对 (It, M̂t, Is) 再跑一遍 → M̂s</span><br><span class="line">  ↓  Lcycle = BCE(Ms, M̂s)（无需目标 GT）</span><br><span class="line">Output: M̂t（训练）；推理时 TTT：只更新最后 K 层 transformer blocks，T 步，lr 5e-6</span><br></pre></td></tr></table></figure>
+
+<h4 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h4><ol>
+<li><strong>源特征提取</strong>：ConvNeXt-based DINOv3-L 提取 Fs，mask 归一化（求和为 1）后加权平均得物体条件特征 zs，线性投影成 CDT token 与 ViT 输入对齐。</li>
+<li><strong>条件化编码</strong>：目标图 It 分 patch 成视觉 token，与 [CLS, CDT] 一起进入 DINOv3 ViT-L 编码器；CDT 经注意力条件化所有视觉 token。</li>
+<li><strong>多任务解码</strong>：Mask Head（两层卷积）生成 M̂t；CLS Head（后训练阶段）预测目标是否可见。</li>
+<li><strong>循环一致性</strong>：把 M̂t 当源 mask，用 (It, M̂t, Is) 反向再跑一遍得 M̂s，与 Ms 算 BCE（+可选 Dice）；不依赖目标 GT，训练与 TTT 通用。</li>
+<li><strong>TTT 推理</strong>：每个测试图像对只更新 ViT 最后 K 个 blocks、T 步（Ego2Exo: K&#x3D;4, T&#x3D;2；Exo2Ego: K&#x3D;11, T&#x3D;6），lr 5e-6。</li>
+</ol>
+<hr>
+<h3 id="3-2-Core-Module-1-—-CDT-条件化-条件二值分割模型"><a href="#3-2-Core-Module-1-—-CDT-条件化-条件二值分割模型" class="headerlink" title="3.2 Core Module 1 — CDT 条件化 + 条件二值分割模型"></a>3.2 Core Module 1 — <code>CDT 条件化 + 条件二值分割模型</code></h3><h4 id="为什么需要？"><a href="#为什么需要？" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>跨视角条件分割需要把”源视图里是哪个物体”注入目标视图的表示空间；做法要么加专用模块（ObjectRelator 的辅助对齐模块），要么改条件注入方式。CCMP 选择最小改动：一个 token 承担全部条件信息。</p>
+<h4 id="核心做法"><a href="#核心做法" class="headerlink" title="核心做法"></a>核心做法</h4><ul>
+<li>源特征 Fs 与归一化 mask M̃s 做空间加权平均得 zs（Eq.1-2），线性投影成 CDT；</li>
+<li>编码器输入 <code>[CLS, CDT, x1, ..., xn]</code>，CDT 的语义经自注意力传播给所有 patch token（无需额外 cross-attention 模块）；</li>
+<li>Mask Head 只在视觉 token 上做两层卷积；CLS Head 处理可见性分类（单独后训练，冻结主干只训 CLS Head 96K 迭代）；</li>
+<li>辅助损失：对最后 n_aux_layers&#x3D;1 层的中间 mask 预测也施加 mask 损失（深监督）。</li>
+</ul>
+<h4 id="关键公式"><a href="#关键公式" class="headerlink" title="关键公式"></a>关键公式</h4><p>归一化 mask 与条件特征（Eq.1-2）：</p>
+<p>$$<br>\tilde{M}<em>{s} &#x3D; \frac{M</em>{s}}{\sum_{i,j} M_{s}[i,j] + \tau},\qquad<br>z_{s} &#x3D; \sum_{i}^{H}\sum_{j}^{W} \tilde{M}<em>{s}[i,j] \cdot F</em>{s}[:, i, j]<br>$$</p>
+<p>输入序列：$x_{input} &#x3D; [CLS,; CDT,; x_{1}, \dots, x_{n}]$，其中 CDT 为 $z_s$ 的线性投影。</p>
+<h4 id="代码对应"><a href="#代码对应" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\train\csegmentor.py</span><br><span class="line">Class: ConditionalSegmentationModel（feat_extractor=&#x27;dinov3_cn_large&#x27;，backbone_type=&#x27;dinov3&#x27;，backbone_size=&#x27;large&#x27;）</span><br><span class="line">Function: compute_conditional_feature（Eq.1-2 的 mask 加权池化）/ forward（encoder → backbone → final → cls_branch → upsampler）</span><br><span class="line">Class: ClsBranch（可见性二分类头）</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># csegmentor.py —— 条件特征（CDT 来源，Eq.1-2 的实现）</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">compute_conditional_feature</span>(<span class="params">self, source_features, source_mask</span>):</span><br><span class="line">    source_features = source_features[<span class="variable language_">self</span>.extractor_depth]   <span class="comment"># ConvNeXt 第 2 层特征</span></span><br><span class="line">    source_mask_resized = F.interpolate(source_mask, size=(H, W), mode=<span class="string">&#x27;bilinear&#x27;</span>, align_corners=<span class="literal">False</span>)</span><br><span class="line">    weighted_features = source_features * source_mask_resized</span><br><span class="line">    conditional_feature = torch.<span class="built_in">sum</span>(weighted_features, dim=(<span class="number">2</span>, <span class="number">3</span>), keepdim=<span class="literal">True</span>) / \</span><br><span class="line">        (torch.<span class="built_in">sum</span>(source_mask_resized, dim=(<span class="number">2</span>, <span class="number">3</span>), keepdim=<span class="literal">True</span>) + <span class="number">1e-6</span>)</span><br><span class="line">    <span class="keyword">return</span> conditional_feature</span><br></pre></td></tr></table></figure>
+
+<h4 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h4><p>CDT 本质上就是”mask 池化的类原型”——与 CAV-SAM 的 prototype pr、V2-SAM 的 RegionPooling 是同一个思想（mask 条件特征），差别在注入方式：CAV-SAM 用相似度图当 prompt，V2-SAM 用 cross-attention 匹配器对齐，CCMP 干脆把原型作为一个 token 丢进 ViT 的自注意力里让网络自己学怎么用它。极简的前提是 DINOv3 特征本身足够强（论文 Table 5：换 DINOv2 掉 1.58 mIoU，仍超 XSegTx+DINOv3 的 30.44 达 42.99）。注意代码里 <code>extractor_depth=2</code>（W&#x2F;16 分辨率）与 backbone 是两套 DINOv3（ConvNeXt-L 提取器 + ViT-L 编码器）。</p>
+<hr>
+<h3 id="3-3-Core-Module-2-—-Lcycle-循环一致性-Test-Time-Training"><a href="#3-3-Core-Module-2-—-Lcycle-循环一致性-Test-Time-Training" class="headerlink" title="3.3 Core Module 2 — Lcycle 循环一致性 + Test-Time Training"></a>3.3 Core Module 2 — <code>Lcycle 循环一致性 + Test-Time Training</code></h3><h4 id="为什么需要？-1"><a href="#为什么需要？-1" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>目标视图 GT mask 昂贵且不可用（测试时）；需要不依赖 GT 的自监督信号来学习视图不变表示，并且这个信号最好在推理时也能用——Lcycle 恰好两者兼备。</p>
+<h4 id="核心做法-1"><a href="#核心做法-1" class="headerlink" title="核心做法"></a>核心做法</h4><ul>
+<li><strong>正向</strong>：网络 (Is, Ms, It) → M̂t；mask 损失 Lmask &#x3D; BCE + λdice·Dice（λdice&#x3D;5）；</li>
+<li><strong>反向</strong>：把 M̂t（sigmoid 输出）当源 mask，网络 (It, M̂t, Is) → M̂s；Lcycle &#x3D; BCE(Ms, M̂s)（λcycle&#x3D;10，<strong>不加 Dice</strong>——论文消融证明加 Dice 会损害 TTT，40.20 vs 44.57）；</li>
+<li><strong>TTT</strong>：推理时对每个测试图像对，冻结其余参数，只更新 ViT 最后 K 个 blocks，T 步，lr 5e-6；</li>
+<li>可见性不可见物体不显式处理（作者认为 Ego-Exo4D 中此类样本罕见）；</li>
+<li>总损失 Ltotal &#x3D; Lmask + λaux·Laux + λcycle·Lcycle（λaux&#x3D;1，辅助损失作用于倒数第二层）。</li>
+</ul>
+<h4 id="关键公式-1"><a href="#关键公式-1" class="headerlink" title="关键公式"></a>关键公式</h4><p>总损失（Eq.1）与循环一致性损失（Eq.4）：</p>
+<p>$$<br>\mathcal{L}<em>{total} &#x3D; \mathcal{L}</em>{mask} + \lambda_{aux}\mathcal{L}<em>{aux} + \lambda</em>{cycle}\mathcal{L}_{cycle}<br>$$</p>
+<p>$$<br>\mathcal{L}<em>{cycle} &#x3D; \mathcal{L}</em>{bce}(M_{s}, \hat{M}<em>{s}), \qquad<br>\hat{M}</em>{s} &#x3D; f\big(I_{s},; \hat{M}<em>{t},; I</em>{t}\big)<br>$$</p>
+<p>mask 损失（Eq.2-3，BCE + Dice）：$\mathcal{L}<em>{mask} &#x3D; \mathcal{L}</em>{bce}(M_{t}, \hat{M}<em>{t}) + \lambda</em>{dice}\mathcal{L}<em>{dice}(M</em>{t}, \hat{M}_{t})$</p>
+<h4 id="代码对应-1"><a href="#代码对应-1" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\train\train.py</span><br><span class="line">Function: trainEpoch（循环一致性：netEncoder(T2, FM2, T1) 反向再跑一次 → Loss(Reversed_output_list[-1], FM1)）</span><br><span class="line">Function: loss_calculation（mask + dice + cls + 辅助损失组合）</span><br><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\train\losses.py</span><br><span class="line">Function: dice_loss_with_logits</span><br><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\eval_segswap_visttt.py</span><br><span class="line">Function: test_time_training（trainable_blocks = netEncoder.backbone.blocks[-ttt_layers:]）</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># train.py —— 循环一致性损失（论文 Lcycle 的实现）</span></span><br><span class="line">output = torch.sigmoid(output_list[-<span class="number">1</span>])</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">abs</span>(consistency_weight) &gt; <span class="number">1e-6</span>:</span><br><span class="line">    FM2 = output.<span class="built_in">type</span>(torch.FloatTensor).cuda()          <span class="comment"># 预测 mask 当源 mask</span></span><br><span class="line">    Reversed_output_list, _ = netEncoder(T2, FM2, T1)    <span class="comment"># 反向再跑一遍</span></span><br><span class="line">    consistency_loss = Loss(Reversed_output_list[-<span class="number">1</span>], FM1)   <span class="comment"># BCE vs 原源 mask</span></span><br><span class="line">    loss += consistency_weight * consistency_loss</span><br><span class="line"></span><br><span class="line"><span class="comment"># eval_segswap_visttt.py —— TTT 实现</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_time_training</span>(<span class="params">netEncoder, tensor1, tensor2, tensor3, lr=..., iterations=..., ttt_layers=...</span>):</span><br><span class="line">    trainable_blocks = netEncoder.backbone.blocks[-ttt_layers:]   <span class="comment"># 只更新最后 K 层</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<h4 id="我的理解-1"><a href="#我的理解-1" class="headerlink" title="我的理解"></a>我的理解</h4><p>Lcycle 的设计哲学是”让对应关系自我闭环”：M̂t 反投影回源视图必须重建 Ms，模型就被迫学到”跨视图一致的表示”而不是”目标视图特有的捷径”。TTT 复用同一目标时有一个精妙之处——Lcycle 不依赖任何 GT，所以测试时可以无限加自监督步数；作者还发现 Dice 会破坏它，我认为原因是 Dice 对”空 mask”惩罚过强（小目标&#x2F;遮挡时 M̂s 与 Ms 重叠小，Dice 梯度噪声大），BCE 相对温和，这对”自监督目标设计”是一个通用教训。</p>
+<hr>
+<h3 id="3-4-论文与代码对照"><a href="#3-4-论文与代码对照" class="headerlink" title="3.4 论文与代码对照"></a>3.4 论文与代码对照</h3><table>
+<thead>
+<tr>
+<th>Paper Module</th>
+<th>Code File</th>
+<th>Class &#x2F; Function</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Source Feature Extractor (ConvNeXt DINOv3-L)</td>
+<td><code>SegSwap/model/dinov3convnext.py</code> + <code>train/csegmentor.py</code></td>
+<td><code>get_convnext_arch</code> &#x2F; <code>compute_conditional_feature</code></td>
+<td>源特征提取 + mask 加权池化（CDT 来源）</td>
+</tr>
+<tr>
+<td>Transformer Encoder (DINOv3 ViT-L)</td>
+<td><code>SegSwap/model/dinov3vit.py</code> + <code>train/csegmentor.py</code></td>
+<td><code>dinov3_vit_large</code> &#x2F; <code>ConditionalSegmentationModel.forward</code></td>
+<td>CDT + CLS + patch tokens 条件化编码</td>
+</tr>
+<tr>
+<td>Mask Head</td>
+<td><code>train/csegmentor.py</code></td>
+<td><code>ConditionalSegmentationModel.final</code>（2 层卷积）</td>
+<td>视觉 token → mask logits</td>
+</tr>
+<tr>
+<td>CLS Head（可见性）</td>
+<td><code>train/csegmentor.py</code> + <code>train/posttrain.py</code></td>
+<td><code>ClsBranch</code> &#x2F; posttrain 主流程</td>
+<td>可见性二分类（冻结主干后训练）</td>
+</tr>
+<tr>
+<td>Mask 损失 (BCE+Dice)</td>
+<td><code>train/losses.py</code> + <code>train/train.py</code></td>
+<td><code>dice_loss_with_logits</code> &#x2F; <code>loss_calculation</code></td>
+<td>Lmask + 辅助损失组合</td>
+</tr>
+<tr>
+<td>循环一致性损失</td>
+<td><code>train/train.py</code></td>
+<td><code>trainEpoch</code>（<code>netEncoder(T2, FM2, T1)</code> 反向 + BCE）</td>
+<td>Lcycle（λ&#x3D;10）</td>
+</tr>
+<tr>
+<td>TTT 推理</td>
+<td><code>eval_segswap_visttt.py</code></td>
+<td><code>test_time_training</code> &#x2F; <code>egoexo</code> &#x2F; <code>exoego</code></td>
+<td>测试时更新最后 K 层 blocks</td>
+</tr>
+<tr>
+<td>HANDAL-X 评测</td>
+<td><code>SegSwap/eval_handal.py</code></td>
+<td>main（torchrun 8 卡）</td>
+<td>HANDAL-X 零样本&#x2F;微调评测</td>
+</tr>
+<tr>
+<td>训练入口</td>
+<td><code>train/main.py</code> + <code>run.sh</code></td>
+<td>main（两阶段：linear probing + 全量）</td>
+<td>训练配置与调度</td>
+</tr>
+</tbody></table>
+<h4 id="论文和代码不一致的地方"><a href="#论文和代码不一致的地方" class="headerlink" title="论文和代码不一致的地方"></a>论文和代码不一致的地方</h4><ul>
+<li><strong>模型架构对应</strong>：论文的”ConvNeXt-based DINOv3-L 源提取器 + ViT-based DINOv3-L 编码器”与代码 <code>run.sh</code> 的 <code>--feat-extractor dinov3_cn_large --extractor-depth 2 --backbone-type dinov3 --backbone-size large</code> 一致。</li>
+<li><strong>训练阶段</strong>：论文说”第一阶段 linear probing 64K 迭代冻结两个 DINOv3，第二阶段 640K 迭代全量”；代码 run.sh 为 <code>--lp-n-epoch 20 --lp-iter-epoch 3200</code>（&#x3D;64K）+ <code>--n-epoch 200 --iter-epoch 3200</code>（&#x3D;640K），一致；论文”gradient accumulation step 16 → 44K 有效更新”，代码 <code>--grad-accum 16</code> 一致。</li>
+<li><strong>TTT 配置</strong>：论文 Ego2Exo K&#x3D;4&#x2F;T&#x3D;2、Exo2Ego K&#x3D;11&#x2F;T&#x3D;6、lr 5e-6；代码 <code>run_ego.sh</code> 为 <code>--ttt_iter 2 --ttt_layers 4</code>（一致），但 <code>test_time_training</code> 默认 <code>lr=0.0001</code>（1e-4），<code>run_ego.sh</code> 未覆盖 ttt_lr，需自行传入 5e-6 才能与论文一致。</li>
+<li><strong>数据规模</strong>：论文用 755 takes 训练（66 takes 因隐私被删减），README 提示官方流程得到的 true_data 可能比论文实际使用的大（有对应 issue），复现数据规模不完全一致。</li>
+<li><strong>Dice in Lcycle</strong>：论文消融显示 Lcycle 中加 Dice 有害；代码 <code>--consistency-dice-weight 0</code> 默认关闭，与论文一致（若打开需自行对齐 40.20 的配置）。</li>
+<li>论文”CLS Head 微调 96K 迭代约 1 小时”，代码为 <code>posttrain.py</code> 的 <code>--posttrain-epoch 30</code>（迭代数由数据量决定，需按 96K 对齐）。</li>
+</ul>
+<hr>
+<h3 id="3-5-训练与推理"><a href="#3-5-训练与推理" class="headerlink" title="3.5 训练与推理"></a>3.5 训练与推理</h3><h4 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Dataset:</span> <span class="string">Ego-Exo4D</span> <span class="string">对应任务（755</span> <span class="string">takes</span> <span class="string">训练</span> <span class="string">/</span> <span class="number">201</span> <span class="string">验证</span> <span class="string">/</span> <span class="number">295</span> <span class="string">测试；1.8M</span> <span class="string">mask</span> <span class="string">标注</span> <span class="string">@1fps）</span></span><br><span class="line"><span class="attr">Resolution:</span> <span class="number">512</span><span class="string">×512（run.sh</span> <span class="string">--image-size</span> <span class="number">512</span><span class="string">；模型测试用</span> <span class="number">518</span><span class="string">）</span></span><br><span class="line"><span class="attr">Epoch:</span> <span class="string">阶段1</span> <span class="string">linear</span> <span class="string">probing</span> <span class="number">20</span> <span class="string">epochs（3200</span> <span class="string">iter/epoch，冻结双</span> <span class="string">DINOv3）；阶段2</span> <span class="string">全量</span> <span class="number">200</span> <span class="string">epochs</span></span><br><span class="line"><span class="attr">Batch Size:</span> <span class="number">2</span> <span class="string">per</span> <span class="string">GPU</span> <span class="string">×</span> <span class="number">8</span> <span class="string">GPU</span> <span class="string">=</span> <span class="number">16</span><span class="string">，grad-accum</span> <span class="number">16</span> <span class="string">→</span> <span class="string">有效更新</span> <span class="string">44K（704K/16）</span></span><br><span class="line"><span class="attr">Optimizer:</span> <span class="string">AdamW（weight_decay</span> <span class="number">1e-3</span><span class="string">）</span></span><br><span class="line"><span class="attr">Learning Rate:</span> <span class="string">阶段1</span> <span class="string">max</span> <span class="number">1e-3</span> <span class="string">/</span> <span class="string">min</span> <span class="number">1e-4</span><span class="string">（cosine）；阶段2</span> <span class="string">max</span> <span class="number">1e-5</span> <span class="string">/</span> <span class="string">min</span> <span class="number">1e-6</span></span><br><span class="line"><span class="attr">Loss:</span> <span class="string">λdice=5，λaux=1，λcycle=10（cycle</span> <span class="string">中无</span> <span class="string">Dice）</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="number">8</span> <span class="string">×</span> <span class="string">NVIDIA</span> <span class="string">RTX</span> <span class="string">A800</span> <span class="string">(40GB)，AMP</span> <span class="string">混合精度</span></span><br><span class="line"><span class="attr">Training Time:</span> <span class="string">约</span> <span class="number">72</span> <span class="string">小时（阶段2）；CLS</span> <span class="string">head</span> <span class="string">后训练约</span> <span class="number">1</span> <span class="string">小时</span></span><br><span class="line"><span class="attr">TTT:</span> <span class="string">Ego2Exo</span> <span class="string">K=4,</span> <span class="string">T=2；Exo2Ego</span> <span class="string">K=11,</span> <span class="string">T=6；lr</span> <span class="number">5e-6</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">(Is, Ms, It)</span><br><span class="line">→ TTT（可选）：更新最后 K 层 blocks，T 步，Lcycle 作目标</span><br><span class="line">→ 前向：CDT 条件化 → mask head → M̂t</span><br><span class="line">→ CLS head 判可见性</span><br><span class="line">→ Post-processing: 阈值化（0.5）→ 评测（IoU/VA/LE/CA）</span><br></pre></td></tr></table></figure>
+
+<h4 id="Complexity"><a href="#Complexity" class="headerlink" title="Complexity"></a>Complexity</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Params: 论文未报告（DINOv3 ConvNeXt-L + ViT-L 双骨干，可训练参数全量）</span><br><span class="line">FLOPs: 论文未报告</span><br><span class="line">FPS / Latency: 论文未报告；TTT 使推理变慢（每对 2-6 步反向传播）</span><br><span class="line">Hardware: 8×A800 训练；单卡推理</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h2><h3 id="数据集与指标"><a href="#数据集与指标" class="headerlink" title="数据集与指标"></a>数据集与指标</h3><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Metric</th>
+<th>Setting</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Ego-Exo4D Correspondences v2 (test)</td>
+<td>mIoU（主指标，Ego2Exo+Exo2Ego 平均）、VA↑、IoU↑、LE↓、CA↑</td>
+<td>Ego Query &#x2F; Exo Query 双设置</td>
+</tr>
+<tr>
+<td>HANDAL-X</td>
+<td>IoU↑（ZSL 与微调两种）</td>
+<td>44,102 训练对 &#x2F; 14,074 测试对，360° 视角</td>
+</tr>
+</tbody></table>
+<h3 id="主要结果"><a href="#主要结果" class="headerlink" title="主要结果"></a>主要结果</h3><blockquote>
+<p><strong>Ego-Exo4D v2 (test)</strong>：mIoU <strong>44.57</strong>（Ego Query 41.95 &#x2F; Exo Query 47.18），超 O-MaMa 43.32（+1.25 mIoU，相对 +2.9%）；Exo Query IoU 47.18 超此前最优 44.08（O-MaMa）达 <strong>+3.10</strong>；Ego Query 41.95 逼近 O-MaMa 42.57。CA 在 Ego Query 下 0.669（相对 +13.4%）。VA 98.92&#x2F;99.86 远高于 O-MaMa 的 50.00（O-MaMa 无可见性判别）。<br><strong>HANDAL-X</strong>：零样本 78.8（超 ObjectRelator 42.8，相对提升 84.1%）；Ego-Exo4D + HANDAL-X 微调后 85.0（ObjectRelator 84.7）。全部方法在 Ego-Exo4D 训练后 HANDAL-X 均涨点，说明 ego-exo 数据对跨视角泛化有正迁移。<br><strong>Ego Query 普遍难</strong>：多数方法 Ego Query 差于 Exo Query（exo 视图物体更小、背景更杂），论文 Figure 4(b) 定量验证。</p>
+</blockquote>
+<h3 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h3><blockquote>
+<p><strong>哪个模块贡献最大？</strong> 循环一致性损失最关键：w&#x2F;o Lcycle → 43.05（-1.52），w&#x2F;o Laux → 42.90（-1.67），w&#x2F;o TTT → 42.99（-1.58）——三者几乎同等重要，说明”训练自监督 + 推理自适应”是一个整体。数据侧：w&#x2F;o 同视图合成 -1.38，w&#x2F;o RTA -1.54。架构侧：DINOv3 双骨干 + 条件分割比”XSegTx 换 DINOv3 骨干”（30.44）高 14.13，证明提升主要来自方法设计而非特征（DINOv2 骨干 42.99 仍超 XSegTx+DINOv3）。反直觉发现：Lcycle 里加 Dice 反而掉到 40.20。w&#x2F;o linear probing 阶段 → 40.83（-3.74）。</p>
+</blockquote>
+<h3 id="失败案例"><a href="#失败案例" class="headerlink" title="失败案例"></a>失败案例</h3><ul>
+<li>**小目标（&lt; 0.1% 图像面积）仍难**：Figure 4(b) 显示 &gt;0.1% 面积时性能良好，更小目标失败率显著上升；cooking、health、bike repair 场景（物体小、环境复杂）IoU 偏低。</li>
+<li><strong>Ego2Exo 的 TTT 受益有限</strong>：Ego2Exo 任务里小目标比例更高，TTT 提升被稀释（w&#x2F;o TTT 只掉 0.16 on Ego IoU，而 Exo 掉 3.0）。</li>
+<li>不可见物体（遮挡&#x2F;出画）不显式建模：论文承认未处理，靠数据中罕见来规避。</li>
+<li>目标形变&#x2F;尺度骤变（如运动中的球）仍会造成 mask 不完整或漂移（定性补充材料）。</li>
+</ul>
+<h4 id="我认为失败的原因"><a href="#我认为失败的原因" class="headerlink" title="我认为失败的原因"></a>我认为失败的原因</h4><ol>
+<li>小目标失败的本质是<strong>条件信息稀释</strong>：源 mask 池化（Eq.2）是”全局平均”，小目标在源视图也可能只占几个 patch，条件特征里目标信号被背景平均掉；同时 ViT patch（16×16@512px）对小目标分辨率不足——这与我在无人机视角观察到的”目标从大变小时跟踪失效”是同一个病根，且这三篇论文（CAV-SAM&#x2F;V2-SAM&#x2F;CCMP）都未能根本解决。</li>
+<li>Ego2Exo TTT 增益小的原因：小目标上 Lcycle 的反向重建信噪比低（M̂s 与 Ms 重叠差），自监督梯度被噪声主导，微调反而难以收敛到有效方向。</li>
+<li>不可见物体未建模的代价是”硬分割”：CLS head 虽判不可见，但 mask head 仍会输出任意掩码，评测时以 VA 惩罚——可见性-分割解耦若不做端到端联合训练，两头的错误无法互相纠错。</li>
+</ol>
+<hr>
+<h3 id="论文图示（截图）"><a href="#论文图示（截图）" class="headerlink" title="论文图示（截图）"></a>论文图示（截图）</h3><p><img src="https://20020730.xyz/images/tracking/cyclemask/fig3.webp" alt="Figure 3: Visualization illustrating the contribution of test-time training." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/cyclemask/fig4.webp" alt="Figure 4: (a) Performance per activity scenario; (b) Perfor- mance across different object sizes in the target view." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/cyclemask/fig5.webp" alt="Figure 5: Qualitative results on the Ego-Exo4D correspondence benchmark. Each row corresponds to one sample. From top to bottom, the firs..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/cyclemask/fig6.webp" alt="Figure 6: Qualitative results on the HANDAL-X benchmark. Each column corresponds to one sample." loading="lazy"></p>
+<h2 id="5-复现指南"><a href="#5-复现指南" class="headerlink" title="5. 复现指南"></a>5. 复现指南</h2><p><strong>Repository</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">GitHub: https://github.com/shannany0606/CCMP</span><br><span class="line">Commit: 15c388a93f1eacf3cb5d21ed549caf36b95606e4 (2026-02-27)</span><br><span class="line">Checkpoint: best_test_miou.pth（Google Drive / 百度网盘）；DINOv3 双权重（dinov3_convnext_large + dinov3_vitl16）官方下载</span><br></pre></td></tr></table></figure>
+
+<p><strong>Environment</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Python:</span> <span class="number">3.11</span></span><br><span class="line"><span class="attr">PyTorch:</span> <span class="string">见</span> <span class="string">requirements.txt（torch</span> <span class="number">2.</span><span class="string">x</span> <span class="string">+</span> <span class="string">xformers</span> <span class="number">0.0</span><span class="number">.31</span><span class="string">.post1）</span></span><br><span class="line"><span class="attr">CUDA:</span> <span class="string">未指定（A800</span> <span class="string">40GB</span> <span class="string">训练）</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="number">8</span><span class="string">×A800（训练）；单卡可推理</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键运行命令</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装</span></span><br><span class="line">conda create -n ccmp python=3.11 -y &amp;&amp; conda activate ccmp</span><br><span class="line">pip install -r requirements.txt</span><br><span class="line">pip install xformers==0.0.31.post1 --no-deps</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练（true_data 解压到 SegSwap/ 下；DINOv3 权重放 SegSwap/model/）</span></span><br><span class="line"><span class="built_in">cd</span> SegSwap/train &amp;&amp; bash run.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 推理（Ego2Exo / Exo2Ego，含 TTT）</span></span><br><span class="line"><span class="built_in">cd</span> SegSwap/train</span><br><span class="line">bash run_ego.sh     <span class="comment"># --ttt_iter 2 --ttt_layers 4</span></span><br><span class="line">bash run_exo.sh     <span class="comment"># --ttt_iter 6 --ttt_layers 11（按论文 Exo2Ego 配置）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 评测（Ego-Exo4D）</span></span><br><span class="line"><span class="built_in">cd</span> evaluation</span><br><span class="line">python process_annotations.py --data_path ../SegSwap/true_data --annotations_path &lt;relations_test.json&gt; \</span><br><span class="line">    --<span class="built_in">split</span> <span class="built_in">test</span> --output_path ../SegSwap/output/correspondence-gt.json</span><br><span class="line">python3 evaluate_egoexo.py --gt-file ../SegSwap/output/correspondence-gt.json \</span><br><span class="line">    --pred-file ../SegSwap/output/&lt;exp&gt;/ego-exo_test_results_ttt.json</span><br><span class="line"></span><br><span class="line"><span class="comment"># HANDAL-X 评测</span></span><br><span class="line"><span class="built_in">cd</span> SegSwap</span><br><span class="line">torchrun --nproc_per_node=8 eval_handal.py --json_path handal/handal_test_visual.json \</span><br><span class="line">    --model_path train/output/&lt;exp&gt;/best_test_miou.pth --root_path handal --image_size 512 \</span><br><span class="line">    --backbone_size large --backbone_type dinov3 --extractor_type dinov3_cn_large --use_amp --dist</span><br></pre></td></tr></table></figure>
+
+<h4 id="复现结果"><a href="#复现结果" class="headerlink" title="复现结果"></a>复现结果</h4><p>未在本地复跑（需 Ego-Exo4D 数据与 8×A800）。论文报告 mIoU 44.57（Ego 41.95 &#x2F; Exo 47.18）；README 提供了预处理数据（网盘 true_data.zip）、预训练权重与推理结果 json，复现链路完整度在三篇中最高（数据、权重、评测脚本齐全）。</p>
+<h4 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h4><ul>
+<li>数据链路依赖 SegSwap 官方预处理或百度网盘（国内可用，国际网络受限）；官方流程产出的数据规模可能与论文不完全一致（README 提到相关 issue）。</li>
+<li><code>run_ego.sh</code> &#x2F; <code>run_exo.sh</code> 未显式传 <code>--ttt_lr 5e-6</code>，与论文 TTT 学习率需手动对齐。</li>
+<li>HANDAL-X 需要按 ObjectRelator 的 DATASET.md 准备。</li>
+</ul>
+<hr>
+<h2 id="6-批判性思考"><a href="#6-批判性思考" class="headerlink" title="6. 批判性思考"></a>6. 批判性思考</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li><strong>极简且有效</strong>：一个 CDT token + 一个往返损失就达到 SOTA，架构复杂度与结果形成强烈对比，方法论上有示范意义。</li>
+<li><strong>自监督与推理闭环</strong>：Lcycle 一鱼两吃（训练正则 + TTT 目标），是”测试时自适应”在跨视角任务上第一个清晰的成功案例。</li>
+<li><strong>诚实的负面结果</strong>：Lcycle 中 Dice 有害、小目标失败、Ego2Exo TTT 增益有限——反直觉发现增加了论文可信度。</li>
+<li><strong>数据设计讲究</strong>：同视图合成 + 时间松弛配对 + 双方向统一，低成本高收益。</li>
+</ul>
+<h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><ul>
+<li><strong>小目标短板</strong>：&lt;0.1% 面积目标性能骤降——与无人机远景目标场景直接冲突。</li>
+<li><strong>无记忆&#x2F;时序模块</strong>：逐帧独立处理，不利用视频时间一致性，帧间抖动需 TTT 逐帧补偿。</li>
+<li><strong>TTT 成本</strong>：每测试对 2-6 步反向传播（Exo2Ego 更新 11&#x2F;24 层），推理吞吐受影响；论文未报告时间开销。</li>
+<li><strong>不可见物体处理薄弱</strong>：CLS head 与 mask head 分开训练，没有联合优化。</li>
+</ul>
+<h3 id="我最关心的问题"><a href="#我最关心的问题" class="headerlink" title="我最关心的问题"></a>我最关心的问题</h3><ol>
+<li>Lcycle 作为 TTT 目标在”目标不可见”样本上的行为？（论文未处理，遮挡-重现在我无人机场景常见）</li>
+<li>小目标问题能否用多尺度 CDT（多层特征池化）缓解？论文只用 <code>extractor_depth=2</code> 一层。</li>
+<li>TTT 步数 T 与更新层数 K 对每类场景的最优值是否稳定？（论文只给了两个任务的固定值）</li>
+</ol>
+<h3 id="可以迁移到我的研究中的部分"><a href="#可以迁移到我的研究中的部分" class="headerlink" title="可以迁移到我的研究中的部分"></a>可以迁移到我的研究中的部分</h3><ul>
+<li><strong>“往返重建”作为记忆自洁目标</strong>：DAM4SAM 的干扰物记忆可以借鉴 Lcycle——把记忆片段”注入当前帧 → 预测 mask → 反投影回记忆帧重建原 mask”，重建损失高的记忆判定为污染&#x2F;失效记忆，直接删除或降权。这个自监督信号不需要标注，与 TTT 同源。</li>
+<li><strong>TTT 用于无人机视角切换自适应</strong>：cross_view_vtuav 中目标从大变小时，可以像 CCMP 一样在测试时用自监督目标（往返重建或记忆一致性）微调最后几层 transformer blocks，代价小、无需新数据。</li>
+<li><strong>小目标分析的评测方法论</strong>：论文 Figure 4(b) 按”目标面积占比分桶”评测的范式，直接可以用在我的 DAM4SAM 评测里——按”目标由大到小变化率”分桶，量化记忆失效的临界点。</li>
+<li><strong>自监督目标设计教训</strong>：Dice 破坏 TTT 的发现提示我：为自监督目标选损失时要考虑”小目标&#x2F;遮挡时梯度噪声”——我的记忆一致性损失也应避免对空 mask 过度惩罚。</li>
+</ul>
+<h3 id="新想法"><a href="#新想法" class="headerlink" title="新想法"></a>新想法</h3><ol>
+<li><strong>尺度条件化 CDT（Scale-Conditioned CDT）</strong>：把目标在源视图的面积占比编码进 CDT（或加一个 scale token），让模型显式感知”目标变小”，对应训练时用 CCMP 的同视图合成 + 尺度抖动增强——直接针对大→小失效。</li>
+<li><strong>记忆往返一致性（Memory Cycle-Consistency）</strong>：在 DAM4SAM 中把 Lcycle 推广到记忆维度：记忆 M 与当前帧 F 互投影重建，定义记忆质量分数，用于写入门控与淘汰——把 CCMP 的”视图往返”升级为”时间往返”。</li>
+<li><strong>TTT + 记忆联合</strong>：测试时不仅微调 backbone，还同时更新记忆编码器（few 步），让记忆表示适配当前视角——CCMP 证明测试时自监督可行，扩到记忆层是自然延伸。</li>
+<li><strong>两阶段 TTT 调度</strong>：借鉴 CCMP”先 linear probing 后全量”的训练两阶段思想，在测试时为”视角突变帧”先做浅层 TTT（K 小、步数少）预热，再做深层 TTT，平衡吞吐与精度。</li>
+</ol>
+<hr>
+<h2 id="7-深度阅读标注"><a href="#7-深度阅读标注" class="headerlink" title="7. 深度阅读标注"></a>7. 深度阅读标注</h2><p>本节暂无额外阅读标注。</p>
+<hr>
+<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h2><h3 id="三句话总结"><a href="#三句话总结" class="headerlink" title="三句话总结"></a>三句话总结</h3><ol>
+<li><strong>Problem：</strong> ego–exo 跨视角物体对应因视角&#x2F;外观剧变、遮挡与空间布局不一致而困难，现有方法（ObjectRelator、O-MaMa）或重或繁，且都不利用无标注的自监督闭环信号。</li>
+<li><strong>Method：</strong> CCMP 用 DINOv3 双骨干做条件二值分割，单一 CDT 条件 token 注入 ViT 完成跨视图条件化，循环一致性损失（Lcycle）强制源 mask 往返重建，并在推理时复用作 TTT 目标。</li>
+<li><strong>Result：</strong> Ego-Exo4D v2 测试 mIoU 44.57（Exo Query 47.18 超 O-MaMa +3.10），HANDAL-X 零样本 78.8（超 ObjectRelator +36.0），以极简架构取得 SOTA。</li>
+</ol>
+<h3 id="一句话评价"><a href="#一句话评价" class="headerlink" title="一句话评价"></a>一句话评价</h3><p>用最少的架构改动 + 一个自监督目标同时解决训练与测试时自适应，是”极简主义 + 测试时训练”在跨视角任务上的教科书式案例，但小目标短板依旧。</p>
+<h3 id="是否值得复现？"><a href="#是否值得复现？" class="headerlink" title="是否值得复现？"></a>是否值得复现？</h3><ul>
+<li>⭐⭐⭐⭐ 值得复现</li>
+</ul>
+<p>理由：代码、数据、权重、评测全链路发布（三篇中最完整），单模型架构（无双专家&#x2F;无扩散生成）复现成本相对可控；其 TTT + 循环一致性思想与我的 DAM4SAM 记忆自洁、UAV 视角切换自适应直接相关；但训练仍需 8×A800 约 72 小时，且小目标问题未解决（我恰好主要面对小目标），故四颗星。</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/bd23800/" title="论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction">https://20020730.xyz/posts/bd23800/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/a17d3727/" rel="prev" title="论文阅读｜Robust Ego-Exo Correspondence with Long-Term Memory"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">论文阅读｜Robust Ego-Exo Correspondence with Long-Term Memory</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/ef5e6d24/" rel="next" title="论文阅读｜Putting the Object Back into Video Object Segmentation"><span class="post-nav-text">论文阅读｜Putting the Object Back into Video Object Segmentation</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
+  display: none;
+}</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
+  //- hide all
+  document.querySelectorAll('.toggle-comment-btn').forEach((btn) => {
+    const container = document.querySelector(btn.dataset.target);
+    if (container) {
+      container.style.display = "none";
+    }
+  });
+}
+function showComment(target) {
+  hideAllComment();
+  //- show target
+  const targetContainer = document.querySelector(target);
+  if (targetContainer) {
+    targetContainer.style.display = "block";
+  }
+}
+</script></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/posts/bd23800/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="Wanglihan954/disscussion" issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async></script></div></main><aside class="right-sidebar"><div id="post-toc-wrap" style="display:block; opacity:1; visibility:visible;"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">论文信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">摘要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E8%B5%84%E6%BA%90"><span class="toc-number">2.</span> <span class="toc-text">论文资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%A0%94%E7%A9%B6%E5%8A%A8%E6%9C%BA"><span class="toc-number">3.</span> <span class="toc-text">1. 研究动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">要解决什么问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">现有方法的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E8%80%85%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">3.3.</span> <span class="toc-text">作者的核心思路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="toc-number">4.</span> <span class="toc-text">2. 主要贡献</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E7%9C%9F%E6%AD%A3%E7%9A%84%E6%96%B0%E6%84%8F"><span class="toc-number">4.1.</span> <span class="toc-text">我认为真正的新意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">3. 方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%95%B4%E4%BD%93%E6%A1%86%E6%9E%B6"><span class="toc-number">5.1.</span> <span class="toc-text">3.1 整体框架</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">整体流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Core-Module-1-%E2%80%94-CDT-%E6%9D%A1%E4%BB%B6%E5%8C%96-%E6%9D%A1%E4%BB%B6%E4%BA%8C%E5%80%BC%E5%88%86%E5%89%B2%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.2.</span> <span class="toc-text">3.2 Core Module 1 — CDT 条件化 + 条件二值分割模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F"><span class="toc-number">5.2.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95"><span class="toc-number">5.2.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F"><span class="toc-number">5.2.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AF%B9%E5%BA%94"><span class="toc-number">5.2.4.</span> <span class="toc-text">代码对应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.5.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Core-Module-2-%E2%80%94-Lcycle-%E5%BE%AA%E7%8E%AF%E4%B8%80%E8%87%B4%E6%80%A7-Test-Time-Training"><span class="toc-number">5.3.</span> <span class="toc-text">3.3 Core Module 2 — Lcycle 循环一致性 + Test-Time Training</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F-1"><span class="toc-number">5.3.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95-1"><span class="toc-number">5.3.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F-1"><span class="toc-number">5.3.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AF%B9%E5%BA%94-1"><span class="toc-number">5.3.4.</span> <span class="toc-text">代码对应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3-1"><span class="toc-number">5.3.5.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E8%AE%BA%E6%96%87%E4%B8%8E%E4%BB%A3%E7%A0%81%E5%AF%B9%E7%85%A7"><span class="toc-number">5.4.</span> <span class="toc-text">3.4 论文与代码对照</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%92%8C%E4%BB%A3%E7%A0%81%E4%B8%8D%E4%B8%80%E8%87%B4%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="toc-number">5.4.1.</span> <span class="toc-text">论文和代码不一致的地方</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="toc-number">5.5.</span> <span class="toc-text">3.5 训练与推理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Training"><span class="toc-number">5.5.1.</span> <span class="toc-text">Training</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Inference"><span class="toc-number">5.5.2.</span> <span class="toc-text">Inference</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Complexity"><span class="toc-number">5.5.3.</span> <span class="toc-text">Complexity</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.</span> <span class="toc-text">4. 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8E%E6%8C%87%E6%A0%87"><span class="toc-number">6.1.</span> <span class="toc-text">数据集与指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="toc-number">6.2.</span> <span class="toc-text">主要结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.3.</span> <span class="toc-text">消融实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E8%B4%A5%E6%A1%88%E4%BE%8B"><span class="toc-number">6.4.</span> <span class="toc-text">失败案例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E5%A4%B1%E8%B4%A5%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">6.4.1.</span> <span class="toc-text">我认为失败的原因</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%9B%BE%E7%A4%BA%EF%BC%88%E6%88%AA%E5%9B%BE%EF%BC%89"><span class="toc-number">6.5.</span> <span class="toc-text">论文图示（截图）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A4%8D%E7%8E%B0%E6%8C%87%E5%8D%97"><span class="toc-number">7.</span> <span class="toc-text">5. 复现指南</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">7.1.</span> <span class="toc-text">复现结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">7.2.</span> <span class="toc-text">遇到的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%89%B9%E5%88%A4%E6%80%A7%E6%80%9D%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">6. 批判性思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">8.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%80%E9%99%90"><span class="toc-number">8.2.</span> <span class="toc-text">局限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E6%9C%80%E5%85%B3%E5%BF%83%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">8.3.</span> <span class="toc-text">我最关心的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E8%BF%81%E7%A7%BB%E5%88%B0%E6%88%91%E7%9A%84%E7%A0%94%E7%A9%B6%E4%B8%AD%E7%9A%84%E9%83%A8%E5%88%86"><span class="toc-number">8.4.</span> <span class="toc-text">可以迁移到我的研究中的部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E6%83%B3%E6%B3%95"><span class="toc-number">8.5.</span> <span class="toc-text">新想法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%B7%B1%E5%BA%A6%E9%98%85%E8%AF%BB%E6%A0%87%E6%B3%A8"><span class="toc-number">9.</span> <span class="toc-text">7. 深度阅读标注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">8. 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%8F%A5%E8%AF%9D%E6%80%BB%E7%BB%93"><span class="toc-number">10.1.</span> <span class="toc-text">三句话总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AF%84%E4%BB%B7"><span class="toc-number">10.2.</span> <span class="toc-text">一句话评价</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%AF%E5%90%A6%E5%80%BC%E5%BE%97%E5%A4%8D%E7%8E%B0%EF%BC%9F"><span class="toc-number">10.3.</span> <span class="toc-text">是否值得复现？</span></a></li></ol></li></ol></div></div></div></aside><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 – 2026 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> 宁翰</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-04-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><!-- hexo injector body_end start --><script src="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/js/index.js"></script><script src="/js/nav-title-fit.js" defer></script><!-- hexo injector body_end end --></body></html>

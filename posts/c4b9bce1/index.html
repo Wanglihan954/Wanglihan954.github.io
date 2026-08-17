@@ -1,0 +1,432 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="宁翰"><meta name="copyright" content="宁翰"><meta name="generator" content="Hexo 8.1.1"><meta name="theme" content="hexo-theme-yun"><title>论文阅读｜RMem: Restricted Memory Banks Improve Video Object Segmentation | Seventh Knot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{"renderMathInElement":true,"strict":"ignore","output":"htmlAndMathml","displayMode":true,"trust":true},
+    ...undefined?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"20020730.xyz","root":"/","title":"世界需要七休日","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.xml"},"localsearch":{"enable":"fasle","trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://comment.20020730.xyz","comment":true,"visitor":true,"emoji":["//unpkg.com/@waline/emojis@1.1.0/weibo",{"name":"嗯呢漫布","folder":"/images/zzz-stickers","prefix":"bangboo-","type":"jpg","icon":"/images/zzz-stickers/bangboo-thanks.jpg","items":["gift","thanks","rest"]},{"name":"丽都漫步","folder":"/images/zzz-stickers","prefix":"lidu-","type":"png","icon":"/images/zzz-stickers/lidu-anby.png","items":["anby","nekomata","lycaon","rina","soldier11","wise"]}],"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="Seventh Knot" type="application/atom+xml"><link rel="stylesheet" href="/css/custom_theme.css?v=20260812-3"><link rel="stylesheet" href="/css/projects.css?v=20260817-1"><script src="/js/web-pet.js" defer></script><script src="/js/mobile-navigation.js" defer></script><script src="/js/home-intro.js?v=20260810-6" defer></script><meta name="description" content="随着 VOS 基准向困难场景演化，本文重新审视一个简单却被忽视的策略： 限制记忆库的大小 。作者设计&quot;memory deciphering&quot;实验发现关键洞察：扩大记忆库看似有益，实际上因冗余信息混淆了 VOS 模块解码相关特征的能力。把记忆库限制在少量关键帧内可显著提升精度；更新策略需平衡帧的 relevance 与 freshness；…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读｜RMem: Restricted Memory Banks Improve Video Object Segmentation">
+<meta property="og:url" content="https://20020730.xyz/posts/c4b9bce1/index.html">
+<meta property="og:site_name" content="Seventh Knot">
+<meta property="og:description" content="随着 VOS 基准向困难场景演化，本文重新审视一个简单却被忽视的策略： 限制记忆库的大小 。作者设计&quot;memory deciphering&quot;实验发现关键洞察：扩大记忆库看似有益，实际上因冗余信息混淆了 VOS 模块解码相关特征的能力。把记忆库限制在少量关键帧内可显著提升精度；更新策略需平衡帧的 relevance 与 freshness；…">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/rmem/fig1.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/rmem/fig3.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/rmem/fig2.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/rmem/fig4.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/rmem/fig5.webp">
+<meta property="article:published_time" content="2026-08-15T12:40:00.000Z">
+<meta property="article:modified_time" content="2026-08-15T15:00:00.000Z">
+<meta property="article:author" content="宁翰">
+<meta property="article:tag" content="AI论文">
+<meta property="article:tag" content="SAM2">
+<meta property="article:tag" content="Tracking">
+<meta property="article:tag" content="VOS">
+<meta property="article:tag" content="文献笔记">
+<meta property="article:tag" content="视频目标分割 (VOS)">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://20020730.xyz/images/tracking/rmem/fig1.webp"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><span class="nav-badge">INTER-KNOT // 20020730</span><div class="nav-left"><button class="nav-item" id="mobile-menu-btn" type="button" title="菜单" aria-label="打开菜单" aria-controls="site-overview-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:menu-line"></span></button><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="代理人档案"><span class="nav-mask-icon" style="--nav-mask-image: url('/images/bangboo-nav.png')" aria-hidden="true"></span></a><a class="nav-item desktop-only-icon" href="/projects/" title="项目终端"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">Seventh Knot</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">论文阅读｜RMem: Restricted Memory Banks Improve Video Object Segmentation</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" aria-hidden="true"></div><button id="mobile-toc-btn" type="button" title="文章目录" aria-label="打开文章目录" aria-controls="post-toc-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:list-unordered"></span></button><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
+  const navCenter = document.getElementById('nav-center');
+  if (navCenter && document.querySelector('.article-title')) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
+    });
+  }
+});
+</script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
+.search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.search-header { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(150,150,150,0.1); }
+.search-header input { flex: 1; border: none; background: transparent; outline: none; font-size: 1.1rem; color: var(--hty-text-color); margin: 0 15px; }
+.search-header .close-btn { cursor: pointer; font-size: 1.4rem; opacity: 0.6; transition: all 0.2s; }
+.search-header .close-btn:hover { opacity: 1; color: var(--hty-primary-color); transform: rotate(90deg); }
+.search-results { overflow-y: auto; padding: 10px 24px 20px; }
+.search-result-item { display: block; padding: 15px 0; border-bottom: 1px dashed rgba(150,150,150,0.1); text-decoration: none; color: var(--hty-text-color); transition: all 0.2s; }
+.search-result-item:hover { transform: translateX(5px); }
+.search-result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--hty-primary-color); }
+.search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
+.search-keyword { color: #ff5252; font-weight: bold; }
+</style><script>let mySearchData = null;
+window.openMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('my-search-input').focus(), 100);
+  if (!mySearchData) {
+    fetch('/search.xml').then(res => res.text()).then(str => {
+      const parser = new DOMParser();
+      const entries = parser.parseFromString(str, "text/xml").getElementsByTagName("entry");
+      mySearchData = Array.from(entries).map(entry => ({
+        title: entry.getElementsByTagName('title')[0]?.textContent || '',
+        content: entry.getElementsByTagName('content')[0]?.textContent.replace(/<[^>]+>/g, '') || '',
+        url: entry.getElementsByTagName('url')[0]?.textContent || ''
+      }));
+    }).catch(err => console.error("搜索数据加载失败:", err));
+  }
+};
+window.closeMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'none';
+  document.getElementById('my-search-input').value = '';
+  document.getElementById('my-search-results').innerHTML = '';
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('my-search-input');
+  if(input) {
+    input.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+      const results = document.getElementById('my-search-results');
+      if (!keyword) { results.innerHTML = ''; return; }
+      if (!mySearchData) return;
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
+      results.innerHTML = matched.map(item => {
+        const reg = new RegExp(keyword, 'gi');
+        const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        let content = item.content;
+        const index = content.toLowerCase().indexOf(keyword);
+        if (index > -1) {
+          let start = Math.max(0, index - 30);
+          let end = Math.min(content.length, index + 30);
+          content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+          content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        } else { content = content.substring(0, 60) + '...'; }
+        return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
+      }).join('');
+    });
+  }
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">57</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">78</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/c4b9bce1/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">论文阅读｜RMem: Restricted Memory Banks Improve Video Object Segmentation</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-08-15 20:40:00" itemprop="dateCreated datePublished" datetime="2026-08-15T20:40:00+08:00">2026-08-15</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">5.2k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">21m</span></span></span><span class="leancloud_visitors" id="/posts/c4b9bce1/" data-flag-title="论文阅读｜RMem: Restricted Memory Banks Improve Video Object Segmentation"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/c4b9bce1/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">文献阅读</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/Tracking/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Tracking</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%96%87%E7%8C%AE%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">文献笔记</span></a><a class="tag-item" href="/tags/AI%E8%AE%BA%E6%96%87/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">AI论文</span></a><a class="tag-item" href="/tags/SAM2/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">SAM2</span></a><a class="tag-item" href="/tags/Tracking/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Tracking</span></a><a class="tag-item" href="/tags/VOS/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">VOS</span></a><a class="tag-item" href="/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2-VOS/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">视频目标分割 (VOS)</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p>本文基于论文、补充材料与公开代码整理。文中的“我的理解”和“批判性思考”属于个人分析；<br>论文插图均来自原论文或补充材料，仅用于学习与讨论。</p>
+</blockquote>
+<h2 id="论文信息"><a href="#论文信息" class="headerlink" title="论文信息"></a>论文信息</h2><p><strong>Title:</strong> RMem: Restricted Memory Banks Improve Video Object Segmentation<br><strong>Authors:</strong> Junbao Zhou, Ziqi Pang, Yu-Xiong Wang（前两位 equal contribution）<br><strong>Venue:</strong> CVPR 2024<br><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/Restricted-Memory/RMem">https://github.com/Restricted-Memory/RMem</a><br><strong>Project Page:</strong> <a target="_blank" rel="noopener" href="https://restricted-memory.github.io/">https://restricted-memory.github.io/</a><br><strong>IF &#x2F; CCF:</strong> CCF-A | CVPR 2024</p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>随着 VOS 基准向困难场景演化，本文重新审视一个简单却被忽视的策略：<strong>限制记忆库的大小</strong>。作者设计”memory deciphering”实验发现关键洞察：扩大记忆库看似有益，实际上因冗余信息混淆了 VOS 模块解码相关特征的能力。把记忆库限制在少量关键帧内可显著提升精度；更新策略需平衡帧的 relevance 与 freshness；受限记忆还缩小了训练-推理的记忆长度差距，从而允许引入此前被忽视的”temporal positional embedding”。RMem 在 VOST（物体状态变化）与 Long Videos（长视频）上取得 SOTA。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="论文资源"><a href="#论文资源" class="headerlink" title="论文资源"></a>论文资源</h2><ul>
+<li><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/Restricted-Memory/RMem">https://github.com/Restricted-Memory/RMem</a></li>
+<li><strong>Project Page:</strong> <a target="_blank" rel="noopener" href="https://restricted-memory.github.io/">https://restricted-memory.github.io/</a></li>
+</ul>
+<hr>
+<h2 id="1-研究动机"><a href="#1-研究动机" class="headerlink" title="1. 研究动机"></a>1. 研究动机</h2><h3 id="要解决什么问题？"><a href="#要解决什么问题？" class="headerlink" title="要解决什么问题？"></a>要解决什么问题？</h3><blockquote>
+<p>主流 memory-based VOS 用”不断追加帧”的方式扩张记忆库，但 VOST（状态变化）、Long Videos（&gt;1000 帧）等新基准表明：记忆库越大，VOS 模块越难从中解码出相关特征——冗余信息稀释了注意力。</p>
+</blockquote>
+<h3 id="现有方法的问题"><a href="#现有方法的问题" class="headerlink" title="现有方法的问题"></a>现有方法的问题</h3><ul>
+<li><strong>直觉与结果相悖</strong>：视频越长记忆库越大，但解码质量反而下降——“memory deciphering”实验显示，从记忆库解码首帧 mask 的 Jaccard 随记忆增长而退化，注意力分数从 0.247 掉到 0.056（query 与其最相关记忆帧之间）。</li>
+<li>现有限制记忆的方法（XMem、AFB-URR 等）<strong>只强调效率</strong>，把记忆拆成区域&#x2F;像素级结构并定制算子，没有揭示”限制记忆本身提升精度”这一事实，也难即插即用。</li>
+<li>训练-推理记忆长度不一致：模型在短片段上训练（记忆短），推理时记忆无限膨胀，阻碍依赖时序同步的技术（如 temporal PE）使用。</li>
+</ul>
+<h3 id="作者的核心思路"><a href="#作者的核心思路" class="headerlink" title="作者的核心思路"></a>作者的核心思路</h3><blockquote>
+<p>用”memory deciphering”实验证明记忆膨胀的害处源于冗余信息混淆解码注意力，然后直接用”固定容量 K 的受限记忆库 + UCB 启发的帧淘汰（relevance+freshness）+ 可学习的 temporal positional embedding”这三个即插即用改动，在 VOST 与长视频基准上刷新 SOTA——不做新架构，只做”减法”。</p>
+</blockquote>
+<hr>
+<p><strong>论文图示</strong></p>
+<p><img src="https://20020730.xyz/images/tracking/rmem/fig1.webp" alt="Figure 1: In light of challenging object state changes [34, 41, 47], we rethink the conventional approach of continuously accumulat- ing ..." loading="lazy"></p>
+<h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2. 主要贡献"></a>2. 主要贡献</h2><ol>
+<li><strong>Contribution 1：memory deciphering 分析</strong>——设计可控变量的实验（预测目标固定为首帧 mask，只改变记忆库内容），系统性揭示记忆库扩张会降低 VOS 模块的解码能力，并给出注意力分数证据（0.247 → 0.056）。</li>
+<li><strong>Contribution 2：限制记忆库 + UCB 记忆更新</strong>——把记忆库限制为固定 K 帧；受多臂老虎机 UCB 启发，用 attention 分数作为 relevance、停留时间作为 freshness，淘汰”最过时”帧。</li>
+<li><strong>Contribution 3：temporal positional embedding</strong>——受限记忆缩小了训练&#x2F;推理记忆长度差，使可学习的 temporal PE（训练长度内学习、超出时最近邻插值）首次在 VOS 记忆读取中显式编码帧顺序。</li>
+</ol>
+<h4 id="我认为真正的新意"><a href="#我认为真正的新意" class="headerlink" title="我认为真正的新意"></a>我认为真正的新意</h4><blockquote>
+<p>新意不是”限制记忆”（XMem 早就做），而是<strong>用对照实验把”记忆越大越难解码”变成了可量化的事实</strong>（不是效率动机而是精度动机），并给了一个极简的 plug-and-play 改法：限制容量 + 帧级淘汰 + temporal PE，总共只动了 AOT 的推理记忆管理和一小块参数。它示范了一种”先诊断后治疗”的研究范式——用受控实验定位问题，再以最小改动验证洞察——这比堆模块更值得学习。</p>
+</blockquote>
+<hr>
+<h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><blockquote>
+<p><strong>阅读说明</strong><br>有官方代码（repo: <code>F:\Code\Projects\Tracking\RMem</code>），Method 已结合源码核对。RMem 以 AOT&#x2F;DeAOT（ResNet-50 encoder + LSTT decoder）为 baseline，是纯推理侧+轻训练改动。</p>
+</blockquote>
+<h3 id="3-1-整体框架"><a href="#3-1-整体框架" class="headerlink" title="3.1 整体框架"></a>3.1 整体框架</h3><p><img src="https://20020730.xyz/images/tracking/rmem/fig3.webp" alt="Figure 3: RMem Overview. (a) RMem revisits restricting memory banks to enhance VOS (Sec. 4.1), motivated by the insight from our pilot st..." loading="lazy"></p>
+<p><strong>核心架构图</strong></p>
+<blockquote>
+<p>论文 Figure 3（RMem Overview）。官方图：<code>F:\Code\Projects\Tracking\RMem\figures\method2.jpg</code></p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Video frames</span><br><span class="line">    ↓</span><br><span class="line">VOS Encoder (ResNet-50) → feature F_t          Memory Bank (容量 K=8, 帧级)</span><br><span class="line">    ↓                                                   ↑</span><br><span class="line">AOT Decoder (LSTT, 带 temporal PE)  ←————— KV 读取 (Eq.5)</span><br><span class="line">    ↓                                                   ↑</span><br><span class="line">Predicted mask t —————————————→ 记忆更新 (Eq.3 + UCB 淘汰)</span><br><span class="line">    ↓                                                   ↑</span><br><span class="line">（推理时：Former=帧0 永久保留; Latter=最近 K-1 帧按 relevance/freshness 淘汰）</span><br></pre></td></tr></table></figure>
+
+<h4 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h4><ol>
+<li>记忆库限制为固定 K 帧（代码：<code>former_mem_len=1</code>（帧 0 永驻）+ <code>latter_mem_len=8</code>，即容量 8 帧）。</li>
+<li>新帧特征 F_t 通过 LSTT 解码器与记忆库做 cross-attention（Eq.5）；记下 attention 分数作为每帧 relevance 的度量。</li>
+<li>记忆更新：满容量时按 UCB 分数 O_j &#x3D; relevance + freshness 选最小者淘汰（帧 0 不可淘汰），腾出位置给新帧。</li>
+<li>记忆库内所有帧的 key&#x2F;value 加上可学习 temporal PE（memory 槽位 &lt; K_train&#x3D;4 直接用学习向量，超出用最近邻插值），再送注意力计算。</li>
+</ol>
+<hr>
+<h3 id="3-2-Core-Module-1-—-受限记忆库-UCB-帧淘汰（Memory-Update）"><a href="#3-2-Core-Module-1-—-受限记忆库-UCB-帧淘汰（Memory-Update）" class="headerlink" title="3.2 Core Module 1 — 受限记忆库 + UCB 帧淘汰（Memory Update）"></a>3.2 Core Module 1 — <code>受限记忆库 + UCB 帧淘汰（Memory Update）</code></h3><h4 id="为什么需要？"><a href="#为什么需要？" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>固定容量 K 后，满员时如何淘汰最无用的帧？朴素策略（随机、只留最新）各有缺陷：随机忽略 relevance，只留最新会知识漂移（目标状态变化后旧状态信息丢失）。需要同时考虑”帧对当前目标的价值”（relevance）与”帧的新鲜度”（freshness），这正是 UCB 在 exploration&#x2F;exploitation 之间的平衡。</p>
+<h4 id="核心做法"><a href="#核心做法" class="headerlink" title="核心做法"></a>核心做法</h4><p>baseline 更新（Eq.3）：满员时移除第 1 帧（保留帧 0 与最近帧）。正式版：用当前帧与记忆帧的 cross-attention 分数之和作为 relevance（帧级，而非 XMem 的像素级），用帧在记忆中的停留次数定义 freshness，组合成 UCB 分数，淘汰分数最小的帧。</p>
+<h4 id="关键公式"><a href="#关键公式" class="headerlink" title="关键公式"></a>关键公式</h4><p>baseline 更新（K_t &#x3D; K 时）：<br>$$<br>M_{t+1} &#x3D; \text{Concat}(M_t^0,; M_t^{2:K_t-1},; F_t)<br>$$</p>
+<p>解码与 relevance 定义（attention 分数按记忆帧求和）：<br>$$<br>F_t^D &#x3D; \text{Attn}(Q&#x3D;F_t, K&#x3D;M_t, V&#x3D;M_t), \qquad R_k &#x3D; \text{sum}(S_t^k)<br>$$</p>
+<p>UCB 淘汰分数（多臂老虎机启发）：<br>$$<br>O_j &#x3D; R_j + \sqrt{\frac{2\log T}{t_j}}<br>$$<br>$R_j$ &#x3D; 帧 j 的 relevance；$t_j$ &#x3D; 帧 j 在记忆中的停留次数（代码里 <code>frame_times</code>），$T$ &#x3D; 各帧停留次数总和；代码中实际为 $O &#x3D; \text{attn_weight} + 1.5 \cdot \sqrt{\log(\sum t) &#x2F; (t + 8)}$，并淘汰 argmin。</p>
+<h4 id="代码对应"><a href="#代码对应" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: F:/Code/Projects/Tracking/RMem/aot_plus/networks/layers/transformer.py</span><br><span class="line">Class: LongShortTermTransformer</span><br><span class="line">Function: restrict_long_memories (line 324，注释 &quot;UCB&quot; 位于 line 377)</span><br><span class="line">File: F:/Code/Projects/Tracking/RMem/aot_plus/networks/engines/aot_engine.py</span><br><span class="line">Class: AOTEngine</span><br><span class="line">Function: update_short_term_memory (line 327，触发 restrict + 记录 long_memories_indexes)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># transformer.py restrict_long_memories 内 UCB 组合（relevance + freshness）</span></span><br><span class="line">attn_weight = attn_weight * foreground_proba          <span class="comment"># relevance：attention 分数(×前景概率)</span></span><br><span class="line">attn_weight = attn_weight.<span class="built_in">sum</span>(dim=<span class="number">0</span>); attn_weight /= attn_weight.<span class="built_in">sum</span>()</span><br><span class="line"><span class="comment"># 移动平均(0.8) 平滑 relevance</span></span><br><span class="line">add_item, mul_item = <span class="number">8</span>, <span class="number">1.5</span></span><br><span class="line">frame_times_param = mul_item * torch.sqrt(torch.log(frame_times_np.<span class="built_in">sum</span>()) / (frame_times_np + add_item))</span><br><span class="line">attn_weight = attn_weight + frame_times_param          <span class="comment"># + freshness 项</span></span><br><span class="line">to_drop_idx = torch.argmin(attn_weight_remove_0).item()  <span class="comment"># 淘汰 UCB 分最小的帧(帧0受保护)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h4><p>relevance 用”解码时当前帧对每个记忆帧的平均注意力”是廉价又合理的度量：注意力大 &#x3D; 该帧对当前预测贡献大 &#x3D; 别删。freshness 项把”停留过久”视为风险——状态变化场景下旧状态帧虽曾有用，但持续霸占槽位会阻碍新状态进入。Ablation（Table 4）显示仅 relevance 39.1&#x2F;50.1、加 freshness 后 39.4&#x2F;50.3，且”移除最新帧”退化最严重（35.7&#x2F;48.5），说明新鲜度是必要项而非锦上添花。</p>
+<hr>
+<h3 id="3-3-Core-Module-2-—-Temporal-Positional-Embedding-temporal-PE"><a href="#3-3-Core-Module-2-—-Temporal-Positional-Embedding-temporal-PE" class="headerlink" title="3.3 Core Module 2 — Temporal Positional Embedding (temporal PE)"></a>3.3 Core Module 2 — <code>Temporal Positional Embedding (temporal PE)</code></h3><h4 id="核心做法-1"><a href="#核心做法-1" class="headerlink" title="核心做法"></a>核心做法</h4><p>受限记忆使训练&#x2F;推理的记忆长度差从”无限 vs 短”缩小到”K vs K_train”，因此可以在记忆读取中显式编码帧的时序位置。仿照 ViT 的可学习 PE：按训练长度 K_train&#x3D;4 初始化可学习向量 {Pe_0..Pe_{K_train-1}}；推理时记忆长度 K_t ≤ K_train 直接取，超出则用最近邻插值。关键设计：使用记忆内的相对索引（0..K_t-1）而非全局帧号，避免训练&#x2F;推理偏移；key&#x2F;value 同时加 PE。</p>
+<h4 id="关键公式-1"><a href="#关键公式-1" class="headerlink" title="关键公式"></a>关键公式</h4><p>记忆 temporal PE（K_t &gt; K_train 时插值）：<br>$$<br>P_t^{0:K_t-1} &#x3D; \begin{cases}<br>Pe^{0:K_t-1}, &amp; K_t \le K_{train}\<br>\text{Interp}(Pe^{0:K_{train}-1}, K_t), &amp; K_t &gt; K_{train}<br>\end{cases}<br>$$</p>
+<p>加入 PE 后的记忆读取（query 加专用 PE P_q）：<br>$$<br>F_t^D &#x3D; \text{Attn}(Q &#x3D; F_t + P_q,; K &#x3D; M_t^{0:K_t-1} + P_t^{0:K_t-1},; V &#x3D; M_t^{0:K_t-1})<br>$$</p>
+<h4 id="代码对应-1"><a href="#代码对应-1" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: F:/Code/Projects/Tracking/RMem/aot_plus/networks/models/aot.py</span><br><span class="line">Class: AOT</span><br><span class="line">Function: __init__ (use_temporal_pe; cur_pos_emb + mem_pos_emb 4 槽可学习参数)</span><br><span class="line">File: F:/Code/Projects/Tracking/RMem/aot_plus/networks/engines/aot_engine.py</span><br><span class="line">Function: AOTEngine.add_reference_frame (line 309-310: temporal_pos_emb = cat(cur_pos_emb, mem_pos_emb))</span><br><span class="line">File: F:/Code/Projects/Tracking/RMem/aot_plus/configs/models/r50_aotl.py</span><br><span class="line">USE_TEMPORAL_POSITIONAL_EMBEDDING = True; TEMPORAL_POSITIONAL_EMBEDDING_SLOT_4 = True</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># aot.py __init__：可学习 temporal PE（记忆槽 4 个 + 当前帧 1 个）</span></span><br><span class="line"><span class="variable language_">self</span>.cur_pos_emb = nn.Parameter(torch.randn(<span class="number">1</span>, dim) * <span class="number">0.05</span>)</span><br><span class="line"><span class="variable language_">self</span>.mem_pos_emb = nn.Parameter(torch.randn(<span class="number">4</span>, dim) * <span class="number">0.05</span>)  <span class="comment"># K_train=4 槽</span></span><br><span class="line"><span class="comment"># 引擎侧：当前帧 PE 与记忆 PE 拼接后随 LSTT 读取一起送入注意力</span></span><br><span class="line">temporal_pos_emb = torch.cat((<span class="variable language_">self</span>.AOT.cur_pos_emb, <span class="variable language_">self</span>.AOT.mem_pos_emb), dim=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="我的理解-1"><a href="#我的理解-1" class="headerlink" title="我的理解"></a>我的理解</h4><p>temporal PE 的巧妙点在于”训练长度对齐”：AOT 训练时记忆只有约 4-5 帧，若用全局帧号或 SinCos 高频编码，推理时 K 很大或索引漂移会让 PE 超出训练分布（Ablation Table 5：无 RM 时加 SinCos PE 反而掉分 37.2 vs 37.0）。相对索引 + 最近邻插值 + 可学习向量（适合少量离散槽位）三者缺一不可。它证明了”限制记忆”不只是效率手段，而是打开训练&#x2F;推理对齐设计空间的钥匙。</p>
+<hr>
+<h3 id="3-4-论文与代码对照"><a href="#3-4-论文与代码对照" class="headerlink" title="3.4 论文与代码对照"></a>3.4 论文与代码对照</h3><table>
+<thead>
+<tr>
+<th>Paper Module</th>
+<th>Code File</th>
+<th>Class &#x2F; Function</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AOT&#x2F;DeAOT baseline</td>
+<td><code>aot_plus/networks/models/aot.py</code>, <code>models/deaot.py</code></td>
+<td><code>AOT</code>, <code>DeAOT</code></td>
+<td>ResNet-50 encoder + LSTT decoder</td>
+</tr>
+<tr>
+<td>LSTT 解码器（记忆读取）</td>
+<td><code>aot_plus/networks/layers/transformer.py</code></td>
+<td><code>LongShortTermTransformer</code>, <code>LSTT</code></td>
+<td>长&#x2F;短期记忆 cross-attention</td>
+</tr>
+<tr>
+<td>受限记忆库 (Eq.3)</td>
+<td><code>aot_plus/networks/layers/transformer.py</code></td>
+<td><code>restrict_long_memories</code> (line 324)</td>
+<td>容量限制 + 淘汰帧</td>
+</tr>
+<tr>
+<td>UCB 记忆更新 (Eq.4)</td>
+<td><code>aot_plus/networks/layers/transformer.py</code></td>
+<td><code>restrict_long_memories</code> (line 377 <code># UCB</code>)</td>
+<td>relevance(attn 分数) + freshness(停留时间)</td>
+</tr>
+<tr>
+<td>Temporal PE (Eq.6-7)</td>
+<td><code>aot_plus/networks/models/aot.py</code></td>
+<td><code>AOT.__init__</code> (<code>mem_pos_emb</code>, <code>cur_pos_emb</code>)</td>
+<td>可学习 4 槽 temporal PE</td>
+</tr>
+<tr>
+<td>记忆更新触发</td>
+<td><code>aot_plus/networks/engines/aot_engine.py</code></td>
+<td><code>AOTEngine.update_short_term_memory</code> (line 327)</td>
+<td>每 long_term_mem_gap 帧调用 restrict</td>
+</tr>
+<tr>
+<td>配置</td>
+<td><code>configs/models/r50_aotl.py</code>, <code>configs/pre_vost_2.py</code></td>
+<td><code>USE_TEMPORAL_POSITIONAL_EMBEDDING</code>, <code>DATA_SEQ_LEN=17</code></td>
+<td>开关 temporal PE &#x2F; 训练序列长度</td>
+</tr>
+<tr>
+<td>推理&#x2F;训练入口</td>
+<td><code>aot_plus/tools/eval.py</code>, <code>tools/train.py</code></td>
+<td><code>--former_mem_len 1 --latter_mem_len 8</code></td>
+<td>记忆容量 K&#x3D;8</td>
+</tr>
+</tbody></table>
+<h4 id="论文和代码不一致的地方"><a href="#论文和代码不一致的地方" class="headerlink" title="论文和代码不一致的地方"></a>论文和代码不一致的地方</h4><ul>
+<li>论文 Eq.4 的 UCB 是 $O_j &#x3D; R_j + \sqrt{(2\log T)&#x2F;t_j}$；代码实现为 $\text{attn_weight} + 1.5\sqrt{\log(\sum t)&#x2F;(t+8)}$，常数（add_item&#x3D;8, mul_item&#x3D;1.5）与 $\sqrt{2}$ 系数不同——论文写的是原理示意，代码是调过的版本。</li>
+<li>论文说 “the sum of scores as the relevance”；代码里 relevance 额外乘了前景概率（<code>foreground_proba</code>）并做 0.8 移动平均——细节未在论文正文展开。</li>
+<li>论文正文说 temporal PE 用 “nearest neighbor” 插值且槽位数为 K_train（未给具体值）；代码固定为 4 槽（<code>TEMPORAL_POSITIONAL_EMBEDDING_SLOT_4=True</code>），训练序列长度 DATA_SEQ_LEN&#x3D;17。</li>
+<li>论文摘要&#x2F;正文强调”限制到 8 帧”；代码通过 eval 参数 <code>--latter_mem_len 8</code> 与 <code>--former_mem_len 1</code> 实现（默认后者是 9999&#x3D;不限制，需显式传参）。</li>
+</ul>
+<hr>
+<h3 id="3-5-训练与推理"><a href="#3-5-训练与推理" class="headerlink" title="3.5 训练与推理"></a>3.5 训练与推理</h3><h4 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Dataset:</span> <span class="string">VOST（pre_vost_2</span> <span class="string">阶段；从</span> <span class="string">AOT/DeAOT</span> <span class="string">官方</span> <span class="string">DAVIS+YouTubeVOS</span> <span class="string">预训练权重继续训练）</span></span><br><span class="line"><span class="attr">Resolution:</span> <span class="string">由</span> <span class="string">configs/default.py</span> <span class="string">决定（VOST</span> <span class="string">视频原分辨率采样）</span></span><br><span class="line"><span class="attr">Epoch:</span> <span class="string">TRAIN_TOTAL_STEPS=20000</span> <span class="string">iterations（从</span> <span class="number">80000</span> <span class="string">步的</span> <span class="string">YTB_DAV</span> <span class="string">预训练权重出发）</span></span><br><span class="line"><span class="attr">Batch Size:</span> <span class="number">8</span><span class="string">（train_vost.sh,</span> <span class="number">4</span> <span class="string">卡）</span></span><br><span class="line"><span class="attr">Optimizer:</span> <span class="string">AOT</span> <span class="string">官方</span> <span class="string">AdamW</span> <span class="string">配置（configs/default.py），EMA</span> <span class="string">更新（checkpoint</span> <span class="string">名含</span> <span class="string">ema_20000）</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="number">4</span> <span class="string">卡（train_vost.sh:</span> <span class="string">gpu_num=4,</span> <span class="string">devices=1,2,3,4）</span></span><br><span class="line"><span class="attr">Training Time:</span> <span class="string">论文未报告（20000</span> <span class="string">步微调）</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Input（首帧 mask 引导）</span><br><span class="line">→ Encoder 提取特征 F_t</span><br><span class="line">→ LSTT 读取记忆（KV 已加 temporal PE）</span><br><span class="line">→ Decoder 出 mask</span><br><span class="line">→ 记忆更新：每 long_term_mem_gap 帧调用 restrict_long_memories（UCB 淘汰后并入新帧）</span><br><span class="line">→ 输出 mask</span><br></pre></td></tr></table></figure>
+
+<h4 id="Complexity"><a href="#Complexity" class="headerlink" title="Complexity"></a>Complexity</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Params: 论文未报告（AOT/DeAOT R50 backbone, 与 baseline 相同 + 4×256 可学习 PE 参数，可忽略）</span><br><span class="line">FLOPs: 论文未报告</span><br><span class="line">FPS / Latency: DAVIS-17 上 AOT+RMem 15.57 FPS（AOT 13.67）; DeAOT+RMem 27.42（DeAOT 25.11）</span><br><span class="line">Hardware: DAVIS-17 显存：AOT 4.46G→2.34G, DeAOT 2.24G→1.53G（受限记忆反而省显存）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h2><h3 id="数据集与指标"><a href="#数据集与指标" class="headerlink" title="数据集与指标"></a>数据集与指标</h3><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Metric</th>
+<th>Setting</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>VOST</td>
+<td>J（全视频 Jaccard）、Jtr（最后 25% 帧，对应状态变化）</td>
+<td>&gt;700 视频，目标状态变化（切片、形状变换、遮挡、拥挤）</td>
+</tr>
+<tr>
+<td>Long Videos</td>
+<td>J&amp;F, J, F</td>
+<td>3 个验证视频，每段 &gt;1000 帧</td>
+</tr>
+<tr>
+<td>DAVIS 2017</td>
+<td>J&amp;F</td>
+<td>常规短视频（验证通用性）</td>
+</tr>
+<tr>
+<td>YouTubeVOS &#x2F; LVOS</td>
+<td>J&amp;F（补充）</td>
+<td>预训练与常规基准</td>
+</tr>
+</tbody></table>
+<h3 id="主要结果"><a href="#主要结果" class="headerlink" title="主要结果"></a>主要结果</h3><blockquote>
+<p>最值得关注的结果：<strong>VOST：DeAOT+RMem Jtr 40.4 &#x2F; J 51.8</strong>（baseline DeAOT 37.6&#x2F;50.9），AOT+RMem 39.8&#x2F;50.5——即插即用提升 ~3 Jtr。<strong>Long Videos：DeAOT+RMem 91.5 J&amp;F</strong>（baseline 89.4），AOT+RMem 90.3（baseline 86.7，超过 XMem 89.8 且无定制算子）。<strong>DAVIS-17 不掉分</strong>（85.2→85.3）且显存减半、FPS 提升——说明限制记忆是通用改进而非只对长视频。</p>
+</blockquote>
+<h3 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h3><blockquote>
+<p>哪个模块贡献最大？<strong>“限制记忆库”本身</strong>（Table 3：仅 RM 就 +1.6 Jtr&#x2F;+1.0 J），temporal PE 次之（+1.1&#x2F;+0.1），UCB 更新再 +0.1~0.4。Figure 4 显示记忆容量有最优值：8 帧最好（J 50.3&#x2F;Jtr 38.7），12 帧开始下降，20 帧接近不限（37.0&#x2F;49.3）——直接验证核心洞察。更新策略：UCB(relev+fresh) 39.4&#x2F;50.3 &gt; 删第 1 帧 38.6&#x2F;50.2 &gt; 随机 38.0&#x2F;50.0；删首帧最伤（35.9&#x2F;48.9）。temporal PE：learnable 39.7 &gt; SinCos 37.9 &gt; 无 PE 38.6。</p>
+</blockquote>
+<h3 id="失败案例"><a href="#失败案例" class="headerlink" title="失败案例"></a>失败案例</h3><blockquote>
+<p>论文未给显式 failure case 列表；Limitation 承认方法”适配记忆库到模块能力”，而未提升模块本身对大记忆库的解码能力（图 4 中 K 超过 8 后精度单调下降，说明解码能力是硬上限）。定性图（Figure 5）显示切番茄场景在目标分裂成小碎片时仍有失败风险（白像素为 VOST 标注的 ignored 区域）。</p>
+</blockquote>
+<h4 id="我认为失败的原因"><a href="#我认为失败的原因" class="headerlink" title="我认为失败的原因"></a>我认为失败的原因</h4><ul>
+<li>目标分裂&#x2F;剧烈形变时，帧级 relevance（整帧注意力分数之和）无法定位”哪个区域状态变了”——帧粒度太粗，无法应对目标内部的状态变化（切片后各碎片独立运动）。</li>
+<li>受限记忆是”内容过滤”而非”内容融合”：若 K 帧内都缺目标新状态（状态变化发生在两次记忆更新之间），解码照样失败；对用户关心的”目标从大变小的跨视角场景”，若视角切换后新尺度外观与库内所有帧都不同，relevance 会错选帧。</li>
+<li>依赖 AOT 的注意力分数作为 relevance 代理，而该分数本身受训练分布影响，跨数据集泛化时代理质量下降。</li>
+</ul>
+<hr>
+<h3 id="论文图示（截图）"><a href="#论文图示（截图）" class="headerlink" title="论文图示（截图）"></a>论文图示（截图）</h3><p><img src="https://20020730.xyz/images/tracking/rmem/fig2.webp" alt="Figure 2: Sketch of Pilot Study. Our memory deciphering analysis emulates decoding the mask on frame 0 from the memory bank features to q..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/rmem/fig4.webp" alt="Figure 4: Impact of memory bank size on VOS, tested on VOST. With more frames in the restricted memory, the accuracy first in- creases an..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/rmem/fig5.webp" alt="Figure 5: (Best viewed zoom-in with color.) Qualitative VOS results for object state changes on VOST [34]. We provide two examples showin..." loading="lazy"></p>
+<h2 id="5-复现指南"><a href="#5-复现指南" class="headerlink" title="5. 复现指南"></a>5. 复现指南</h2><p><strong>Repository</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">GitHub: https://github.com/Restricted-Memory/RMem</span><br><span class="line">Commit: 9395801aa6db5c6c05288ec49466d1f735bc4a34 (2026-06-19)</span><br><span class="line">Checkpoint: aot_plus/pretrain_models/（README 提供 AOT/DeAOT vanilla 与 +RMem 四个权重，Google Drive）</span><br></pre></td></tr></table></figure>
+
+<p><strong>Environment</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Python:</span> <span class="string">未指定（pytorch.org</span> <span class="string">官方安装对应版本）</span></span><br><span class="line"><span class="attr">PyTorch:</span> <span class="string">与机器匹配的版本（README</span> <span class="string">要求自行选择）</span></span><br><span class="line"><span class="attr">CUDA:</span> <span class="string">未指定</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="string">官方实验</span> <span class="number">4</span> <span class="string">卡</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键运行命令</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 环境依赖（README）</span></span><br><span class="line">conda install numpy matplotlib scipy scikit-learn tqdm pyyaml pandas</span><br><span class="line">pip install opencv-python timm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 评估（用官方 checkpoint 复现 VOST）</span></span><br><span class="line"><span class="built_in">cd</span> ./aot_plus</span><br><span class="line">./eval_vost.sh   <span class="comment"># 内部: python tools/eval.py ... --ckpt_path pretrain_models/aotplus_R50_DeAOTL_Temp_pe_Slot_4_ema_20000.pth --latter_mem_len 8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练（从 AOT 官方 YTB_DAV 权重出发微调）</span></span><br><span class="line"><span class="built_in">cd</span> ./aot_plus</span><br><span class="line">./train_vost.sh  <span class="comment"># stage=pre_vost_2, 20000 步, batch 8, 4 卡</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="复现结果"><a href="#复现结果" class="headerlink" title="复现结果"></a>复现结果</h4><p>README 给出官方 checkpoint 结果：R50 AOTL+RMem 39.8&#x2F;50.5（Jtr&#x2F;J），R50 DeAOTL+RMem 40.4&#x2F;51.8——与论文 Table 1 一致；<code>eval_vost.sh</code> 一键复现（需先下载 VOST 数据并按 README 目录结构软链）。</p>
+<h4 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h4><ul>
+<li>VOST 数据集需从 vostdataset.org 申请下载，官方只提供软链方式组织目录。</li>
+<li><code>eval_vost.sh</code> 中 <code>--eval_name</code> 默认 “debug”、模型默认 r50_deaotl；复现 AOT 需手动改 model 与 ckpt_path（README 有说明）。</li>
+<li>依赖 AOT-benchmark 生态（<code>networks/</code> 为改造版 AOT 代码），与其他 VOS 代码库（如 Cutie）不互通；<code>--latter_mem_len 8</code> 必须显式传入，默认 9999 是无限记忆（baseline 行为）。</li>
+</ul>
+<hr>
+<h2 id="6-批判性思考"><a href="#6-批判性思考" class="headerlink" title="6. 批判性思考"></a>6. 批判性思考</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li><strong>研究范式好</strong>：先用受控实验（memory deciphering）拿到”记忆扩张伤害解码”的可量化证据，再据此做最小改动——insight 先行、架构从简。</li>
+<li><strong>即插即用</strong>：以帧为粒度限制记忆（不拆像素&#x2F;区域），可直接套到 AOT&#x2F;DeAOT，论文还验证了对精度与显存的双重收益。</li>
+<li>temporal PE 的”训练&#x2F;推理对齐”视角（相对索引、最近邻插值、可学习向量）有通用价值。</li>
+</ul>
+<h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><ul>
+<li>只在 AOT&#x2F;DeAOT 上验证；对 XMem 式分层记忆、SAM2 式 object pointer 记忆是否成立未实验。</li>
+<li>帧级 relevance 粒度粗：目标状态变化发生在帧内区域时（切片、分裂），帧级分数无法定位问题区域。</li>
+<li>K&#x3D;8 是经验值，无自适应机制；目标尺度剧变（无人机视角）下库内帧的”尺度覆盖”可能不足。</li>
+<li>论文未报推理速度的整体开销（除 DAVIS 表外），长视频上的额外注意力成本分析缺失。</li>
+</ul>
+<h3 id="我最关心的问题"><a href="#我最关心的问题" class="headerlink" title="我最关心的问题"></a>我最关心的问题</h3><ol>
+<li>用户场景：cross_view_vtuav 中目标从大变小——<strong>尺度变化是否比状态变化更依赖”帧选择”</strong>？RMem 的 relevance 只反映”与当前帧外观的相似度”，对尺度剧变帧可能选错参考。</li>
+<li>跨视角切换后，帧 0（固定保留）来自旧视角，其外观与新视角差异大时，<code>former_mem_len=1</code> 的永驻策略是否变成负担？</li>
+<li>UCB 的 freshness 项在长视频中是否会让”关键但久远的帧”（如首次出现干扰物的帧）被过早淘汰，损害抗干扰？</li>
+</ol>
+<h3 id="可以迁移到我的研究中的部分"><a href="#可以迁移到我的研究中的部分" class="headerlink" title="可以迁移到我的研究中的部分"></a>可以迁移到我的研究中的部分</h3><ul>
+<li><strong>DAM4SAM 记忆库瘦身</strong>：直接借鉴”限制容量 + 帧级淘汰”：在 SAM2 的 memory bank（默认 FIFO 最近 N 帧）上实现 RMem 式选择——用 SAM2 已有的 predicted IoU &#x2F; occlusion 分数作为 relevance（无需额外注意力分数），淘汰低质量帧。这对跨视角场景尤其重要：视角切换后大量”旧视角帧”应被淘汰而非按 FIFO 慢慢滚出。</li>
+<li><strong>memory deciphering 诊断法</strong>：把”解码首帧 mask”的受控实验搬到 DAM4SAM 的跨视角场景：固定首帧（参考视角），在目标从大变小的帧上测解码质量，量化”尺度漂移导致记忆解码失效”的曲线——这能为用户的问题给出量化证据。</li>
+<li><strong>temporal PE</strong>：DAM4SAM 若做多镜头&#x2F;多视角拼接，记忆库中帧的”镜头归属”比”时间顺序”更关键——可把 RMem 的 temporal PE 泛化为”view embedding”（相对镜头索引的可学习向量），在记忆读取中显式编码视角。</li>
+</ul>
+<h3 id="新想法"><a href="#新想法" class="headerlink" title="新想法"></a>新想法</h3><ol>
+<li><strong>尺度感知的帧淘汰（Scale-aware UCB）</strong>：把 relevance 从纯外观相似度改为”外观相似度 × 尺度相似度”（如 mask 面积比），使记忆库倾向保留与当前目标尺度相近的帧——直接解决用户”目标从大变小”时旧尺度帧霸占记忆的问题；freshness 项改为”距上次同尺度帧出现的时间”。</li>
+<li><strong>视角重置门控</strong>：用帧间 mask 面积&#x2F;位置突变（跨视角切换的信号）触发记忆库”硬重置”（只留帧 0 + 新视角最近帧），与 RMem 的永驻帧 0 策略互补——旧视角帧 0 在新视角下应降权或替换为”跨视角参考帧”。</li>
+<li><strong>干扰物专用槽位</strong>：在 K&#x3D;8 中预留 1-2 个”distractor 槽”（强制保留最高干扰分数的帧），使记忆库同时携带”目标状态”与”干扰物外观”，配合淘汰策略保证干扰物模板不丢失——把 RMem 的纯目标记忆升级为 target+distractor 双记忆。</li>
+</ol>
+<hr>
+<h2 id="7-深度阅读标注"><a href="#7-深度阅读标注" class="headerlink" title="7. 深度阅读标注"></a>7. 深度阅读标注</h2><p>本节暂无额外阅读标注。</p>
+<hr>
+<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h2><h3 id="三句话总结"><a href="#三句话总结" class="headerlink" title="三句话总结"></a>三句话总结</h3><ol>
+<li><strong>Problem：</strong> 主流 VOS 无限扩张记忆库，冗余信息使模块难以解码相关特征（注意力分数 0.247→0.056），在状态变化与长视频基准上成为瓶颈。</li>
+<li><strong>Method：</strong> RMem 用 memory deciphering 实验证明该洞察，然后把记忆库限制到 8 帧，用 UCB 分数（attention 分数 relevance + 停留时间 freshness）淘汰帧，并引入可学习 temporal PE 显式编码帧顺序。</li>
+<li><strong>Result：</strong> VOST 上 DeAOT+RMem 达 40.4 Jtr&#x2F;51.8 J（+3 分），Long Videos 91.5 J&amp;F 超 XMem，DAVIS 不掉分且显存减半、FPS 提升。</li>
+</ol>
+<h3 id="一句话评价"><a href="#一句话评价" class="headerlink" title="一句话评价"></a>一句话评价</h3><p>“记忆越少越准”这一反直觉结论配以严谨的受控实验和三个极简改动，是 insight-driven 研究的范例，值得每个做记忆管理的人精读。</p>
+<h3 id="是否值得复现？"><a href="#是否值得复现？" class="headerlink" title="是否值得复现？"></a>是否值得复现？</h3><ul>
+<li>⭐⭐⭐⭐ 值得复现</li>
+</ul>
+<p>理由：改动极小（推理侧记忆管理 + 少量 PE 参数），可直接套在 AOT&#x2F;DeAOT 上验证；对 DAM4SAM 的记忆库管理有直接借鉴（SAM2 的 FIFO 记忆同样存在冗余问题），且官方 checkpoint 一键可跑。扣一星是因为只在 AOT 系验证、与 SAM2 生态集成需要自行适配。</p>
+<hr>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/c4b9bce1/" title="论文阅读｜RMem: Restricted Memory Banks Improve Video Object Segmentation">https://20020730.xyz/posts/c4b9bce1/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/6ceb3d59/" rel="prev" title="论文阅读｜Robust Promptable Video Object Segmentation"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">论文阅读｜Robust Promptable Video Object Segmentation</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/b48da836/" rel="next" title="论文阅读｜ObjectRelator: Enabling Cross-View Object Relation Understanding Across Ego-Centric and Exo-Centric Perspectives"><span class="post-nav-text">论文阅读｜ObjectRelator: Enabling Cross-View Object Relation Understanding Across Ego-Centric and Exo-Centric Perspectives</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
+  display: none;
+}</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
+  //- hide all
+  document.querySelectorAll('.toggle-comment-btn').forEach((btn) => {
+    const container = document.querySelector(btn.dataset.target);
+    if (container) {
+      container.style.display = "none";
+    }
+  });
+}
+function showComment(target) {
+  hideAllComment();
+  //- show target
+  const targetContainer = document.querySelector(target);
+  if (targetContainer) {
+    targetContainer.style.display = "block";
+  }
+}
+</script></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/posts/c4b9bce1/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="Wanglihan954/disscussion" issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async></script></div></main><aside class="right-sidebar"><div id="post-toc-wrap" style="display:block; opacity:1; visibility:visible;"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">论文信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">摘要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E8%B5%84%E6%BA%90"><span class="toc-number">2.</span> <span class="toc-text">论文资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%A0%94%E7%A9%B6%E5%8A%A8%E6%9C%BA"><span class="toc-number">3.</span> <span class="toc-text">1. 研究动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">要解决什么问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">现有方法的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E8%80%85%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">3.3.</span> <span class="toc-text">作者的核心思路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="toc-number">4.</span> <span class="toc-text">2. 主要贡献</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E7%9C%9F%E6%AD%A3%E7%9A%84%E6%96%B0%E6%84%8F"><span class="toc-number">4.1.</span> <span class="toc-text">我认为真正的新意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">3. 方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%95%B4%E4%BD%93%E6%A1%86%E6%9E%B6"><span class="toc-number">5.1.</span> <span class="toc-text">3.1 整体框架</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">整体流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Core-Module-1-%E2%80%94-%E5%8F%97%E9%99%90%E8%AE%B0%E5%BF%86%E5%BA%93-UCB-%E5%B8%A7%E6%B7%98%E6%B1%B0%EF%BC%88Memory-Update%EF%BC%89"><span class="toc-number">5.2.</span> <span class="toc-text">3.2 Core Module 1 — 受限记忆库 + UCB 帧淘汰（Memory Update）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F"><span class="toc-number">5.2.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95"><span class="toc-number">5.2.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F"><span class="toc-number">5.2.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AF%B9%E5%BA%94"><span class="toc-number">5.2.4.</span> <span class="toc-text">代码对应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.5.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Core-Module-2-%E2%80%94-Temporal-Positional-Embedding-temporal-PE"><span class="toc-number">5.3.</span> <span class="toc-text">3.3 Core Module 2 — Temporal Positional Embedding (temporal PE)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95-1"><span class="toc-number">5.3.1.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F-1"><span class="toc-number">5.3.2.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AF%B9%E5%BA%94-1"><span class="toc-number">5.3.3.</span> <span class="toc-text">代码对应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3-1"><span class="toc-number">5.3.4.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E8%AE%BA%E6%96%87%E4%B8%8E%E4%BB%A3%E7%A0%81%E5%AF%B9%E7%85%A7"><span class="toc-number">5.4.</span> <span class="toc-text">3.4 论文与代码对照</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%92%8C%E4%BB%A3%E7%A0%81%E4%B8%8D%E4%B8%80%E8%87%B4%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="toc-number">5.4.1.</span> <span class="toc-text">论文和代码不一致的地方</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="toc-number">5.5.</span> <span class="toc-text">3.5 训练与推理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Training"><span class="toc-number">5.5.1.</span> <span class="toc-text">Training</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Inference"><span class="toc-number">5.5.2.</span> <span class="toc-text">Inference</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Complexity"><span class="toc-number">5.5.3.</span> <span class="toc-text">Complexity</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.</span> <span class="toc-text">4. 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8E%E6%8C%87%E6%A0%87"><span class="toc-number">6.1.</span> <span class="toc-text">数据集与指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="toc-number">6.2.</span> <span class="toc-text">主要结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.3.</span> <span class="toc-text">消融实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E8%B4%A5%E6%A1%88%E4%BE%8B"><span class="toc-number">6.4.</span> <span class="toc-text">失败案例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E5%A4%B1%E8%B4%A5%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">6.4.1.</span> <span class="toc-text">我认为失败的原因</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%9B%BE%E7%A4%BA%EF%BC%88%E6%88%AA%E5%9B%BE%EF%BC%89"><span class="toc-number">6.5.</span> <span class="toc-text">论文图示（截图）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A4%8D%E7%8E%B0%E6%8C%87%E5%8D%97"><span class="toc-number">7.</span> <span class="toc-text">5. 复现指南</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">7.1.</span> <span class="toc-text">复现结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">7.2.</span> <span class="toc-text">遇到的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%89%B9%E5%88%A4%E6%80%A7%E6%80%9D%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">6. 批判性思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">8.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%80%E9%99%90"><span class="toc-number">8.2.</span> <span class="toc-text">局限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E6%9C%80%E5%85%B3%E5%BF%83%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">8.3.</span> <span class="toc-text">我最关心的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E8%BF%81%E7%A7%BB%E5%88%B0%E6%88%91%E7%9A%84%E7%A0%94%E7%A9%B6%E4%B8%AD%E7%9A%84%E9%83%A8%E5%88%86"><span class="toc-number">8.4.</span> <span class="toc-text">可以迁移到我的研究中的部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E6%83%B3%E6%B3%95"><span class="toc-number">8.5.</span> <span class="toc-text">新想法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%B7%B1%E5%BA%A6%E9%98%85%E8%AF%BB%E6%A0%87%E6%B3%A8"><span class="toc-number">9.</span> <span class="toc-text">7. 深度阅读标注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">8. 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%8F%A5%E8%AF%9D%E6%80%BB%E7%BB%93"><span class="toc-number">10.1.</span> <span class="toc-text">三句话总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AF%84%E4%BB%B7"><span class="toc-number">10.2.</span> <span class="toc-text">一句话评价</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%AF%E5%90%A6%E5%80%BC%E5%BE%97%E5%A4%8D%E7%8E%B0%EF%BC%9F"><span class="toc-number">10.3.</span> <span class="toc-text">是否值得复现？</span></a></li></ol></li></ol></div></div></div></aside><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 – 2026 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> 宁翰</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-04-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><!-- hexo injector body_end start --><script src="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/js/index.js"></script><script src="/js/nav-title-fit.js" defer></script><!-- hexo injector body_end end --></body></html>

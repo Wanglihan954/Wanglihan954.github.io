@@ -1,0 +1,528 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="宁翰"><meta name="copyright" content="宁翰"><meta name="generator" content="Hexo 8.1.1"><meta name="theme" content="hexo-theme-yun"><title>论文阅读｜SEATrack: Simple, Efficient, and Adaptive Multimodal Tracker | Seventh Knot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{"renderMathInElement":true,"strict":"ignore","output":"htmlAndMathml","displayMode":true,"trust":true},
+    ...undefined?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"20020730.xyz","root":"/","title":"世界需要七休日","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.xml"},"localsearch":{"enable":"fasle","trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://comment.20020730.xyz","comment":true,"visitor":true,"emoji":["//unpkg.com/@waline/emojis@1.1.0/weibo",{"name":"嗯呢漫布","folder":"/images/zzz-stickers","prefix":"bangboo-","type":"jpg","icon":"/images/zzz-stickers/bangboo-thanks.jpg","items":["gift","thanks","rest"]},{"name":"丽都漫步","folder":"/images/zzz-stickers","prefix":"lidu-","type":"png","icon":"/images/zzz-stickers/lidu-anby.png","items":["anby","nekomata","lycaon","rina","soldier11","wise"]}],"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="Seventh Knot" type="application/atom+xml"><link rel="stylesheet" href="/css/custom_theme.css?v=20260812-3"><link rel="stylesheet" href="/css/projects.css?v=20260817-1"><script src="/js/web-pet.js" defer></script><script src="/js/mobile-navigation.js" defer></script><script src="/js/home-intro.js?v=20260810-6" defer></script><meta name="description" content="多模态跟踪中的参数高效微调（PEFT）出现了一个令人担忧的趋势：最近的性能提升往往以膨胀的参数预算为代价，这从根本上侵蚀了 PEFT 的效率承诺。本文提出 SEATrack，一个 Simple、Efficient、Adaptive 的双流多模态跟踪器，从两个互补的视角解决这一性能-效率困境。首先，我们优先考虑 匹配响应的跨模态对齐 ——一个被忽视但关键的因素，我们论证它对打破这一权衡至关重要。…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读｜SEATrack: Simple, Efficient, and Adaptive Multimodal Tracker">
+<meta property="og:url" content="https://20020730.xyz/posts/8731bb69/index.html">
+<meta property="og:site_name" content="Seventh Knot">
+<meta property="og:description" content="多模态跟踪中的参数高效微调（PEFT）出现了一个令人担忧的趋势：最近的性能提升往往以膨胀的参数预算为代价，这从根本上侵蚀了 PEFT 的效率承诺。本文提出 SEATrack，一个 Simple、Efficient、Adaptive 的双流多模态跟踪器，从两个互补的视角解决这一性能-效率困境。首先，我们优先考虑 匹配响应的跨模态对齐 ——一个被忽视但关键的因素，我们论证它对打破这一权衡至关重要。…">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/seatrack/fig1.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/seatrack/fig2.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/seatrack/fig3.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/seatrack/fig4.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/seatrack/fig5.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/seatrack/fig6.webp">
+<meta property="og:image" content="https://20020730.xyz/images/tracking/seatrack/fig7.webp">
+<meta property="article:published_time" content="2026-08-16T12:10:00.000Z">
+<meta property="article:modified_time" content="2026-08-16T15:00:00.000Z">
+<meta property="article:author" content="宁翰">
+<meta property="article:tag" content="AI论文">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="RGB-T">
+<meta property="article:tag" content="Tracking">
+<meta property="article:tag" content="文献笔记">
+<meta property="article:tag" content="视频目标跟踪">
+<meta property="article:tag" content="追踪">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://20020730.xyz/images/tracking/seatrack/fig1.webp"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><span class="nav-badge">INTER-KNOT // 20020730</span><div class="nav-left"><button class="nav-item" id="mobile-menu-btn" type="button" title="菜单" aria-label="打开菜单" aria-controls="site-overview-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:menu-line"></span></button><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="代理人档案"><span class="nav-mask-icon" style="--nav-mask-image: url('/images/bangboo-nav.png')" aria-hidden="true"></span></a><a class="nav-item desktop-only-icon" href="/projects/" title="项目终端"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">Seventh Knot</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">论文阅读｜SEATrack: Simple, Efficient, and Adaptive Multimodal Tracker</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" aria-hidden="true"></div><button id="mobile-toc-btn" type="button" title="文章目录" aria-label="打开文章目录" aria-controls="post-toc-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:list-unordered"></span></button><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
+  const navCenter = document.getElementById('nav-center');
+  if (navCenter && document.querySelector('.article-title')) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
+    });
+  }
+});
+</script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
+.search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.search-header { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(150,150,150,0.1); }
+.search-header input { flex: 1; border: none; background: transparent; outline: none; font-size: 1.1rem; color: var(--hty-text-color); margin: 0 15px; }
+.search-header .close-btn { cursor: pointer; font-size: 1.4rem; opacity: 0.6; transition: all 0.2s; }
+.search-header .close-btn:hover { opacity: 1; color: var(--hty-primary-color); transform: rotate(90deg); }
+.search-results { overflow-y: auto; padding: 10px 24px 20px; }
+.search-result-item { display: block; padding: 15px 0; border-bottom: 1px dashed rgba(150,150,150,0.1); text-decoration: none; color: var(--hty-text-color); transition: all 0.2s; }
+.search-result-item:hover { transform: translateX(5px); }
+.search-result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--hty-primary-color); }
+.search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
+.search-keyword { color: #ff5252; font-weight: bold; }
+</style><script>let mySearchData = null;
+window.openMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('my-search-input').focus(), 100);
+  if (!mySearchData) {
+    fetch('/search.xml').then(res => res.text()).then(str => {
+      const parser = new DOMParser();
+      const entries = parser.parseFromString(str, "text/xml").getElementsByTagName("entry");
+      mySearchData = Array.from(entries).map(entry => ({
+        title: entry.getElementsByTagName('title')[0]?.textContent || '',
+        content: entry.getElementsByTagName('content')[0]?.textContent.replace(/<[^>]+>/g, '') || '',
+        url: entry.getElementsByTagName('url')[0]?.textContent || ''
+      }));
+    }).catch(err => console.error("搜索数据加载失败:", err));
+  }
+};
+window.closeMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'none';
+  document.getElementById('my-search-input').value = '';
+  document.getElementById('my-search-results').innerHTML = '';
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('my-search-input');
+  if(input) {
+    input.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+      const results = document.getElementById('my-search-results');
+      if (!keyword) { results.innerHTML = ''; return; }
+      if (!mySearchData) return;
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
+      results.innerHTML = matched.map(item => {
+        const reg = new RegExp(keyword, 'gi');
+        const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        let content = item.content;
+        const index = content.toLowerCase().indexOf(keyword);
+        if (index > -1) {
+          let start = Math.max(0, index - 30);
+          let end = Math.min(content.length, index + 30);
+          content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+          content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        } else { content = content.substring(0, 60) + '...'; }
+        return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
+      }).join('');
+    });
+  }
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">57</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">78</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/8731bb69/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">论文阅读｜SEATrack: Simple, Efficient, and Adaptive Multimodal Tracker</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-08-16 20:10:00" itemprop="dateCreated datePublished" datetime="2026-08-16T20:10:00+08:00">2026-08-16</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">8.3k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">33m</span></span></span><span class="leancloud_visitors" id="/posts/8731bb69/" data-flag-title="论文阅读｜SEATrack: Simple, Efficient, and Adaptive Multimodal Tracker"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/8731bb69/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">文献阅读</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/Tracking/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Tracking</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%96%87%E7%8C%AE%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">文献笔记</span></a><a class="tag-item" href="/tags/AI%E8%AE%BA%E6%96%87/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">AI论文</span></a><a class="tag-item" href="/tags/Tracking/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Tracking</span></a><a class="tag-item" href="/tags/%E8%BF%BD%E8%B8%AA/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">追踪</span></a><a class="tag-item" href="/tags/RGB-T/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">RGB-T</span></a><a class="tag-item" href="/tags/CVPR/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">CVPR</span></a><a class="tag-item" href="/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">视频目标跟踪</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p>本文基于论文、补充材料与公开代码整理。文中的“我的理解”和“批判性思考”属于个人分析；<br>论文插图均来自原论文或补充材料，仅用于学习与讨论。</p>
+</blockquote>
+<h2 id="论文信息"><a href="#论文信息" class="headerlink" title="论文信息"></a>论文信息</h2><p><strong>Title:</strong> SEATrack: Simple, Efficient, and Adaptive Multimodal Tracker<br><strong>Authors:</strong> Junbin Su, Ziteng Xue, Shihui Zhang, Kun Chen, Weiming Hu, Zhipeng Zhang（苏俊斌 &#x2F; 薛子腾 &#x2F; 张世辉 &#x2F; 陈坤 &#x2F; 胡卫明 &#x2F; 张志成；燕山大学、北航、中科院自动化所 MAIS、国科大、上海交大 AutoLab）<br><strong>Venue:</strong> CVPR 2026 (Oral)<br><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/AutoLab-SAI-SJTU/SEATrack%EF%BC%88%E7%BD%91%E7%BB%9C%E5%8F%97%E9%99%90%E6%9C%AA%E6%8A%93%E5%8F%96%E9%AA%8C%E8%AF%81%EF%BC%8C%E9%93%BE%E6%8E%A5%E4%B8%BA%E7%94%A8%E6%88%B7%E6%8F%90%E4%BE%9B%EF%BC%89">https://github.com/AutoLab-SAI-SJTU/SEATrack（网络受限未抓取验证，链接为用户提供）</a>  </p>
+<h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>多模态跟踪中的参数高效微调（PEFT）出现了一个令人担忧的趋势：最近的性能提升往往以膨胀的参数预算为代价，这从根本上侵蚀了 PEFT 的效率承诺。本文提出 SEATrack，一个 Simple、Efficient、Adaptive 的双流多模态跟踪器，从两个互补的视角解决这一性能-效率困境。首先，我们优先考虑<strong>匹配响应的跨模态对齐</strong>——一个被忽视但关键的因素，我们论证它对打破这一权衡至关重要。具体地，我们观察到现有双流方法中的模态特异性偏差产生<strong>相互冲突的匹配注意力图</strong>，阻碍了有效的联合表示学习。为缓解此问题，我们提出 <strong>AMG-LoRA</strong>：将低秩适配（LoRA）用于域自适应，与自适应互引导（Adaptive Mutual Guidance, AMG）无缝结合，动态细化和对齐跨模态注意力图。随后我们跳出传统局部融合，提出<strong>层级混合专家（HMoE）</strong>，实现高效的全局关系建模，在跨模态融合的表达力与计算效率间取得平衡。凭借这些创新，SEATrack 在 RGB-T、RGB-D、RGB-E 三类跟踪任务上取得了性能与效率平衡的新 SOTA。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="论文资源"><a href="#论文资源" class="headerlink" title="论文资源"></a>论文资源</h2><ul>
+<li><strong>Zotero:</strong> 未导入</li>
+<li><strong>PDF:</strong> <a href="../.papers/seatrack.pdf">Open PDF</a>（本地路径 <code>.papers/seatrack.pdf</code>，已确认存在）</li>
+<li><strong>Paper:</strong> <a target="_blank" rel="noopener" href="https://openaccess.thecvf.com/content/CVPR2026/html/Su_SEATrack_Simple_Efficient_and_Adaptive_Multimodal_Tracker_CVPR_2026_paper.html">CVF Open Access</a></li>
+<li><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/AutoLab-SAI-SJTU/SEATrack">https://github.com/AutoLab-SAI-SJTU/SEATrack</a></li>
+</ul>
+<hr>
+<h2 id="1-研究动机"><a href="#1-研究动机" class="headerlink" title="1. 研究动机"></a>1. 研究动机</h2><h3 id="要解决什么问题？"><a href="#要解决什么问题？" class="headerlink" title="要解决什么问题？"></a>要解决什么问题？</h3><blockquote>
+<p>在”冻结预训练 RGB 跟踪器（foundation tracker）骨干 + 少量可调参数”的 PEFT 范式下，做出一个性能与效率（参数&#x2F;速度）都站得住的多模态跟踪器，覆盖 RGB-T（热成像）、RGB-D（深度）、RGB-E（事件相机）三类任务。论文核心论断：现有 PEFT 方法为了追平 FFT 性能大幅膨胀参数（据称最高达先驱工作 ViPT [54] 的约 16 倍），违背了 PEFT 的效率初衷；出路不是继续加参数做更强的融合，而是解决一个被忽视的问题——<strong>跨模态注意力对齐</strong>。</p>
+</blockquote>
+<h3 id="现有方法的问题"><a href="#现有方法的问题" class="headerlink" title="现有方法的问题"></a>现有方法的问题</h3><ul>
+<li><strong>参数膨胀</strong>：最近 SOTA PEFT 方法 [10, 11, 35, 42]（OneTracker &#x2F; SDSTrack &#x2F; XTrack &#x2F; UnTrack）大幅增加可调参数，甚至达到先驱工作 ViPT [54] 的 16 倍以上（表中 SDSTrack 为 14.8M vs ViPT 0.8M），”PEFT 的效率承诺”名存实亡。</li>
+<li><strong>One-stream 架构的注意力偏移（attention shifting）</strong>：在混合模态输入上做 intra-modal 匹配时，预训练权重天然偏向 RGB 域；权重冻结时该域偏差无法泛化到混合分布，表现为错误的注意力偏移（Fig.1(a)）。论文引用 SDSTrack [11] 的结论：one-stream 不如 two-stream 鲁棒。</li>
+<li><strong>Two-stream 架构的注意力不一致（attention inconsistency）</strong>：域差距叠加模态可靠性动态变化（同一目标在不同场景下各模态的显著性不同，Fig.6），导致两个模态产生<strong>相互冲突的匹配注意力图</strong>，阻碍联合表示学习（Fig.1(b)）。</li>
+<li><strong>融合策略两难</strong>：attention 式融合（跨模态&#x2F;跨注意力）有全局感受野但二次复杂度；局部融合（ViPT 的 MCP、prompter 块等）效率高但缺全局感受野、表达力受限。</li>
+<li><strong>FFT 的两个固有缺陷</strong>：多模态数据有限时全量微调导致灾难性遗忘；计算成本高。</li>
+</ul>
+<h3 id="作者的核心思路"><a href="#作者的核心思路" class="headerlink" title="作者的核心思路"></a>作者的核心思路</h3><blockquote>
+<p>核心假设：<strong>多模态输入在时空上是配准的（spatio-temporally aligned），因此各模态 intra-modal 匹配的响应在原则上应当彼此一致</strong>。据此提出 alignment-before-fusion 的设计原则：(1) AMG-LoRA——用共享 LoRA 旁路做域自适应（Wk&#x2F;Wv），再用受 Classifier-Free Guidance (CFG) 启发的双向可学习线性插值动态对齐两模态的注意力图（一个模态当”无条件分支”，另一个当”条件分支”）；(2) HMoE——把模板对 &#x2F; 候选对 token 做 sub-token→token 两级软路由融合，全局感受野 + 线性复杂度，替代 quadratic 的 attention 融合。</p>
+</blockquote>
+<hr>
+<h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2. 主要贡献"></a>2. 主要贡献</h2><ol>
+<li><strong>Contribution 1：</strong> 提出 SEATrack，一个 Simple、Efficient、Adaptive 的两流多模态跟踪器（基于冻结的 OSTrack ViT-Base），在 RGB-T &#x2F; RGB-D &#x2F; RGB-E 三个任务的五个基准上取得性能-效率平衡的新 SOTA：仅 <strong>0.6M 可调参数</strong>、63.5 FPS、约 1GB 显存。</li>
+<li><strong>Contribution 2：</strong> 提出 AMG-LoRA，瞄准<strong>未被充分探索的跨模态注意力对齐</strong>问题：共享 LoRA 旁路（0.14M 参数）做域自适应，AMG 把对齐重写为 CFG 式的多分支权衡，双向可学习插值动态校准注意力图。消融显示其在 LasHeR &#x2F; DepthTrack &#x2F; VisEvent 上分别带来 18.3% &#x2F; 7.2% &#x2F; 6.1% 的 PR 增益，证明对齐是打破性能-效率困境的可行方向，可作为可靠 baseline。</li>
+<li><strong>Contribution 3：</strong> 提出 HMoE（0.46M 参数），一个高效的全局关系建模器：与已有 MoE 跟踪工作（SPMTrack [1]、eMoET [5]、XTrack [36] 的专家级集成）不同，HMoE 通过 sub-token 到 token 的<strong>层级软路由</strong>实现细粒度跨模态交互，比 attention 式融合快约 35% FPS（论文声称）且性能相当。</li>
+</ol>
+<h4 id="我认为真正的新意"><a href="#我认为真正的新意" class="headerlink" title="我认为真正的新意"></a>我认为真正的新意</h4><blockquote>
+<p><strong>把”对齐”而不是”融合”作为第一性矛盾</strong>。主流工作（ProTrack&#x2F;ViPT 的 prompt 融合、XTrack 的 MoE 聚合、SDSTrack 的注意力复用）都在融合阶段做文章；SEATrack 论证冲突的匹配注意力图才是病根，用 CFG 式双向插值在<strong>注意力图层面</strong>（softmax 之前）直接校准——这是一种”信号级”而非”特征级”的对齐，与 CAM 类注意力校正的思路同源但更轻。另一个亮点是共享 LoRA 旁路的设计：单一低秩旁路同时服务两个模态的 K&#x2F;V 投影，天然迫使两模态在低秩子空间共享匹配模式，算一种隐式对齐正则，且推理时可合并进原权重（零额外延迟）。HMoE 的”sub-token 级混合”也比专家级 MoE 粒度更细，是其能在线性复杂度下拿到全局感受野的关键。</p>
+</blockquote>
+<hr>
+<h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><h3 id="3-1-整体框架"><a href="#3-1-整体框架" class="headerlink" title="3.1 整体框架"></a>3.1 整体框架</h3><p><img src="https://20020730.xyz/images/tracking/seatrack/fig1.webp" alt="Figure 1: Figure 1. Previous frameworks v.s. SEATrack. (a) The previous one-stream method [54] suffers from attention shifting when per- forming in..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/seatrack/fig2.webp" alt="Figure 2: Figure 2. Overall pipeline of SEATrack. Input tokens from each modality are processed by stacked shared ViT encoders for intra-modal targ..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/seatrack/fig3.webp" alt="Figure 3: Figure 3. Architecture details of HMoE configured with e &#x3D; 4 experts, each containing h &#x3D; 2 heads." loading="lazy"></p>
+<p><strong>核心架构图</strong></p>
+<blockquote>
+<p>论文 Figure 2：冻结的 OSTrack 双流管线 + 每 2 层插入 AMG-LoRA 与 HMoE</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Input: RGB 模板 z_rgb ∈ R^&#123;Nz×D&#125; + RGB 搜索区域 c_rgb ∈ R^&#123;Nc×D&#125;</span><br><span class="line">       X 模态模板 z_X ∈ R^&#123;Nz×D&#125; + X 模态搜索区域 c_X ∈ R^&#123;Nc×D&#125;   （128×128 / 256×256）</span><br><span class="line">Patch Embedding → H_rgb = [z_rgb; c_rgb]，H_X = [z_X; c_X]（各自拼接）</span><br><span class="line">Stacked ViT Encoders（冻结的 foundation tracker [46]，双流共享权重）</span><br><span class="line">  └─ 每 2 层嵌入两个可学习组件：</span><br><span class="line">      ├─ AMG-LoRA（注意力对齐）：共享 LoRA 旁路（Wk/Wv）+ 双向可学习插值校准注意力图</span><br><span class="line">      └─ HMoE（跨模态融合）：对模板对 [z_rgb; z_X] 与候选对 [c_rgb; c_X] 做 sub-token→token 层级软路由</span><br><span class="line">搜索区域特征聚合：c_rgb 与 c_X 逐元素相加</span><br><span class="line">Prediction Head（继承自 foundation tracker）：3 个堆叠 Conv-BN-ReLU 块</span><br><span class="line">  └─ 目标中心得分图 / 中心坐标偏移 / bbox 尺寸</span><br><span class="line">Loss: L = L_focal + λ_iou·L_iou + λ_L1·L_1 （λ_iou=2, λ_L1=5）</span><br></pre></td></tr></table></figure>
+
+<h4 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h4><p>SEATrack 以 OSTrack [46] ViT-Base 为 foundation tracker：RGB 模板-搜索区域对经 patch embedding 后拼接为 H_rgb，过堆叠 ViT encoder 做模板-候选联合特征提取与匹配；X 模态（thermal&#x2F;depth&#x2F;event）完全复制该管线形成双流（Fig.2）。两个可学习组件 AMG-LoRA 与 HMoE 每 2 层嵌入 ViT encoder：前者负责把两个流在注意力图层面的匹配响应对齐，后者负责在 token 层面融合跨模态信息。最终两流搜索区域特征逐元素相加后送入预测头定位目标。训练时仅更新 AMG-LoRA 与 HMoE 参数（共 0.6M），foundation tracker 全程冻结。</p>
+<hr>
+<h3 id="3-2-Core-Module-1-—-AMG-LoRA：跨模态注意力对齐"><a href="#3-2-Core-Module-1-—-AMG-LoRA：跨模态注意力对齐" class="headerlink" title="3.2 Core Module 1 — AMG-LoRA：跨模态注意力对齐"></a>3.2 Core Module 1 — AMG-LoRA：跨模态注意力对齐</h3><h4 id="为什么需要？"><a href="#为什么需要？" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>预训练注意力层冻结后，两流各自的 intra-modal 匹配受 RGB 域偏差影响（Wk&#x2F;Wv 的投影空间偏向 RGB 分布），加上目标在各模态的显著性随场景动态变化（Fig.6 展示了不同场景下模型对各模态的感知能力漂移），产生<strong>冲突的匹配注意力图</strong>。若不做对齐，后端的融合只是把”互相矛盾的两张响应图”折中——这正是 joint representation learning 受阻的根源。固定对齐也不行：不可靠模态会反过来误导可靠模态（negative transfer），因此对齐必须是<strong>动态的、双向的</strong>。</p>
+<h4 id="核心做法"><a href="#核心做法" class="headerlink" title="核心做法"></a>核心做法</h4><p>两个部件（Fig.2 右上角”Attention with AMG-LoRA”）：</p>
+<ol>
+<li><strong>共享 LoRA 旁路</strong>：在注意力层的 Wk、Wv 投影矩阵上挂低秩旁路 AB（A ∈ R^{D×r}, B ∈ R^{r×D}）。训练时同一套 AB <strong>共享</strong>作用于 RGB 与 X 两个模态的输入（”serves as a shared bypass for RGB and X-modal inputs”），迫使两模态在低秩子空间学习共同的匹配模式；推理时低秩矩阵可合并回原权重（零额外延迟）。</li>
+<li><strong>AMG（自适应互引导）</strong>：受 Classifier-Free Guidance (CFG) [9] 启发，把对齐重写为多分支权衡问题——把一模态的判别先验当”无条件分支”，另一模态当”条件分支”，做<strong>双向可学习的线性插值</strong>：每个模态的注意力图 &#x3D; 自身注意力图 + 可学习权重 ×（另一模态注意力图 − 自身注意力图）。w_X 与 w_rgb 是两个可学习缩放因子，训练时初始化为 1（cross-guidance），以适应模态可靠性的动态变化。</li>
+</ol>
+<h4 id="关键公式"><a href="#关键公式" class="headerlink" title="关键公式"></a>关键公式</h4><p>$$<br>\tilde{K} &#x3D; \mathbf{H}<em>* W_k + \mathbf{H}</em>* AB, \qquad<br>\tilde{\textbf{attn}}<em>* &#x3D; \frac{(\mathbf{H}</em>* W_q)\tilde{K}}{\sqrt{D}}<br>\tag{2}<br>$$</p>
+<p>$$<br>\textbf{attn}<em>{rgb} &#x3D; \tilde{\textbf{attn}}</em>{rgb} + w_{X}(\tilde{\textbf{attn}}<em>{X}-\tilde{\textbf{attn}}</em>{rgb}), \qquad<br>\textbf{attn}<em>{X} &#x3D; \tilde{\textbf{attn}}</em>{X} + w_{rgb}(\tilde{\textbf{attn}}<em>{rgb}-\tilde{\textbf{attn}}</em>{X})<br>\tag{4}<br>$$</p>
+<p>其中 H_* 为任意模态的拼接 token，att̃tn_* 为 softmax 前的未归一化匹配注意力图；插值发生在 softmax 之前。</p>
+<h4 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h4><p>AMG 的 CFG 类比很关键：CFG 中无条件分支提供”先验”、条件分支提供”引导”，采样时两者加权；AMG 让每个模态既当对方的先验又当对方的引导——w 学到的是”我该在多大程度上相信对方的响应”。当热成像因光照变化失效时，w_rgb 驱动的”RGB 修正 X”方向权重会占主导；反之亦然（Fig.6 的 Case 2&#x2F;3 分别展示了 X Refines RGB 与 RGB Refines X 两种自适应方向）。公式 (4) 在 <strong>softmax 前</strong>做插值这点很讲究：归一化后注意力分布已经是竞争性分配的，插值会破坏”排他性”信息；归一化前的线性组合保留了各模态原始的响应强度对比。共享 LoRA 旁路则让”域自适应”与”对齐”合二为一——单一低秩子空间承担两模态的匹配模式学习，相当于参数级的隐式对齐。注意 w 推理时固定（非输入依赖），这是论文 Limitation 里承认的简化。</p>
+<hr>
+<h3 id="3-3-Core-Module-2-—-HMoE：层级混合专家融合"><a href="#3-3-Core-Module-2-—-HMoE：层级混合专家融合" class="headerlink" title="3.3 Core Module 2 — HMoE：层级混合专家融合"></a>3.3 Core Module 2 — HMoE：层级混合专家融合</h3><h4 id="为什么需要？-1"><a href="#为什么需要？-1" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>跨模态融合长期面临表达力 vs 效率的两难：attention 式融合（二次复杂度）表达力强但慢；局部融合（MCP 等，线性复杂度）快但缺全局感受野。已有 MoE 跟踪工作（SPMTrack [1]、eMoET [5]、XTrack [36]）把 MoE 当”专家级集成”做特征增强，粒度是整 token 的。论文想要一个<strong>全局感受野 + 线性复杂度 + 亚 token 粒度</strong>的融合器。</p>
+<h4 id="核心做法-1"><a href="#核心做法-1" class="headerlink" title="核心做法"></a>核心做法</h4><p>HMoE 在 Attention 与 FFN 子层之后插入（Fig.2），处理模板对或候选对的拼接 token 序列 X_in ∈ R^{N×D}（即 [z_rgb; z_X] 或 [c_rgb; c_X]）。结构（Fig.3，示例 e&#x3D;4 专家、h&#x3D;2 heads&#x2F;专家）：</p>
+<ol>
+<li><strong>低秩线性层 + 通道拆分</strong>：X_in 先过低秩线性层，每个 token 拆成 h 个 sub-token，得 X_split ∈ R^{(N·h)×(D&#x2F;h)}（式 5）。每个专家含 h 个 head，配一个可学习门控矩阵 Φ ∈ R^{(D&#x2F;h)×(e·h)} 度量输入与各 head 的亲和度。</li>
+<li><strong>Sub-token 级融合</strong>：X_mix &#x3D; softmax(X_split·Φ, dim&#x3D;0)ᵀ · X_split ∈ R^{(e·h)×(D&#x2F;h)}（式 6）——所有 N·h 个 sub-token 按与各 head 的亲和度加权混合成每个 head 的输入；各专家 f_i（低秩线性层 R^{D_h}→R^r→R^{D_h}, r≪D_h）处理后按 head 拼回专家级输出 Y_expert ∈ R^{e×D}（式 8）。</li>
+<li><strong>Token 级融合</strong>：把 X_split·Φ 的 (N·h)×(e·h) 亲和矩阵按不重叠的 h×h patch 聚合，重建 token→expert 亲和矩阵 A ∈ R^{N×e}（patchify 操作 F_p，式 9）；最终 Y_out &#x3D; A·Y_expert（式 10）——每个 token 从 e 个专家输出中按亲和度加权取回自己的表示。</li>
+</ol>
+<p>层级软路由 &#x3D; 两级 softmax：式 (6) 的 dim&#x3D;0 softmax 决定”哪些 sub-token 喂给哪个 head”，式 (9) 的 dim&#x3D;1 softmax 决定”每个 token 如何从专家输出取回信息”。</p>
+<h4 id="关键公式-1"><a href="#关键公式-1" class="headerlink" title="关键公式"></a>关键公式</h4><p>$$<br>\textbf{X}_{split} &#x3D; \mathcal{F}<em>s(\textbf{X}</em>{in})<br>\tag{5}<br>$$</p>
+<p>$$<br>\textbf{X}<em>{mix} &#x3D; \mathrm{softmax}(\textbf{X}</em>{split}\boldsymbol{\Phi},\ \text{dim}&#x3D;0)^{\mathsf{T}}\textbf{X}_{split}<br>\tag{6}<br>$$</p>
+<p>$$<br>\textbf{Y}^{i,j}<em>{head} &#x3D; f_i(\textbf{X}^{i,j}</em>{mix}),\quad i\in{1,\dots,e},\ j\in{1,\dots,h}, \qquad<br>\textbf{Y}_{expert} &#x3D; \mathcal{F}<em>m(\textbf{Y}</em>{head})<br>\tag{8}<br>$$</p>
+<p>$$<br>\textbf{A} &#x3D; \mathrm{softmax}(\mathcal{F}<em>{p}(\textbf{X}</em>{split}\boldsymbol{\Phi}),\ \text{dim}&#x3D;1), \qquad<br>\textbf{Y}<em>{out} &#x3D; \textbf{A}\textbf{Y}</em>{expert}<br>\tag{9, 10}<br>$$</p>
+<h4 id="我的理解-1"><a href="#我的理解-1" class="headerlink" title="我的理解"></a>我的理解</h4><p>HMoE 的”全局感受野”来自式 (6)：X_mix 的每一列是<strong>全部 N·h 个 sub-token 的加权混合</strong>，等价于在整条序列上做了一次”分组-聚合”——这是 attention 式全局交互的轻量替代，复杂度对 token 数 N 是<strong>线性</strong>的（Φ 的维度与 N 无关），这正是其相对 cross-attention 提速的来源。相比专家级 MoE（XTrack 等整 token 路由到某个专家），sub-token 拆分让”局部语义”（一个 token 的不同通道组分）也能走不同专家——粒度更细，语义破坏更小。Tab.4 也验证了这一点：h&#x3D;1 时层级融合退化为纯 token 级融合，性能明显下降（LasHeR PR 69.7 vs 71.6），”层级”是必要而非锦上添花。</p>
+<hr>
+<p><strong>论文机制图</strong></p>
+<p><img src="https://20020730.xyz/images/tracking/seatrack/fig4.webp" alt="Figure 4: Figure 4. LoRA v.s. AMG-LoRA across 19 challenging attributes on LasHeR [25]." loading="lazy"></p>
+<h3 id="3-4-论文与代码对照"><a href="#3-4-论文与代码对照" class="headerlink" title="3.4 论文与代码对照"></a>3.4 论文与代码对照</h3><blockquote>
+<p><strong>阅读说明</strong><br>论文正文仅声明 “Code is available”，未给出仓库地址与任何代码文件路径；本次阅读未核对源码。下表为按论文描述的模块→预期代码映射（基于用户提供的 GitHub 仓库），<strong>待复现时核对确认</strong>，与 CamSAM2 笔记的源码级对照不同。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Paper Module</th>
+<th>论文描述</th>
+<th>预期代码位置（未确认）</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>共享 LoRA 旁路</td>
+<td>Wk&#x2F;Wv 挂低秩旁路 AB，双流共享，推理可合并</td>
+<td>基础模型改动&#x2F;attention 层注入逻辑</td>
+<td>域自适应 + 隐式对齐（0.14M 的一部分）</td>
+</tr>
+<tr>
+<td>AMG 双向插值</td>
+<td>式 (4)：w_X&#x2F;w_rgb 可学习缩放因子（init&#x3D;1）</td>
+<td>AMG-LoRA 模块实现</td>
+<td>softmax 前动态对齐两模态注意力图</td>
+</tr>
+<tr>
+<td>HMoE sub-token 融合</td>
+<td>式 (5)(6)(8)：Φ 门控 + 低秩专家 + h heads</td>
+<td>HMoE 模块实现（e、h 可配）</td>
+<td>sub-token 级跨模态混合</td>
+</tr>
+<tr>
+<td>HMoE token 融合</td>
+<td>式 (9)(10)：patchify 重建 A → Y_out</td>
+<td>HMoE 模块实现（第二级路由）</td>
+<td>token 级专家输出加权取回</td>
+</tr>
+<tr>
+<td>预测头</td>
+<td>c_rgb+c_X 求和 → Conv-BN-ReLU×3 → 中心&#x2F;偏移&#x2F;尺寸</td>
+<td>继承 OSTrack 原头</td>
+<td>目标定位</td>
+</tr>
+<tr>
+<td>训练损失</td>
+<td>式 (11)：L_focal + 2·L_iou + 5·L_1</td>
+<td>训练脚本损失配置</td>
+<td>与 foundation tracker 同源损失</td>
+</tr>
+</tbody></table>
+<h4 id="论文中的疑点（非代码对照）"><a href="#论文中的疑点（非代码对照）" class="headerlink" title="论文中的疑点（非代码对照）"></a>论文中的疑点（非代码对照）</h4><ul>
+<li>正文称 AMG-LoRA 在 DepthTrack 上带来 <strong>7.2%</strong> 的 PR 增益，但 Tab.2 中 AMG-LoRA 相对基线（53.6→58.1）的 PR 增益为 <strong>4.5 点</strong>、RE 为 5.0 点、F-score 为 4.7 点——“7.2%”无法从表中任何指标直接对应，口径存疑（LasHeR 的 18.3% 与 VisEvent 的 6.1% 则精确对应 PR 绝对点数）。</li>
+<li>正文多处称 HMoE 相比 attention 式融合快”约 35% FPS”，但 Tab.6 数字（63.5 vs 41.2 FPS，含 AMG-LoRA）推算为约 <strong>54%</strong> 的 FPS 提升，35% 与表内口径不一致。</li>
+<li>表内 ProTrack 的 Learnable Parameters 为 “—“（未给出），正文”16 倍参数膨胀”的比较基准是 ViPT（0.8M），从表内数字看 SDSTrack 14.8M 约为其 18.5 倍。</li>
+</ul>
+<hr>
+<h3 id="3-5-训练与推理"><a href="#3-5-训练与推理" class="headerlink" title="3.5 训练与推理"></a>3.5 训练与推理</h3><h4 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Foundation tracker:</span> <span class="string">OSTrack</span> <span class="string">ViT-Base</span> [<span class="number">46</span>]<span class="string">（冻结，只训新增模块，Xavier</span> <span class="string">初始化）</span></span><br><span class="line"><span class="string">可调参数:</span> <span class="number">0.</span><span class="string">6M（AMG-LoRA</span> <span class="number">0.</span><span class="string">14M</span> <span class="string">+</span> <span class="string">HMoE</span> <span class="number">0.</span><span class="string">46M），每</span> <span class="number">2</span> <span class="string">层插入一次</span></span><br><span class="line"><span class="string">数据集（各任务单独训练）:</span> <span class="string">LasHeR（RGB-T）/</span> <span class="string">DepthTrack（RGB-D）/</span> <span class="string">VisEvent（RGB-E）</span></span><br><span class="line"><span class="string">输入尺寸:</span> <span class="number">128</span><span class="string">×128</span> <span class="string">template,</span> <span class="number">256</span><span class="string">×256</span> <span class="string">search</span> <span class="string">region</span></span><br><span class="line"><span class="attr">Epochs:</span> <span class="string">RGB-T</span> <span class="number">60</span> <span class="string">/</span> <span class="string">RGB-D</span> <span class="number">25</span> <span class="string">/</span> <span class="string">RGB-E</span> <span class="number">45</span></span><br><span class="line"><span class="attr">Optimizer:</span> <span class="string">AdamW,</span> <span class="string">weight</span> <span class="string">decay</span> <span class="number">1e-4</span></span><br><span class="line"><span class="attr">Learning Rate:</span> <span class="number">4e-4</span><span class="string">（RGB-T</span> <span class="string">/</span> <span class="string">RGB-D）,</span> <span class="number">6e-5</span><span class="string">（RGB-E）</span></span><br><span class="line"><span class="attr">Batch Size:</span> <span class="number">64</span><span class="string">（global）</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="number">2</span><span class="string">×</span> <span class="string">NVIDIA</span> <span class="string">RTX</span> <span class="number">4090</span></span><br><span class="line"><span class="attr">Loss:</span> <span class="string">L</span> <span class="string">=</span> <span class="string">L_focal</span> <span class="string">+</span> <span class="string">λ_iou·L_iou</span> <span class="string">+</span> <span class="string">λ_L1·L_1（λ_iou=2,</span> <span class="string">λ_L1=5）</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">RGB + X 双流 patch embedding → 堆叠 ViT encoder（冻结）</span><br><span class="line">  每 2 层：AMG-LoRA 对齐注意力图（w 推理时固定）→ HMoE 融合模板对/候选对</span><br><span class="line">c_rgb + c_X 逐元素相加 → 预测头（Conv-BN-ReLU×3）→ 中心得分图/偏移/bbox</span><br><span class="line">效率（RTX 4090）: 63.5 FPS, 约 1GB 显存</span><br></pre></td></tr></table></figure>
+
+<h4 id="Complexity"><a href="#Complexity" class="headerlink" title="Complexity"></a>Complexity</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Learnable Params: 0.6M（AMG-LoRA 0.14M + HMoE 0.46M；对比：ViPT 0.8M、UnTrack 6.6M、</span><br><span class="line">                  SDSTrack 14.8M、XTrack 5.4M*、FFT 类 93.7M-203M）</span><br><span class="line">Speed: 63.5 FPS（RTX 4090，约 1GB 显存；对比 SDSTrack 20.8、XTrack 10.3*、UnTrack 25.6）</span><br><span class="line">Fusion MACs: 三种融合策略（Crs Attn / MCP / HMoE）均为 56.4×10^9（MACs 持平，速度差在实现）</span><br><span class="line">Hardware: RTX 4090（论文评测）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h2><h3 id="数据集与指标"><a href="#数据集与指标" class="headerlink" title="数据集与指标"></a>数据集与指标</h3><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>模态</th>
+<th>规模</th>
+<th>Metric</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LasHeR [25]</td>
+<td>RGB-T</td>
+<td>train 975 &#x2F; test 245 序列</td>
+<td>PR &#x2F; NPR &#x2F; SR</td>
+<td>高多样性 RGB-T benchmark</td>
+</tr>
+<tr>
+<td>RGBT234 [24]</td>
+<td>RGB-T</td>
+<td>234 个视频</td>
+<td>MPR &#x2F; MSR</td>
+<td>用最大精度&#x2F;成功率以降低标注对齐误差影响</td>
+</tr>
+<tr>
+<td>DepthTrack [44]</td>
+<td>RGB-D</td>
+<td>train 150 &#x2F; test 50 序列</td>
+<td>PR &#x2F; RE &#x2F; F-score</td>
+<td>大规模长时 RGB-D benchmark，F-score 为主指标</td>
+</tr>
+<tr>
+<td>VOT-RGBD2022 [22]</td>
+<td>RGB-D</td>
+<td>127 个视频</td>
+<td>EAO &#x2F; Accuracy &#x2F; Robustness</td>
+<td>最新 RGB-D benchmark</td>
+</tr>
+<tr>
+<td>VisEvent [41]</td>
+<td>RGB-E</td>
+<td>train 500 &#x2F; test 320 序列</td>
+<td>PR &#x2F; SR</td>
+<td>真实场景 RGB-事件 benchmark</td>
+</tr>
+</tbody></table>
+<h3 id="主要结果"><a href="#主要结果" class="headerlink" title="主要结果"></a>主要结果</h3><blockquote>
+<p>最值得关注的结果（Tab.1，L.P. &#x3D; Learnable Parameters，* 为复现数值）：</p>
+<ul>
+<li><strong>LasHeR</strong>：PR <strong>71.6</strong> &#x2F; NPR 67.5 &#x2F; SR 57.3——超过全部 PEFT 方法（XTrack 69.1&#x2F;65.5&#x2F;55.7、TATrack 70.2&#x2F;66.7&#x2F;56.1、BAT 70.2&#x2F;66.4&#x2F;56.3），也超过 FFT 的 TBSI（69.2&#x2F;65.7&#x2F;55.6）；与 FFT 最佳 IIMF（72.4&#x2F;68.4&#x2F;58.1）接近，而参数量仅约其 <strong>0.3%</strong>（0.6M vs 182M）。</li>
+<li><strong>RGBT234</strong>：MPR <strong>87.8</strong>（全部 PEFT 第一，仅低于 FFT 的 CAFormer 88.3）；MSR 63.9 与 XTrack 的 64.9 差 1%，但参数 0.6M vs 5.4M。</li>
+<li><strong>DepthTrack</strong>：PR 62.9 &#x2F; RE 63.5 &#x2F; <strong>F-score 63.2</strong>——全面超过所有 PEFT 方法（XTrack 61.5、SDSTrack 61.4、UnTrack 61.0），接近 FFT 的 SMSTrack（63.6）。</li>
+<li><strong>VOT-RGBD2022</strong>：EAO <strong>73.6</strong> &#x2F; Acc 82.1 &#x2F; Rob 88.4——EAO 超 SDSTrack 0.8 点、Acc 超 0.9 点、Rob 超 0.1 点；但三项均低于 FFT 的 SMSTrack（74.8&#x2F;82.2&#x2F;89.7）。</li>
+<li><strong>VisEvent</strong>：PR <strong>77.1</strong> &#x2F; SR 60.3——与任务专用方法 eMoET（76.4&#x2F;61.3，8.4M 参数）相当，SR 略低；与 FFT SOTA SMSTrack（76.3&#x2F;60.4）持平或略高 PR；低于 PHPTrack（77.8&#x2F;61.1，93.7M）。</li>
+</ul>
+</blockquote>
+<h4 id="PEFT-方法的参数-性能权衡（本次最关心的视角）"><a href="#PEFT-方法的参数-性能权衡（本次最关心的视角）" class="headerlink" title="PEFT 方法的参数-性能权衡（本次最关心的视角）"></a>PEFT 方法的参数-性能权衡（本次最关心的视角）</h4><table>
+<thead>
+<tr>
+<th>Method</th>
+<th align="right">L.P.</th>
+<th align="right">LasHeR PR</th>
+<th align="right">DepthTrack F</th>
+<th align="right">VisEvent PR</th>
+<th align="right">FPS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ViPT (CVPR’23)</td>
+<td align="right">0.8M</td>
+<td align="right">65.1</td>
+<td align="right">59.4</td>
+<td align="right">75.8</td>
+<td align="right">—</td>
+</tr>
+<tr>
+<td>ProTrack (MM’22)</td>
+<td align="right">—</td>
+<td align="right">53.8</td>
+<td align="right">57.8</td>
+<td align="right">63.2</td>
+<td align="right">—</td>
+</tr>
+<tr>
+<td>UnTrack (CVPR’24)</td>
+<td align="right">6.6M</td>
+<td align="right">64.6</td>
+<td align="right">61.0</td>
+<td align="right">75.5</td>
+<td align="right">25.6</td>
+</tr>
+<tr>
+<td>OneTracker (CVPR’24)</td>
+<td align="right">2.8M</td>
+<td align="right">67.2</td>
+<td align="right">60.9</td>
+<td align="right">76.7</td>
+<td align="right">—</td>
+</tr>
+<tr>
+<td>SDSTrack (CVPR’24)</td>
+<td align="right">14.8M</td>
+<td align="right">66.5</td>
+<td align="right">61.4</td>
+<td align="right">76.7</td>
+<td align="right">20.8</td>
+</tr>
+<tr>
+<td>XTrack (ICCV’25)</td>
+<td align="right">5.4M*</td>
+<td align="right">69.1</td>
+<td align="right">61.5</td>
+<td align="right">77.5</td>
+<td align="right">10.3*</td>
+</tr>
+<tr>
+<td><strong>SEATrack (Ours)</strong></td>
+<td align="right"><strong>0.6M</strong></td>
+<td align="right"><strong>71.6</strong></td>
+<td align="right"><strong>63.2</strong></td>
+<td align="right"><strong>77.1</strong></td>
+<td align="right"><strong>63.5</strong></td>
+</tr>
+</tbody></table>
+<p>SEATrack 用全场最小参数（0.6M）拿到全 PEFT 最高的 LasHeR PR 与 DepthTrack F-score，FPS 也远高于 UnTrack&#x2F;SDSTrack&#x2F;XTrack——“对齐先行”确实换来了更陡的参数量-性能曲线。</p>
+<h3 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h3><blockquote>
+<p>哪个模块贡献最大？（Tab.2，baseline &#x3D; 无跨模态交互的双流冻结 OSTrack，搜索区域仅逐元素相加）</p>
+<ul>
+<li><strong>组件消融</strong>：baseline（0 参数）LasHeR PR 51.5&#x2F;SR 41.2，DepthTrack F 52.9，VisEvent PR 69.5&#x2F;SR 53.4 → 仅 AMG-LoRA（0.14M）：69.8&#x2F;55.7、F 57.6、75.6&#x2F;59.1 → 仅 HMoE（0.46M）：67.4&#x2F;54.2、F 61.1、76.5&#x2F;59.9 → 两者组合（0.6M）：<strong>71.6&#x2F;57.3、F 63.2、77.1&#x2F;60.3</strong>。注意<strong>仅 AMG-LoRA（0.14M）在 LasHeR 上就超过 ViPT&#x2F;UnTrack&#x2F;OneTracker&#x2F;SDSTrack 四个完整方法</strong>——这是”对齐”价值的最有力证据。</li>
+<li><strong>AMG 缩放因子初始化</strong>（Tab.3）：0-init → LasHeR PR 70.4（无引导退化为普通 LoRA 但表现不佳）；0.5-init → 69.7；<strong>1-init → 71.6 最优</strong>——“RGB 分支匹配响应为 X 分支提供强先验”的 cross-guidance 起跑点最好，且三个任务一致。</li>
+<li><strong>AMG vs 纯 LoRA（19 属性，Fig.4）</strong>：几乎全部属性有增益。常规场景 SA（相似外观）+2.6&#x2F;+2.3、BC（背景杂乱）+3.8&#x2F;+2.8、FM（快速运动）+2.8&#x2F;+2.4（PR&#x2F;SR）；更值得注意的是<strong>违反设计假设的场景</strong>——OV（出视野）+6.7&#x2F;+5.5、FL（丢帧）+3.7&#x2F;+3.1：某模态缺失时对齐反而更有帮助（Fig.5 的 FL 示例）。</li>
+<li><strong>HMoE heads&#x2F;专家</strong>（Tab.4&#x2F;5）：h&#x3D;2 最优（h&#x3D;1 退化为 token 级融合 → 69.7；h&#x3D;4&#x2F;8 过拆分破坏语义 → 70.6）；专家预算 4&#x2F;8（Attn 4 + FFN 8，0.6M）最优，8&#x2F;16（0.9M）过拟合下降——与 [8] 观察一致，FFN 层专家比 attention 层专家更有价值。</li>
+<li><strong>融合策略对比</strong>（Tab.6，全在 template-to-template + candidate-to-candidate 设置下）：HMoE（67.4&#x2F;54.2）≈ Cross-Attention（67.6&#x2F;54.4）&gt; MCP（68.4&#x2F;54.9 但双向化后效率下降）；三者加 AMG-LoRA 均涨点且几乎零延迟（+AMG 后 71.6&#x2F;57.3、69.9&#x2F;55.7、70.3&#x2F;56.1）。AMG 对三种融合策略的泛化性说明对齐与融合解耦、可插拔。</li>
+</ul>
+</blockquote>
+<h3 id="失败案例"><a href="#失败案例" class="headerlink" title="失败案例"></a>失败案例</h3><ul>
+<li>论文没有独立 Failure Cases 小节，Limitation 自述三点：<strong>(1) 在部分指标上仍不及某些方法</strong>（如 RGBT234 MSR 低于 XTrack 1 点、VisEvent SR 低于 eMoET 与 PHPTrack）；<strong>(2) 对齐机制非输入依赖</strong>（w 推理时固定，input-dependent alignment 被认为可进一步提升鲁棒性）；<strong>(3) 未探索空间异质模态</strong>（如 vision-language）的对齐。</li>
+<li>从数据推导的弱项：<strong>模态缺失场景</strong>（OV&#x2F;FL）虽比纯 LoRA 好，但仍是最弱属性区间（OV PR 54.5、FL 52.8，远低于 NO 的 89.7 等常规属性）；<strong>低照度&#x2F;相似外观</strong>属性上相对增益最大（AIV、SA），说明常规场景的边际收益在变小。</li>
+<li>从方法看结构性的局限：AMG 假设两模态<strong>时空严格配准</strong>；若模态间存在视差&#x2F;畸变（深度图边缘、事件流延迟），”响应应一致”的前提被破坏，线性插值会引入错误先验。</li>
+</ul>
+<h4 id="我认为失败的原因"><a href="#我认为失败的原因" class="headerlink" title="我认为失败的原因"></a>我认为失败的原因</h4><ul>
+<li>w 推理时固定 → 无法对”模态可靠性突变”（如热成像突然失效、事件流拥堵）做实例级响应，只能靠训练时学到的静态均衡；论文自己也把 input-dependent alignment 列为未来工作。</li>
+<li>AMG 的对齐只作用于<strong>注意力图</strong>，不校正特征层面的模态错位；对 RGB-E 这类特征分布差异极大的模态，LoRA 共享旁路可能容量不足（RGB-E 上 lr 降到 6e-5、epoch 45，训练明显更”费劲”）。</li>
+<li>逐任务单独训练（LasHeR&#x2F;DepthTrack&#x2F;VisEvent 各自训练），不是统一多任务训练——“统一架构”的跨模态泛化能力未被验证。</li>
+</ul>
+<hr>
+<h3 id="论文图示（截图）"><a href="#论文图示（截图）" class="headerlink" title="论文图示（截图）"></a>论文图示（截图）</h3><p><img src="https://20020730.xyz/images/tracking/seatrack/fig5.webp" alt="Figure 5: Figure 5. LoRA (left) vs. AMG-LoRA (right) under a modality- missing scenario. (a) Missing RGB frame. (b) RGB attention map. (c) Thermal ..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/seatrack/fig6.webp" alt="Figure 6: Figure 6. Comprehensive visualization of AMG-LoRA’s adaptability. The results of “Pre-train” row are directly inferred from the frozen fo..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/seatrack/fig7.webp" alt="Figure 7: Figure 7. Prediction-level comparison of SEATrack with two well- established PEFT-based multimodal trackers." loading="lazy"></p>
+<h2 id="5-复现指南"><a href="#5-复现指南" class="headerlink" title="5. 复现指南"></a>5. 复现指南</h2><p><strong>Repository</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">GitHub: https://github.com/AutoLab-SAI-SJTU/SEATrack（网络受限未抓取验证）</span><br><span class="line">论文正文仅声明 &quot;Code is available&quot;，未给出仓库地址与复现命令</span><br><span class="line">Checkpoint: 论文未说明（推测需 OSTrack ViT-Base 预训练权重 + 新增模块权重，未确认）</span><br></pre></td></tr></table></figure>
+
+<p><strong>Environment</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">Python:</span> <span class="string">论文未说明</span></span><br><span class="line"><span class="attr">PyTorch:</span> <span class="string">论文未说明（仅称</span> <span class="string">&quot;using PyTorch&quot;</span><span class="string">）</span></span><br><span class="line"><span class="attr">CUDA:</span> <span class="string">论文未说明</span></span><br><span class="line"><span class="attr">GPU:</span> <span class="number">2</span><span class="string">×</span> <span class="string">NVIDIA</span> <span class="string">RTX</span> <span class="number">4090</span><span class="string">（训练，global</span> <span class="string">batch</span> <span class="number">64</span><span class="string">）；RTX</span> <span class="number">4090</span><span class="string">（效率评测）</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键运行命令</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">论文未提供任何训练/测试命令。复现所需信息（从论文提取）：</span><br><span class="line">训练数据：LasHeR train 975 / DepthTrack train 150 / VisEvent train 500（官方划分）</span><br><span class="line">超参：AdamW wd 1e-4；lr 4e-4（RGB-T/RGB-D）/ 6e-5（RGB-E）；epochs 60/25/45；</span><br><span class="line">      输入 128×128 模板 + 256×256 搜索区域；AMG-LoRA 与 HMoE 每 2 层插入、Xavier 初始化</span><br></pre></td></tr></table></figure>
+
+<h4 id="复现结果"><a href="#复现结果" class="headerlink" title="复现结果"></a>复现结果</h4><ul>
+<li><strong>未运行（本次仅阅读）</strong>。</li>
+<li>复现难度评估：中。无公开命令与配置细节（未说明 LoRA rank r、HMoE 的 r&#x2F;D_h、插入层数从第几层开始等），需要对照开源仓库补全；训练数据量大（三个任务各训一遍）。</li>
+</ul>
+<h4 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h4><ul>
+<li>论文正文缺代码路径与命令，细节只能等仓库核对；AMG 公式 (4) 中插值作用在 softmax 前的未归一化 attention，复现时需确认是否对每层每头独立插值、w 是否逐层独立；Tab.6 的 FPS 口径（~35% vs 推算 ~54%）需以代码实测为准。</li>
+</ul>
+<hr>
+<h2 id="6-批判性思考"><a href="#6-批判性思考" class="headerlink" title="6. 批判性思考"></a>6. 批判性思考</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li><strong>问题选择精准</strong>：把”跨模态注意力对齐”立为第一性矛盾，并用仅 0.14M 的 AMG-LoRA 单独超过 ViPT&#x2F;UnTrack&#x2F;OneTracker&#x2F;SDSTrack 四个完整方法（LasHeR PR 69.8 vs 65.1&#x2F;64.6&#x2F;67.2&#x2F;66.5）——证明性能瓶颈不在融合而在对齐，论证闭环完整。</li>
+<li><strong>设计极简且可插拔</strong>：AMG 提升三种异构融合策略（cross-attention&#x2F;MCP&#x2F;HMoE），说明对齐与融合解耦；LoRA 推理可合并进原权重、w 固定，推理零额外开销。</li>
+<li><strong>效率指标齐全</strong>：0.6M 参数 &#x2F; 63.5 FPS &#x2F; ~1GB 显存，且对 HMoE 的 heads、专家数、专家分配、融合策略、w 初始化都做了消融，工程结论可复用（专家预算给 FFN 层）。</li>
+<li>评估面广：RGB-T&#x2F;RGB-D&#x2F;RGB-E 三类任务、5 个 benchmark、19 个属性对比、逐任务训练+统一架构。</li>
+</ul>
+<h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><ul>
+<li>w 非输入依赖（论文自认）；共享 LoRA 旁路对分布差异极大的模态（事件流）容量可能不足；逐任务训练而非统一训练，跨任务泛化未验证。</li>
+<li>“注意力一致性假设”建立在<strong>时空配准</strong>上，对深度&#x2F;事件模态的边缘误差、RGB-T 的配准误差（RGBT234 甚至因此改用 MPR&#x2F;MSR 指标）敏感——论文未做错位鲁棒性实验。</li>
+<li>无失败案例分析小节，对”哪些场景仍会跟丢”缺乏定性证据（只有 Fig.5&#x2F;6&#x2F;7 的少量正面可视化）。</li>
+</ul>
+<h3 id="我最关心的问题"><a href="#我最关心的问题" class="headerlink" title="我最关心的问题"></a>我最关心的问题</h3><ol>
+<li>公式 (4) 在 softmax 前对两模态未归一化注意力做线性插值：不同层&#x2F;不同模态的未归一化数值尺度差异很大，w 是<strong>逐层独立</strong>还是全局共享？论文未说明，若尺度不一致，插值可能被大尺度模态主导。</li>
+<li>“响应一致性”假设对<strong>跨视角失配</strong>是否成立？我推测视角差异会造成匹配响应在空间上的系统性偏移（同一目标两视角特征不对齐），此时”注意力图相减”会变成”两张错位图的相减”——AMG 能否自纠错位，还是只纠”响应强度”层面的不一致？论文没有配准误差实验。</li>
+<li>HMoE 的 dim&#x3D;0 softmax 让所有 sub-token 竞争 e·h 个 head：当 N 很大（长模板&#x2F;多帧记忆）时，路由是否会趋近均匀分布（容量稀释）？Tab.5 中 8&#x2F;16 专家过拟合暗示了路由容量的敏感性。</li>
+<li>每个任务单独训练 60&#x2F;25&#x2F;45 epochs、batch 64：总训练开销约等于三个全模型 PEFT 训练，与”效率”叙事的对比基准（参数数）不完全对齐——速度优势只体现在推理。</li>
+</ol>
+<h3 id="可以迁移到我的研究中的部分"><a href="#可以迁移到我的研究中的部分" class="headerlink" title="可以迁移到我的研究中的部分"></a>可以迁移到我的研究中的部分</h3><ul>
+<li><strong>“注意力一致性”假设用于跨视角（cross_view_vtuav）</strong>：AMG 的立论是”时空对齐的模态其匹配响应应一致”。跨视角 UAV 恰好是这一假设的<strong>压力测试</strong>——可以先量化两视角注意力图的一致性（cosine &#x2F; KL 散度），若局部视角差异下仍成立，AMG 式双向插值可作为跨视角特征对齐的机制；若不一致，则说明跨视角需要”先几何对齐、再响应对齐”的两段式方案，这本身就是一个可写论文的发现。</li>
+<li><strong>HMoE 线性融合 → 机载部署</strong>：cross_view_vtuav 若做机载推理，HMoE 的 O(N·D·e·h) 融合（对 token 数线性）比 attention 式 memory read（O(N²)）更适合边缘设备；且”模板对&#x2F;候选对分别融合”的结构可以直接改造成”目标模板-历史记忆 tokens”的融合器。</li>
+<li><strong>共享 LoRA 旁路的 PEFT 开销控制</strong>：DAM4SAM 若冻结 SAM2 骨干加记忆管理模块，可仿照”单一共享旁路服务两条通路”的做法——目标通路与干扰物通路共享一个低秩旁路（0.14M 量级），用任务级权重区分，避免每个记忆分支独立 adapter 造成的参数膨胀（正是本文批判的趋势）。</li>
+<li><strong>CFG 式权衡 → 抗干扰</strong>：把 AMG 的”两个模态”换成”目标分支 vs 干扰物分支”：以目标匹配响应为无条件分支、干扰物响应为条件分支，双向插值让不可靠的干扰物分支自动降权——把”模态可靠性”问题翻译成”干扰物可靠性”问题，机制完全复用。</li>
+</ul>
+<h3 id="新想法"><a href="#新想法" class="headerlink" title="新想法"></a>新想法</h3><ol>
+<li><strong>时序化动态引导权重</strong>：论文自认 w 固定是局限。可把 w 变成<strong>记忆状态相关的门控</strong>（目标置信度、遮挡程度、原型新鲜度）：遮挡时提高对辅助分支的信任——把 AMG 从”训练期学到的静态均衡”升级为”推理期随记忆质量变化的动态均衡”，与 DAM4SAM 的记忆管理直接耦合。</li>
+<li><strong>跨视角互引导（Cross-view Mutual Guidance）</strong>：先在 cross_view_vtuav 上验证”响应一致性”假设成立，再用公式 (4) 的形式做双视角注意力对齐；若视角失配过大，则把插值改为”先按相对位姿 warp 再插值”，形成几何-响应的两阶段对齐。</li>
+<li><strong>HMoE 作为记忆-当前帧融合器</strong>：用 HMoE 替代 attention 式 memory read——历史帧目标 tokens 与当前帧 tokens 走 sub-token 级软路由融合，获得线性复杂度的”长时全局关系建模”；结合 sub-token 粒度，还能让”目标的局部外观”与”记忆中的对应部位”细粒度匹配，缓解遮挡后的重识别漂移。</li>
+<li><strong>干扰物专家的显式路由</strong>：把 HMoE 的 gating Φ 扩展为”目标专家 + 干扰物专家 + 背景专家”的分配器——sub-token 级路由天然允许同一 token 的部分语义走抑制分支，比整帧级”目标&#x2F;干扰物”二选一更细；用 DAM4SAM 的干扰物记忆监督”专家 2 的输出应忽略”。</li>
+</ol>
+<hr>
+<h2 id="7-深度阅读标注"><a href="#7-深度阅读标注" class="headerlink" title="7. 深度阅读标注"></a>7. 深度阅读标注</h2><p>本节暂无额外阅读标注。</p>
+<hr>
+<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h2><h3 id="三句话总结"><a href="#三句话总结" class="headerlink" title="三句话总结"></a>三句话总结</h3><ol>
+<li><strong>Problem：</strong> PEFT 多模态跟踪陷入性能-参数膨胀的怪圈（新方法可调参数达 ViPT 的 16 倍以上），病根被定位为双流架构中<strong>相互冲突的匹配注意力图</strong>——即跨模态对齐缺失，而非融合不够强。</li>
+<li><strong>Method：</strong> SEATrack（冻结 OSTrack ViT-Base + 每 2 层插入 AMG-LoRA 与 HMoE）：AMG-LoRA 用共享 LoRA 旁路（Wk&#x2F;Wv）做域自适应、CFG 式双向可学习插值动态对齐注意力图；HMoE 用 sub-token→token 两级软路由实现线性复杂度的全局跨模态融合。</li>
+<li><strong>Result：</strong> 仅 0.6M 可调参数、63.5 FPS、约 1GB 显存，在 LasHeR（PR 71.6）、RGBT234（MPR 87.8）、DepthTrack（F 63.2）、VOT-RGBD2022（EAO 73.6）、VisEvent（PR 77.1）五个基准上全面领先或持平 PEFT SOTA，且逼近 100-200M 参数的 FFT 方法。</li>
+</ol>
+<h3 id="一句话评价"><a href="#一句话评价" class="headerlink" title="一句话评价"></a>一句话评价</h3><p>一篇”对齐先行、融合次之”的教科书式 PEFT 多模态跟踪工作：0.14M 的 AMG-LoRA 单独超过四个完整方法，用最小成本证明了注意力对齐是打破性能-效率困境的正确抓手，且各组件可插拔、消融完备。</p>
+<h3 id="是否值得复现？"><a href="#是否值得复现？" class="headerlink" title="是否值得复现？"></a>是否值得复现？</h3><p><strong>复现理由：</strong> 三星。实验证据扎实（对齐假设的验证、19 属性对比、融合策略泛化性），0.6M 参数的成本极低，AMG 机制对 RGB-T 与跨视角场景都有直接迁移价值；但论文未给训练&#x2F;测试命令与关键超参（LoRA rank、HMoE 维度、插入起始层），且 FPS 口径与正文数字有出入，需要等开源仓库补齐才能复现，故不给四星。</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/8731bb69/" title="论文阅读｜SEATrack: Simple, Efficient, and Adaptive Multimodal Tracker">https://20020730.xyz/posts/8731bb69/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/d3c3087/" rel="prev" title="论文阅读｜Spatio-Temporal Conditional Denoising Transformer for Modality-Missing RGBT Tracking"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">论文阅读｜Spatio-Temporal Conditional Denoising Transformer for Modality-Missing RGBT Tracking</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/87c2401d/" rel="next" title="论文阅读｜RAGTrack: Language-aware RGBT Tracking with Retrieval-Augmented Generation"><span class="post-nav-text">论文阅读｜RAGTrack: Language-aware RGBT Tracking with Retrieval-Augmented Generation</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
+  display: none;
+}</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
+  //- hide all
+  document.querySelectorAll('.toggle-comment-btn').forEach((btn) => {
+    const container = document.querySelector(btn.dataset.target);
+    if (container) {
+      container.style.display = "none";
+    }
+  });
+}
+function showComment(target) {
+  hideAllComment();
+  //- show target
+  const targetContainer = document.querySelector(target);
+  if (targetContainer) {
+    targetContainer.style.display = "block";
+  }
+}
+</script></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/posts/8731bb69/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="Wanglihan954/disscussion" issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async></script></div></main><aside class="right-sidebar"><div id="post-toc-wrap" style="display:block; opacity:1; visibility:visible;"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">论文信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">摘要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E8%B5%84%E6%BA%90"><span class="toc-number">2.</span> <span class="toc-text">论文资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%A0%94%E7%A9%B6%E5%8A%A8%E6%9C%BA"><span class="toc-number">3.</span> <span class="toc-text">1. 研究动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-number">3.1.</span> <span class="toc-text">要解决什么问题？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">现有方法的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E8%80%85%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="toc-number">3.3.</span> <span class="toc-text">作者的核心思路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE"><span class="toc-number">4.</span> <span class="toc-text">2. 主要贡献</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E7%9C%9F%E6%AD%A3%E7%9A%84%E6%96%B0%E6%84%8F"><span class="toc-number">4.1.</span> <span class="toc-text">我认为真正的新意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">3. 方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%95%B4%E4%BD%93%E6%A1%86%E6%9E%B6"><span class="toc-number">5.1.</span> <span class="toc-text">3.1 整体框架</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">5.1.1.</span> <span class="toc-text">整体流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Core-Module-1-%E2%80%94-AMG-LoRA%EF%BC%9A%E8%B7%A8%E6%A8%A1%E6%80%81%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%AF%B9%E9%BD%90"><span class="toc-number">5.2.</span> <span class="toc-text">3.2 Core Module 1 — AMG-LoRA：跨模态注意力对齐</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F"><span class="toc-number">5.2.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95"><span class="toc-number">5.2.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F"><span class="toc-number">5.2.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.4.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-Core-Module-2-%E2%80%94-HMoE%EF%BC%9A%E5%B1%82%E7%BA%A7%E6%B7%B7%E5%90%88%E4%B8%93%E5%AE%B6%E8%9E%8D%E5%90%88"><span class="toc-number">5.3.</span> <span class="toc-text">3.3 Core Module 2 — HMoE：层级混合专家融合</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%EF%BC%9F-1"><span class="toc-number">5.3.1.</span> <span class="toc-text">为什么需要？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%81%9A%E6%B3%95-1"><span class="toc-number">5.3.2.</span> <span class="toc-text">核心做法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%AC%E5%BC%8F-1"><span class="toc-number">5.3.3.</span> <span class="toc-text">关键公式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3-1"><span class="toc-number">5.3.4.</span> <span class="toc-text">我的理解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E8%AE%BA%E6%96%87%E4%B8%8E%E4%BB%A3%E7%A0%81%E5%AF%B9%E7%85%A7"><span class="toc-number">5.4.</span> <span class="toc-text">3.4 论文与代码对照</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E4%B8%AD%E7%9A%84%E7%96%91%E7%82%B9%EF%BC%88%E9%9D%9E%E4%BB%A3%E7%A0%81%E5%AF%B9%E7%85%A7%EF%BC%89"><span class="toc-number">5.4.1.</span> <span class="toc-text">论文中的疑点（非代码对照）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="toc-number">5.5.</span> <span class="toc-text">3.5 训练与推理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Training"><span class="toc-number">5.5.1.</span> <span class="toc-text">Training</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Inference"><span class="toc-number">5.5.2.</span> <span class="toc-text">Inference</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Complexity"><span class="toc-number">5.5.3.</span> <span class="toc-text">Complexity</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.</span> <span class="toc-text">4. 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8E%E6%8C%87%E6%A0%87"><span class="toc-number">6.1.</span> <span class="toc-text">数据集与指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="toc-number">6.2.</span> <span class="toc-text">主要结果</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PEFT-%E6%96%B9%E6%B3%95%E7%9A%84%E5%8F%82%E6%95%B0-%E6%80%A7%E8%83%BD%E6%9D%83%E8%A1%A1%EF%BC%88%E6%9C%AC%E6%AC%A1%E6%9C%80%E5%85%B3%E5%BF%83%E7%9A%84%E8%A7%86%E8%A7%92%EF%BC%89"><span class="toc-number">6.2.1.</span> <span class="toc-text">PEFT 方法的参数-性能权衡（本次最关心的视角）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.3.</span> <span class="toc-text">消融实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B1%E8%B4%A5%E6%A1%88%E4%BE%8B"><span class="toc-number">6.4.</span> <span class="toc-text">失败案例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%91%E8%AE%A4%E4%B8%BA%E5%A4%B1%E8%B4%A5%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-number">6.4.1.</span> <span class="toc-text">我认为失败的原因</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%9B%BE%E7%A4%BA%EF%BC%88%E6%88%AA%E5%9B%BE%EF%BC%89"><span class="toc-number">6.5.</span> <span class="toc-text">论文图示（截图）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%A4%8D%E7%8E%B0%E6%8C%87%E5%8D%97"><span class="toc-number">7.</span> <span class="toc-text">5. 复现指南</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">7.1.</span> <span class="toc-text">复现结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">7.2.</span> <span class="toc-text">遇到的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%89%B9%E5%88%A4%E6%80%A7%E6%80%9D%E8%80%83"><span class="toc-number">8.</span> <span class="toc-text">6. 批判性思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">8.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%80%E9%99%90"><span class="toc-number">8.2.</span> <span class="toc-text">局限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E6%9C%80%E5%85%B3%E5%BF%83%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">8.3.</span> <span class="toc-text">我最关心的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E8%BF%81%E7%A7%BB%E5%88%B0%E6%88%91%E7%9A%84%E7%A0%94%E7%A9%B6%E4%B8%AD%E7%9A%84%E9%83%A8%E5%88%86"><span class="toc-number">8.4.</span> <span class="toc-text">可以迁移到我的研究中的部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E6%83%B3%E6%B3%95"><span class="toc-number">8.5.</span> <span class="toc-text">新想法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%B7%B1%E5%BA%A6%E9%98%85%E8%AF%BB%E6%A0%87%E6%B3%A8"><span class="toc-number">9.</span> <span class="toc-text">7. 深度阅读标注</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">8. 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E5%8F%A5%E8%AF%9D%E6%80%BB%E7%BB%93"><span class="toc-number">10.1.</span> <span class="toc-text">三句话总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AF%84%E4%BB%B7"><span class="toc-number">10.2.</span> <span class="toc-text">一句话评价</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%AF%E5%90%A6%E5%80%BC%E5%BE%97%E5%A4%8D%E7%8E%B0%EF%BC%9F"><span class="toc-number">10.3.</span> <span class="toc-text">是否值得复现？</span></a></li></ol></li></ol></div></div></div></aside><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 – 2026 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> 宁翰</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-04-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><!-- hexo injector body_end start --><script src="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/js/index.js"></script><script src="/js/nav-title-fit.js" defer></script><!-- hexo injector body_end end --></body></html>
