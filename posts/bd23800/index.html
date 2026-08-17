@@ -45,7 +45,119 @@ document.addEventListener("DOMContentLoaded", () => {
   const setting = localStorage.getItem('darken-mode') || 'auto'
   if (setting === 'dark' || (prefersDark && setting !== 'light'))
     document.documentElement.classList.toggle('dark', true)
-})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
 IconifyProviders = {
   // Empty prefix: overwrite default API provider configuration
   '': {
@@ -126,10 +238,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }).join('');
     });
   }
-});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">57</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">78</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/bd23800/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-08-15 20:15:00" itemprop="dateCreated datePublished" datetime="2026-08-15T20:15:00+08:00">2026-08-15</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">6.3k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">26m</span></span></span><span class="leancloud_visitors" id="/posts/bd23800/" data-flag-title="论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/bd23800/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">文献阅读</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/Tracking/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Tracking</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%96%87%E7%8C%AE%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">文献笔记</span></a><a class="tag-item" href="/tags/AI%E8%AE%BA%E6%96%87/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">AI论文</span></a><a class="tag-item" href="/tags/SAM2/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">SAM2</span></a><a class="tag-item" href="/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">跨视角</span></a><a class="tag-item" href="/tags/Tracking/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Tracking</span></a><a class="tag-item" href="/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%AF%B9%E5%BA%94/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">跨视角目标对应</span></a><a class="tag-item" href="/tags/%E5%BE%AA%E7%8E%AF%E4%B8%80%E8%87%B4%E6%80%A7/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">循环一致性</span></a><a class="tag-item" href="/tags/Test-Time-Training/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Test-Time Training</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">57</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">78</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/bd23800/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-08-15 20:15:00" itemprop="dateCreated datePublished" datetime="2026-08-15T20:15:00+08:00">2026-08-15</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">6.2k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">25m</span></span></span><span class="leancloud_visitors" id="/posts/bd23800/" data-flag-title="论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/bd23800/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">文献阅读</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/Tracking/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Tracking</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/%E6%96%87%E7%8C%AE%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">文献笔记</span></a><a class="tag-item" href="/tags/AI%E8%AE%BA%E6%96%87/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">AI论文</span></a><a class="tag-item" href="/tags/SAM2/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">SAM2</span></a><a class="tag-item" href="/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">跨视角</span></a><a class="tag-item" href="/tags/%E5%BE%AA%E7%8E%AF%E4%B8%80%E8%87%B4%E6%80%A7/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">循环一致性</span></a><a class="tag-item" href="/tags/Test-Time-Training/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Test-Time Training</span></a><a class="tag-item" href="/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%AF%B9%E5%BA%94/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">跨视角目标对应</span></a><a class="tag-item" href="/tags/Tracking/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Tracking</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
 <p>本文基于论文、补充材料与公开代码整理。文中的“我的理解”和“批判性思考”属于个人分析；<br>论文插图均来自原论文或补充材料，仅用于学习与讨论。</p>
 </blockquote>
-<h2 id="论文信息"><a href="#论文信息" class="headerlink" title="论文信息"></a>论文信息</h2><p><strong>Title:</strong> Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction<br><strong>Authors:</strong> Shannan Yan, Leqi Zheng, Keyu Lv, Jingchen Ni, Hongyang Wei, Jiajun Zhang, Guangting Wang, Jing Lyu, Chun Yuan, Fengyun Rao（清华深圳 &#x2F; 腾讯 WeChat Vision &#x2F; USTC）<br><strong>Venue:</strong> CVPR 2026<br><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/shannany0606/CCMP">https://github.com/shannany0606/CCMP</a><br><strong>Project Page:</strong> 无（arXiv 2602.18996）  </p>
+<h2 id="论文信息"><a href="#论文信息" class="headerlink" title="论文信息"></a>论文信息</h2><p><strong>Title:</strong> Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction<br><strong>Authors:</strong> Shannan Yan, Leqi Zheng, Keyu Lv, Jingchen Ni, Hongyang Wei, Jiajun Zhang, Guangting Wang, Jing Lyu, Chun Yuan, Fengyun Rao（清华深圳 / 腾讯 WeChat Vision / USTC）<br><strong>Venue:</strong> CVPR 2026<br><strong>GitHub:</strong> <a target="_blank" rel="noopener" href="https://github.com/shannany0606/CCMP">https://github.com/shannany0606/CCMP</a><br><strong>Project Page:</strong> 无（arXiv 2602.18996）  </p>
 <h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>研究视频中跨视角（ego↔exo）的物体级视觉对应。提出一个基于条件二值分割的简单有效框架：把查询视图的物体 mask 编码成潜在表示（单一条件 token CDT），引导目标视频中对应物体的定位。引入循环一致性训练目标：目标视图预测的 mask 被投影回源视图以重建原始查询 mask，无需 GT 标注即可提供强自监督信号，并支撑推理时的 test-time training (TTT)。在 Ego-Exo4D 与 HANDAL-X 上取得 SOTA。</p>
 <span id="more"></span>
 
@@ -141,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </ul>
 <hr>
 <h2 id="1-研究动机"><a href="#1-研究动机" class="headerlink" title="1. 研究动机"></a>1. 研究动机</h2><h3 id="要解决什么问题？"><a href="#要解决什么问题？" class="headerlink" title="要解决什么问题？"></a>要解决什么问题？</h3><blockquote>
-<p>在 egocentric（第一人称，晃动&#x2F;杂乱&#x2F;运动模糊）与 exocentric（第三人称，稳定但细节少）视角之间建立物体级对应：给源视图一个物体 mask，在目标视图中分割出同一个物体。视角差异、外观变化、遮挡、空间布局不一致，以及”需要结合时间动态推理”都让传统外观匹配&#x2F;跟踪方法失效——如何用尽量小的架构改动获得鲁棒的视图不变表示？</p>
+<p>在 egocentric（第一人称，晃动/杂乱/运动模糊）与 exocentric（第三人称，稳定但细节少）视角之间建立物体级对应：给源视图一个物体 mask，在目标视图中分割出同一个物体。视角差异、外观变化、遮挡、空间布局不一致，以及”需要结合时间动态推理”都让传统外观匹配/跟踪方法失效——如何用尽量小的架构改动获得鲁棒的视图不变表示？</p>
 </blockquote>
 <h3 id="现有方法的问题"><a href="#现有方法的问题" class="headerlink" title="现有方法的问题"></a>现有方法的问题</h3><ul>
 <li><strong>传统对应模型</strong>多在共视（co-visible）或静态场景训练，无法处理 ego–exo 的剧烈视角差异与不相交的空间参照。</li>
@@ -151,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <li>O-MaMa 把任务转成 FastSAM 候选 mask 的后验匹配，学习与泛化受限（Ego 查询只有 42.57 IoU）。</li>
 </ul>
 </li>
-<li><strong>外观匹配的两难</strong>：纯外观表示被视角光照&#x2F;分辨率差异打乱；纯几何&#x2F;背景线索在不相交空间布局下不可用；还要处理”目标是否可见”（遮挡&#x2F;出画）与时间动态（物体运动&#x2F;形变不同步）。</li>
+<li><strong>外观匹配的两难</strong>：纯外观表示被视角光照/分辨率差异打乱；纯几何/背景线索在不相交空间布局下不可用；还要处理”目标是否可见”（遮挡/出画）与时间动态（物体运动/形变不同步）。</li>
 <li>现有方法都没有利用”往返重建”这个天然的自监督信号，也没有人在此任务上做 test-time training。</li>
 </ul>
 <h3 id="作者的核心思路"><a href="#作者的核心思路" class="headerlink" title="作者的核心思路"></a>作者的核心思路</h3><blockquote>
@@ -161,15 +273,15 @@ document.addEventListener('DOMContentLoaded', function() {
 <h2 id="2-主要贡献"><a href="#2-主要贡献" class="headerlink" title="2. 主要贡献"></a>2. 主要贡献</h2><ol>
 <li><strong>Contribution 1：极简端到端框架</strong>。基于 DINOv3 的条件二值分割（conditional binary segmentation），一个 CDT 条件 token 注入 ViT 编码器即完成跨视图条件化，与预训练 backbone 完全兼容，无辅助模块、无额外数据。</li>
 <li><strong>Contribution 2：循环一致性目标</strong>。Lcycle 强制源 mask 往返重建，无需目标视图 GT 即可学习视图不变表示；并且这个自监督目标在推理时可复用于 test-time training (TTT)，是该任务上第一个成功的 TTT 应用。</li>
-<li><strong>Contribution 3：训练数据设计</strong>。统一 Ego2Exo&#x2F;Exo2Ego 双方向、同视图样本合成（Ego2Ego&#x2F;Exo2Exo）、时间松弛配对（RTA）三种预处理协同。</li>
+<li><strong>Contribution 3：训练数据设计</strong>。统一 Ego2Exo/Exo2Ego 双方向、同视图样本合成（Ego2Ego/Exo2Exo）、时间松弛配对（RTA）三种预处理协同。</li>
 <li><strong>Contribution 4：实验</strong>。Ego-Exo4D v2 测试集 mIoU 44.57（超 O-MaMa 43.32）；Exo Query 47.18（超此前最优 44.08 达 +3.10）；HANDAL-X 零样本 78.8（超 ObjectRelator 42.8，相对提升 84.1%）；微调后 85.0。</li>
 </ol>
 <h4 id="我认为真正的新意"><a href="#我认为真正的新意" class="headerlink" title="我认为真正的新意"></a>我认为真正的新意</h4><blockquote>
-<p>新意在于<strong>把”循环一致性”从训练目标升级为推理工具</strong>：多数工作（含 V2-SAM 的 PCCS）把循环一致性当选择器&#x2F;正则器用，CCMP 则把它变成 TTT 的优化目标——测试时不需要任何 GT，只需让”往返重建损失”在测试对上再下降几步，模型就自适应了这组视角。第二个值得注意的点是<strong>极简性本身是贡献</strong>：CDT 单 token 条件化（对比 V2-SAM 的双 prompt 生成器 + 三专家）证明在强 backbone（DINOv3）上，架构复杂度不是必需的。另外论文诚实地暴露了一个反直觉发现：Dice loss 加入 Lcycle 会<strong>损害</strong> TTT（40.20 vs 44.57），说明自监督目标的”软硬程度”需要与 TTT 步数匹配。</p>
+<p>新意在于<strong>把”循环一致性”从训练目标升级为推理工具</strong>：多数工作（含 V2-SAM 的 PCCS）把循环一致性当选择器/正则器用，CCMP 则把它变成 TTT 的优化目标——测试时不需要任何 GT，只需让”往返重建损失”在测试对上再下降几步，模型就自适应了这组视角。第二个值得注意的点是<strong>极简性本身是贡献</strong>：CDT 单 token 条件化（对比 V2-SAM 的双 prompt 生成器 + 三专家）证明在强 backbone（DINOv3）上，架构复杂度不是必需的。另外论文诚实地暴露了一个反直觉发现：Dice loss 加入 Lcycle 会<strong>损害</strong> TTT（40.20 vs 44.57），说明自监督目标的”软硬程度”需要与 TTT 步数匹配。</p>
 </blockquote>
 <hr>
 <h2 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h2><blockquote>
-<p><strong>阅读说明</strong><br>官方代码完整（基于 Ego-Exo4D 官方 SegSwap&#x2F;XSegTx 基线改造）。核心在 <code>SegSwap/train/</code>：<code>csegmentor.py</code>（模型）、<code>train.py</code>（训练 + 循环一致性 + 梯度累积）、<code>losses.py</code>、<code>posttrain.py</code>（CLS head 微调）、<code>eval_segswap_visttt.py</code>（TTT 推理）。</p>
+<p><strong>阅读说明</strong><br>官方代码完整（基于 Ego-Exo4D 官方 SegSwap/XSegTx 基线改造）。核心在 <code>SegSwap/train/</code>：<code>csegmentor.py</code>（模型）、<code>train.py</code>（训练 + 循环一致性 + 梯度累积）、<code>losses.py</code>、<code>posttrain.py</code>（CLS head 微调）、<code>eval_segswap_visttt.py</code>（TTT 推理）。</p>
 </blockquote>
 <h3 id="3-1-整体框架"><a href="#3-1-整体框架" class="headerlink" title="3.1 整体框架"></a>3.1 整体框架</h3><p><img src="https://20020730.xyz/images/tracking/cyclemask/fig1.webp" alt="Figure 1: Cycle-Consistent Visual Correspondence with Test- Time Training. Our framework learns object-level correspon- dences by enforci..." loading="lazy"><br><img src="https://20020730.xyz/images/tracking/cyclemask/fig2.webp" alt="Figure 2: Model overview. \mathit {CLS} denotes class tokens, and \mathit {CDT} denotes condition tokens. The CLS head determines whether..." loading="lazy"></p>
 <p><strong>核心架构图</strong></p>
@@ -183,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <li><strong>条件化编码</strong>：目标图 It 分 patch 成视觉 token，与 [CLS, CDT] 一起进入 DINOv3 ViT-L 编码器；CDT 经注意力条件化所有视觉 token。</li>
 <li><strong>多任务解码</strong>：Mask Head（两层卷积）生成 M̂t；CLS Head（后训练阶段）预测目标是否可见。</li>
 <li><strong>循环一致性</strong>：把 M̂t 当源 mask，用 (It, M̂t, Is) 反向再跑一遍得 M̂s，与 Ms 算 BCE（+可选 Dice）；不依赖目标 GT，训练与 TTT 通用。</li>
-<li><strong>TTT 推理</strong>：每个测试图像对只更新 ViT 最后 K 个 blocks、T 步（Ego2Exo: K&#x3D;4, T&#x3D;2；Exo2Ego: K&#x3D;11, T&#x3D;6），lr 5e-6。</li>
+<li><strong>TTT 推理</strong>：每个测试图像对只更新 ViT 最后 K 个 blocks、T 步（Ego2Exo: K=4, T=2；Exo2Ego: K=11, T=6），lr 5e-6。</li>
 </ol>
 <hr>
 <h3 id="3-2-Core-Module-1-—-CDT-条件化-条件二值分割模型"><a href="#3-2-Core-Module-1-—-CDT-条件化-条件二值分割模型" class="headerlink" title="3.2 Core Module 1 — CDT 条件化 + 条件二值分割模型"></a>3.2 Core Module 1 — <code>CDT 条件化 + 条件二值分割模型</code></h3><h4 id="为什么需要？"><a href="#为什么需要？" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>跨视角条件分割需要把”源视图里是哪个物体”注入目标视图的表示空间；做法要么加专用模块（ObjectRelator 的辅助对齐模块），要么改条件注入方式。CCMP 选择最小改动：一个 token 承担全部条件信息。</p>
@@ -191,54 +303,54 @@ document.addEventListener('DOMContentLoaded', function() {
 <li>源特征 Fs 与归一化 mask M̃s 做空间加权平均得 zs（Eq.1-2），线性投影成 CDT；</li>
 <li>编码器输入 <code>[CLS, CDT, x1, ..., xn]</code>，CDT 的语义经自注意力传播给所有 patch token（无需额外 cross-attention 模块）；</li>
 <li>Mask Head 只在视觉 token 上做两层卷积；CLS Head 处理可见性分类（单独后训练，冻结主干只训 CLS Head 96K 迭代）；</li>
-<li>辅助损失：对最后 n_aux_layers&#x3D;1 层的中间 mask 预测也施加 mask 损失（深监督）。</li>
+<li>辅助损失：对最后 n_aux_layers=1 层的中间 mask 预测也施加 mask 损失（深监督）。</li>
 </ul>
 <h4 id="关键公式"><a href="#关键公式" class="headerlink" title="关键公式"></a>关键公式</h4><p>归一化 mask 与条件特征（Eq.1-2）：</p>
-<p>$$<br>\tilde{M}<em>{s} &#x3D; \frac{M</em>{s}}{\sum_{i,j} M_{s}[i,j] + \tau},\qquad<br>z_{s} &#x3D; \sum_{i}^{H}\sum_{j}^{W} \tilde{M}<em>{s}[i,j] \cdot F</em>{s}[:, i, j]<br>$$</p>
-<p>输入序列：$x_{input} &#x3D; [CLS,; CDT,; x_{1}, \dots, x_{n}]$，其中 CDT 为 $z_s$ 的线性投影。</p>
-<h4 id="代码对应"><a href="#代码对应" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\train\csegmentor.py</span><br><span class="line">Class: ConditionalSegmentationModel（feat_extractor=&#x27;dinov3_cn_large&#x27;，backbone_type=&#x27;dinov3&#x27;，backbone_size=&#x27;large&#x27;）</span><br><span class="line">Function: compute_conditional_feature（Eq.1-2 的 mask 加权池化）/ forward（encoder → backbone → final → cls_branch → upsampler）</span><br><span class="line">Class: ClsBranch（可见性二分类头）</span><br></pre></td></tr></table></figure>
+<p>$$\tilde{M}<em>{s} = \frac{M</em>{s}}{\sum_{i,j} M_{s}[i,j] + \tau},\qquad z_{s} = \sum_{i}^{H}\sum_{j}^{W} \tilde{M}<em>{s}[i,j] \cdot F</em>{s}[:, i, j]$$</p>
+<p>输入序列：<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.65ex;" xmlns="http://www.w3.org/2000/svg" width="33.259ex" height="2.347ex" role="img" focusable="false" viewBox="0 -750 14700.7 1037.2"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g><g data-mml-node="TeXAtom" transform="translate(605,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(345,0)"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(945,0)"><path data-c="1D45D" d="M23 287Q24 290 25 295T30 317T40 348T55 381T75 411T101 433T134 442Q209 442 230 378L240 387Q302 442 358 442Q423 442 460 395T497 281Q497 173 421 82T249 -10Q227 -10 210 -4Q199 1 187 11T168 28L161 36Q160 35 139 -51T118 -138Q118 -144 126 -145T163 -148H188Q194 -155 194 -157T191 -175Q188 -187 185 -190T172 -194Q170 -194 161 -194T127 -193T65 -192Q-5 -192 -24 -194H-32Q-39 -187 -39 -183Q-37 -156 -26 -148H-6Q28 -147 33 -136Q36 -130 94 103T155 350Q156 355 156 364Q156 405 131 405Q109 405 94 377T71 316T59 280Q57 278 43 278H29Q23 284 23 287ZM178 102Q200 26 252 26Q282 26 310 49T356 107Q374 141 392 215T411 325V331Q411 405 350 405Q339 405 328 402T306 393T286 380T269 365T254 350T243 336T235 326L232 322Q232 321 229 308T218 264T204 212Q178 106 178 102Z"></path></g><g data-mml-node="mi" transform="translate(1448,0)"><path data-c="1D462" d="M21 287Q21 295 30 318T55 370T99 420T158 442Q204 442 227 417T250 358Q250 340 216 246T182 105Q182 62 196 45T238 27T291 44T328 78L339 95Q341 99 377 247Q407 367 413 387T427 416Q444 431 463 431Q480 431 488 421T496 402L420 84Q419 79 419 68Q419 43 426 35T447 26Q469 29 482 57T512 145Q514 153 532 153Q551 153 551 144Q550 139 549 130T540 98T523 55T498 17T462 -8Q454 -10 438 -10Q372 -10 347 46Q345 45 336 36T318 21T296 6T267 -6T233 -11Q189 -11 155 7Q103 38 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(2020,0)"><path data-c="1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g></g></g><g data-mml-node="mo" transform="translate(2616.4,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mo" transform="translate(3672.2,0)"><path data-c="5B" d="M118 -250V750H255V710H158V-210H255V-250H118Z"></path></g><g data-mml-node="mi" transform="translate(3950.2,0)"><path data-c="1D436" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path></g><g data-mml-node="mi" transform="translate(4710.2,0)"><path data-c="1D43F" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 217 683Q271 680 344 680Q485 680 506 683H518Q524 677 524 674T522 656Q517 641 513 637H475Q406 636 394 628Q387 624 380 600T313 336Q297 271 279 198T252 88L243 52Q243 48 252 48T311 46H328Q360 46 379 47T428 54T478 72T522 106T564 161Q580 191 594 228T611 270Q616 273 628 273H641Q647 264 647 262T627 203T583 83T557 9Q555 4 553 3T537 0T494 -1Q483 -1 418 -1T294 0H116Q32 0 32 10Q32 17 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"></path></g><g data-mml-node="mi" transform="translate(5391.2,0)"><path data-c="1D446" d="M308 24Q367 24 416 76T466 197Q466 260 414 284Q308 311 278 321T236 341Q176 383 176 462Q176 523 208 573T273 648Q302 673 343 688T407 704H418H425Q521 704 564 640Q565 640 577 653T603 682T623 704Q624 704 627 704T632 705Q645 705 645 698T617 577T585 459T569 456Q549 456 549 465Q549 471 550 475Q550 478 551 494T553 520Q553 554 544 579T526 616T501 641Q465 662 419 662Q362 662 313 616T263 510Q263 480 278 458T319 427Q323 425 389 408T456 390Q490 379 522 342T554 242Q554 216 546 186Q541 164 528 137T492 78T426 18T332 -20Q320 -22 298 -22Q199 -22 144 33L134 44L106 13Q83 -14 78 -18T65 -22Q52 -22 52 -14Q52 -11 110 221Q112 227 130 227H143Q149 221 149 216Q149 214 148 207T144 186T142 153Q144 114 160 87T203 47T255 29T308 24Z"></path></g><g data-mml-node="mo" transform="translate(6036.2,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mo" transform="translate(6480.8,0)"><path data-c="3B" d="M78 370Q78 394 95 412T138 430Q162 430 180 414T199 371Q199 346 182 328T139 310T96 327T78 370ZM78 60Q78 85 94 103T137 121Q202 121 202 8Q202 -44 183 -94T144 -169T118 -194Q115 -194 106 -186T95 -174Q94 -171 107 -155T137 -107T160 -38Q161 -32 162 -22T165 -4T165 4Q165 5 161 4T142 0Q110 0 94 18T78 60Z"></path></g><g data-mml-node="mi" transform="translate(6925.5,0)"><path data-c="1D436" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path></g><g data-mml-node="mi" transform="translate(7685.5,0)"><path data-c="1D437" d="M287 628Q287 635 230 637Q207 637 200 638T193 647Q193 655 197 667T204 682Q206 683 403 683Q570 682 590 682T630 676Q702 659 752 597T803 431Q803 275 696 151T444 3L430 1L236 0H125H72Q48 0 41 2T33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM703 469Q703 507 692 537T666 584T629 613T590 629T555 636Q553 636 541 636T512 636T479 637H436Q392 637 386 627Q384 623 313 339T242 52Q242 48 253 48T330 47Q335 47 349 47T373 46Q499 46 581 128Q617 164 640 212T683 339T703 469Z"></path></g><g data-mml-node="mi" transform="translate(8513.5,0)"><path data-c="1D447" d="M40 437Q21 437 21 445Q21 450 37 501T71 602L88 651Q93 669 101 677H569H659Q691 677 697 676T704 667Q704 661 687 553T668 444Q668 437 649 437Q640 437 637 437T631 442L629 445Q629 451 635 490T641 551Q641 586 628 604T573 629Q568 630 515 631Q469 631 457 630T439 622Q438 621 368 343T298 60Q298 48 386 46Q418 46 427 45T436 36Q436 31 433 22Q429 4 424 1L422 0Q419 0 415 0Q410 0 363 1T228 2Q99 2 64 0H49Q43 6 43 9T45 27Q49 40 55 46H83H94Q174 46 189 55Q190 56 191 56Q196 59 201 76T241 233Q258 301 269 344Q339 619 339 625Q339 630 310 630H279Q212 630 191 624Q146 614 121 583T67 467Q60 445 57 441T43 437H40Z"></path></g><g data-mml-node="mo" transform="translate(9217.5,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mo" transform="translate(9662.2,0)"><path data-c="3B" d="M78 370Q78 394 95 412T138 430Q162 430 180 414T199 371Q199 346 182 328T139 310T96 327T78 370ZM78 60Q78 85 94 103T137 121Q202 121 202 8Q202 -44 183 -94T144 -169T118 -194Q115 -194 106 -186T95 -174Q94 -171 107 -155T137 -107T160 -38Q161 -32 162 -22T165 -4T165 4Q165 5 161 4T142 0Q110 0 94 18T78 60Z"></path></g><g data-mml-node="msub" transform="translate(10106.8,0)"><g data-mml-node="mi"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g><g data-mml-node="TeXAtom" transform="translate(605,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></g></g></g><g data-mml-node="mo" transform="translate(11115.4,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="mo" transform="translate(11560.1,0)"><path data-c="2026" d="M78 60Q78 84 95 102T138 120Q162 120 180 104T199 61Q199 36 182 18T139 0T96 17T78 60ZM525 60Q525 84 542 102T585 120Q609 120 627 104T646 61Q646 36 629 18T586 0T543 17T525 60ZM972 60Q972 84 989 102T1032 120Q1056 120 1074 104T1093 61Q1093 36 1076 18T1033 0T990 17T972 60Z"></path></g><g data-mml-node="mo" transform="translate(12898.7,0)"><path data-c="2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path></g><g data-mml-node="msub" transform="translate(13343.4,0)"><g data-mml-node="mi"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g><g data-mml-node="TeXAtom" transform="translate(605,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D45B" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path></g></g></g><g data-mml-node="mo" transform="translate(14422.7,0)"><path data-c="5D" d="M22 710V750H159V-250H22V-210H119V710H22Z"></path></g></g></g></svg></mjx-container>，其中 CDT 为 <mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.355ex;" xmlns="http://www.w3.org/2000/svg" width="1.99ex" height="1.355ex" role="img" focusable="false" viewBox="0 -442 879.6 599.1"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D467" d="M347 338Q337 338 294 349T231 360Q211 360 197 356T174 346T162 335T155 324L153 320Q150 317 138 317Q117 317 117 325Q117 330 120 339Q133 378 163 406T229 440Q241 442 246 442Q271 442 291 425T329 392T367 375Q389 375 411 408T434 441Q435 442 449 442H462Q468 436 468 434Q468 430 463 420T449 399T432 377T418 358L411 349Q368 298 275 214T160 106L148 94L163 93Q185 93 227 82T290 71Q328 71 360 90T402 140Q406 149 409 151T424 153Q443 153 443 143Q443 138 442 134Q425 72 376 31T278 -11Q252 -11 232 6T193 40T155 57Q111 57 76 -3Q70 -11 59 -11H54H41Q35 -5 35 -2Q35 13 93 84Q132 129 225 214T340 322Q352 338 347 338Z"></path></g><g data-mml-node="mi" transform="translate(498,-150) scale(0.707)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></g></g></g></g></svg></mjx-container> 的线性投影。</p>
+<h4 id="代码对应"><a href="#代码对应" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\train\csegmentor.py</span><br><span class="line">Class: ConditionalSegmentationModel（feat_extractor='dinov3_cn_large'，backbone_type='dinov3'，backbone_size='large'）</span><br><span class="line">Function: compute_conditional_feature（Eq.1-2 的 mask 加权池化）/ forward（encoder → backbone → final → cls_branch → upsampler）</span><br><span class="line">Class: ClsBranch（可见性二分类头）</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># csegmentor.py —— 条件特征（CDT 来源，Eq.1-2 的实现）</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">compute_conditional_feature</span>(<span class="params">self, source_features, source_mask</span>):</span><br><span class="line">    source_features = source_features[<span class="variable language_">self</span>.extractor_depth]   <span class="comment"># ConvNeXt 第 2 层特征</span></span><br><span class="line">    source_mask_resized = F.interpolate(source_mask, size=(H, W), mode=<span class="string">&#x27;bilinear&#x27;</span>, align_corners=<span class="literal">False</span>)</span><br><span class="line">    weighted_features = source_features * source_mask_resized</span><br><span class="line">    conditional_feature = torch.<span class="built_in">sum</span>(weighted_features, dim=(<span class="number">2</span>, <span class="number">3</span>), keepdim=<span class="literal">True</span>) / \</span><br><span class="line">        (torch.<span class="built_in">sum</span>(source_mask_resized, dim=(<span class="number">2</span>, <span class="number">3</span>), keepdim=<span class="literal">True</span>) + <span class="number">1e-6</span>)</span><br><span class="line">    <span class="keyword">return</span> conditional_feature</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># csegmentor.py —— 条件特征（CDT 来源，Eq.1-2 的实现）</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">compute_conditional_feature</span>(<span class="params">self, source_features, source_mask</span>):</span><br><span class="line">    source_features = source_features[<span class="variable language_">self</span>.extractor_depth]   <span class="comment"># ConvNeXt 第 2 层特征</span></span><br><span class="line">    source_mask_resized = F.interpolate(source_mask, size=(H, W), mode=<span class="string">'bilinear'</span>, align_corners=<span class="literal">False</span>)</span><br><span class="line">    weighted_features = source_features * source_mask_resized</span><br><span class="line">    conditional_feature = torch.<span class="built_in">sum</span>(weighted_features, dim=(<span class="number">2</span>, <span class="number">3</span>), keepdim=<span class="literal">True</span>) / \</span><br><span class="line">        (torch.<span class="built_in">sum</span>(source_mask_resized, dim=(<span class="number">2</span>, <span class="number">3</span>), keepdim=<span class="literal">True</span>) + <span class="number">1e-6</span>)</span><br><span class="line">    <span class="keyword">return</span> conditional_feature</span><br></pre></td></tr></table></figure>
 
-<h4 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h4><p>CDT 本质上就是”mask 池化的类原型”——与 CAV-SAM 的 prototype pr、V2-SAM 的 RegionPooling 是同一个思想（mask 条件特征），差别在注入方式：CAV-SAM 用相似度图当 prompt，V2-SAM 用 cross-attention 匹配器对齐，CCMP 干脆把原型作为一个 token 丢进 ViT 的自注意力里让网络自己学怎么用它。极简的前提是 DINOv3 特征本身足够强（论文 Table 5：换 DINOv2 掉 1.58 mIoU，仍超 XSegTx+DINOv3 的 30.44 达 42.99）。注意代码里 <code>extractor_depth=2</code>（W&#x2F;16 分辨率）与 backbone 是两套 DINOv3（ConvNeXt-L 提取器 + ViT-L 编码器）。</p>
+<h4 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h4><p>CDT 本质上就是”mask 池化的类原型”——与 CAV-SAM 的 prototype pr、V2-SAM 的 RegionPooling 是同一个思想（mask 条件特征），差别在注入方式：CAV-SAM 用相似度图当 prompt，V2-SAM 用 cross-attention 匹配器对齐，CCMP 干脆把原型作为一个 token 丢进 ViT 的自注意力里让网络自己学怎么用它。极简的前提是 DINOv3 特征本身足够强（论文 Table 5：换 DINOv2 掉 1.58 mIoU，仍超 XSegTx+DINOv3 的 30.44 达 42.99）。注意代码里 <code>extractor_depth=2</code>（W/16 分辨率）与 backbone 是两套 DINOv3（ConvNeXt-L 提取器 + ViT-L 编码器）。</p>
 <hr>
 <h3 id="3-3-Core-Module-2-—-Lcycle-循环一致性-Test-Time-Training"><a href="#3-3-Core-Module-2-—-Lcycle-循环一致性-Test-Time-Training" class="headerlink" title="3.3 Core Module 2 — Lcycle 循环一致性 + Test-Time Training"></a>3.3 Core Module 2 — <code>Lcycle 循环一致性 + Test-Time Training</code></h3><h4 id="为什么需要？-1"><a href="#为什么需要？-1" class="headerlink" title="为什么需要？"></a>为什么需要？</h4><p>目标视图 GT mask 昂贵且不可用（测试时）；需要不依赖 GT 的自监督信号来学习视图不变表示，并且这个信号最好在推理时也能用——Lcycle 恰好两者兼备。</p>
 <h4 id="核心做法-1"><a href="#核心做法-1" class="headerlink" title="核心做法"></a>核心做法</h4><ul>
-<li><strong>正向</strong>：网络 (Is, Ms, It) → M̂t；mask 损失 Lmask &#x3D; BCE + λdice·Dice（λdice&#x3D;5）；</li>
-<li><strong>反向</strong>：把 M̂t（sigmoid 输出）当源 mask，网络 (It, M̂t, Is) → M̂s；Lcycle &#x3D; BCE(Ms, M̂s)（λcycle&#x3D;10，<strong>不加 Dice</strong>——论文消融证明加 Dice 会损害 TTT，40.20 vs 44.57）；</li>
+<li><strong>正向</strong>：网络 (Is, Ms, It) → M̂t；mask 损失 Lmask = BCE + λdice·Dice（λdice=5）；</li>
+<li><strong>反向</strong>：把 M̂t（sigmoid 输出）当源 mask，网络 (It, M̂t, Is) → M̂s；Lcycle = BCE(Ms, M̂s)（λcycle=10，<strong>不加 Dice</strong>——论文消融证明加 Dice 会损害 TTT，40.20 vs 44.57）；</li>
 <li><strong>TTT</strong>：推理时对每个测试图像对，冻结其余参数，只更新 ViT 最后 K 个 blocks，T 步，lr 5e-6；</li>
 <li>可见性不可见物体不显式处理（作者认为 Ego-Exo4D 中此类样本罕见）；</li>
-<li>总损失 Ltotal &#x3D; Lmask + λaux·Laux + λcycle·Lcycle（λaux&#x3D;1，辅助损失作用于倒数第二层）。</li>
+<li>总损失 Ltotal = Lmask + λaux·Laux + λcycle·Lcycle（λaux=1，辅助损失作用于倒数第二层）。</li>
 </ul>
 <h4 id="关键公式-1"><a href="#关键公式-1" class="headerlink" title="关键公式"></a>关键公式</h4><p>总损失（Eq.1）与循环一致性损失（Eq.4）：</p>
-<p>$$<br>\mathcal{L}<em>{total} &#x3D; \mathcal{L}</em>{mask} + \lambda_{aux}\mathcal{L}<em>{aux} + \lambda</em>{cycle}\mathcal{L}_{cycle}<br>$$</p>
-<p>$$<br>\mathcal{L}<em>{cycle} &#x3D; \mathcal{L}</em>{bce}(M_{s}, \hat{M}<em>{s}), \qquad<br>\hat{M}</em>{s} &#x3D; f\big(I_{s},; \hat{M}<em>{t},; I</em>{t}\big)<br>$$</p>
-<p>mask 损失（Eq.2-3，BCE + Dice）：$\mathcal{L}<em>{mask} &#x3D; \mathcal{L}</em>{bce}(M_{t}, \hat{M}<em>{t}) + \lambda</em>{dice}\mathcal{L}<em>{dice}(M</em>{t}, \hat{M}_{t})$</p>
+<p>$$\mathcal{L}<em>{total} = \mathcal{L}</em>{mask} + \lambda_{aux}\mathcal{L}<em>{aux} + \lambda</em>{cycle}\mathcal{L}_{cycle}$$</p>
+<p>$$\mathcal{L}<em>{cycle} = \mathcal{L}</em>{bce}(M_{s}, \hat{M}<em>{s}), \qquad \hat{M}</em>{s} = f\big(I_{s},; \hat{M}<em>{t},; I</em>{t}\big)$$</p>
+<p>mask 损失（Eq.2-3，BCE + Dice）：$\mathcal{L}<em>{mask} = \mathcal{L}</em>{bce}(M_{t}, \hat{M}<em>{t}) + \lambda</em>{dice}\mathcal{L}<em>{dice}(M</em>{t}, \hat{M}_{t})$</p>
 <h4 id="代码对应-1"><a href="#代码对应-1" class="headerlink" title="代码对应"></a>代码对应</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\train\train.py</span><br><span class="line">Function: trainEpoch（循环一致性：netEncoder(T2, FM2, T1) 反向再跑一次 → Loss(Reversed_output_list[-1], FM1)）</span><br><span class="line">Function: loss_calculation（mask + dice + cls + 辅助损失组合）</span><br><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\train\losses.py</span><br><span class="line">Function: dice_loss_with_logits</span><br><span class="line">File: F:\Code\Projects\Tracking\CCMP\SegSwap\eval_segswap_visttt.py</span><br><span class="line">Function: test_time_training（trainable_blocks = netEncoder.backbone.blocks[-ttt_layers:]）</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># train.py —— 循环一致性损失（论文 Lcycle 的实现）</span></span><br><span class="line">output = torch.sigmoid(output_list[-<span class="number">1</span>])</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">abs</span>(consistency_weight) &gt; <span class="number">1e-6</span>:</span><br><span class="line">    FM2 = output.<span class="built_in">type</span>(torch.FloatTensor).cuda()          <span class="comment"># 预测 mask 当源 mask</span></span><br><span class="line">    Reversed_output_list, _ = netEncoder(T2, FM2, T1)    <span class="comment"># 反向再跑一遍</span></span><br><span class="line">    consistency_loss = Loss(Reversed_output_list[-<span class="number">1</span>], FM1)   <span class="comment"># BCE vs 原源 mask</span></span><br><span class="line">    loss += consistency_weight * consistency_loss</span><br><span class="line"></span><br><span class="line"><span class="comment"># eval_segswap_visttt.py —— TTT 实现</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_time_training</span>(<span class="params">netEncoder, tensor1, tensor2, tensor3, lr=..., iterations=..., ttt_layers=...</span>):</span><br><span class="line">    trainable_blocks = netEncoder.backbone.blocks[-ttt_layers:]   <span class="comment"># 只更新最后 K 层</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
 
-<h4 id="我的理解-1"><a href="#我的理解-1" class="headerlink" title="我的理解"></a>我的理解</h4><p>Lcycle 的设计哲学是”让对应关系自我闭环”：M̂t 反投影回源视图必须重建 Ms，模型就被迫学到”跨视图一致的表示”而不是”目标视图特有的捷径”。TTT 复用同一目标时有一个精妙之处——Lcycle 不依赖任何 GT，所以测试时可以无限加自监督步数；作者还发现 Dice 会破坏它，我认为原因是 Dice 对”空 mask”惩罚过强（小目标&#x2F;遮挡时 M̂s 与 Ms 重叠小，Dice 梯度噪声大），BCE 相对温和，这对”自监督目标设计”是一个通用教训。</p>
+<h4 id="我的理解-1"><a href="#我的理解-1" class="headerlink" title="我的理解"></a>我的理解</h4><p>Lcycle 的设计哲学是”让对应关系自我闭环”：M̂t 反投影回源视图必须重建 Ms，模型就被迫学到”跨视图一致的表示”而不是”目标视图特有的捷径”。TTT 复用同一目标时有一个精妙之处——Lcycle 不依赖任何 GT，所以测试时可以无限加自监督步数；作者还发现 Dice 会破坏它，我认为原因是 Dice 对”空 mask”惩罚过强（小目标/遮挡时 M̂s 与 Ms 重叠小，Dice 梯度噪声大），BCE 相对温和，这对”自监督目标设计”是一个通用教训。</p>
 <hr>
 <h3 id="3-4-论文与代码对照"><a href="#3-4-论文与代码对照" class="headerlink" title="3.4 论文与代码对照"></a>3.4 论文与代码对照</h3><table>
 <thead>
 <tr>
 <th>Paper Module</th>
 <th>Code File</th>
-<th>Class &#x2F; Function</th>
+<th>Class / Function</th>
 <th>作用</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>Source Feature Extractor (ConvNeXt DINOv3-L)</td>
 <td><code>SegSwap/model/dinov3convnext.py</code> + <code>train/csegmentor.py</code></td>
-<td><code>get_convnext_arch</code> &#x2F; <code>compute_conditional_feature</code></td>
+<td><code>get_convnext_arch</code> / <code>compute_conditional_feature</code></td>
 <td>源特征提取 + mask 加权池化（CDT 来源）</td>
 </tr>
 <tr>
 <td>Transformer Encoder (DINOv3 ViT-L)</td>
 <td><code>SegSwap/model/dinov3vit.py</code> + <code>train/csegmentor.py</code></td>
-<td><code>dinov3_vit_large</code> &#x2F; <code>ConditionalSegmentationModel.forward</code></td>
+<td><code>dinov3_vit_large</code> / <code>ConditionalSegmentationModel.forward</code></td>
 <td>CDT + CLS + patch tokens 条件化编码</td>
 </tr>
 <tr>
@@ -250,32 +362,32 @@ document.addEventListener('DOMContentLoaded', function() {
 <tr>
 <td>CLS Head（可见性）</td>
 <td><code>train/csegmentor.py</code> + <code>train/posttrain.py</code></td>
-<td><code>ClsBranch</code> &#x2F; posttrain 主流程</td>
+<td><code>ClsBranch</code> / posttrain 主流程</td>
 <td>可见性二分类（冻结主干后训练）</td>
 </tr>
 <tr>
 <td>Mask 损失 (BCE+Dice)</td>
 <td><code>train/losses.py</code> + <code>train/train.py</code></td>
-<td><code>dice_loss_with_logits</code> &#x2F; <code>loss_calculation</code></td>
+<td><code>dice_loss_with_logits</code> / <code>loss_calculation</code></td>
 <td>Lmask + 辅助损失组合</td>
 </tr>
 <tr>
 <td>循环一致性损失</td>
 <td><code>train/train.py</code></td>
 <td><code>trainEpoch</code>（<code>netEncoder(T2, FM2, T1)</code> 反向 + BCE）</td>
-<td>Lcycle（λ&#x3D;10）</td>
+<td>Lcycle（λ=10）</td>
 </tr>
 <tr>
 <td>TTT 推理</td>
 <td><code>eval_segswap_visttt.py</code></td>
-<td><code>test_time_training</code> &#x2F; <code>egoexo</code> &#x2F; <code>exoego</code></td>
+<td><code>test_time_training</code> / <code>egoexo</code> / <code>exoego</code></td>
 <td>测试时更新最后 K 层 blocks</td>
 </tr>
 <tr>
 <td>HANDAL-X 评测</td>
 <td><code>SegSwap/eval_handal.py</code></td>
 <td>main（torchrun 8 卡）</td>
-<td>HANDAL-X 零样本&#x2F;微调评测</td>
+<td>HANDAL-X 零样本/微调评测</td>
 </tr>
 <tr>
 <td>训练入口</td>
@@ -286,8 +398,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </tbody></table>
 <h4 id="论文和代码不一致的地方"><a href="#论文和代码不一致的地方" class="headerlink" title="论文和代码不一致的地方"></a>论文和代码不一致的地方</h4><ul>
 <li><strong>模型架构对应</strong>：论文的”ConvNeXt-based DINOv3-L 源提取器 + ViT-based DINOv3-L 编码器”与代码 <code>run.sh</code> 的 <code>--feat-extractor dinov3_cn_large --extractor-depth 2 --backbone-type dinov3 --backbone-size large</code> 一致。</li>
-<li><strong>训练阶段</strong>：论文说”第一阶段 linear probing 64K 迭代冻结两个 DINOv3，第二阶段 640K 迭代全量”；代码 run.sh 为 <code>--lp-n-epoch 20 --lp-iter-epoch 3200</code>（&#x3D;64K）+ <code>--n-epoch 200 --iter-epoch 3200</code>（&#x3D;640K），一致；论文”gradient accumulation step 16 → 44K 有效更新”，代码 <code>--grad-accum 16</code> 一致。</li>
-<li><strong>TTT 配置</strong>：论文 Ego2Exo K&#x3D;4&#x2F;T&#x3D;2、Exo2Ego K&#x3D;11&#x2F;T&#x3D;6、lr 5e-6；代码 <code>run_ego.sh</code> 为 <code>--ttt_iter 2 --ttt_layers 4</code>（一致），但 <code>test_time_training</code> 默认 <code>lr=0.0001</code>（1e-4），<code>run_ego.sh</code> 未覆盖 ttt_lr，需自行传入 5e-6 才能与论文一致。</li>
+<li><strong>训练阶段</strong>：论文说”第一阶段 linear probing 64K 迭代冻结两个 DINOv3，第二阶段 640K 迭代全量”；代码 run.sh 为 <code>--lp-n-epoch 20 --lp-iter-epoch 3200</code>（=64K）+ <code>--n-epoch 200 --iter-epoch 3200</code>（=640K），一致；论文”gradient accumulation step 16 → 44K 有效更新”，代码 <code>--grad-accum 16</code> 一致。</li>
+<li><strong>TTT 配置</strong>：论文 Ego2Exo K=4/T=2、Exo2Ego K=11/T=6、lr 5e-6；代码 <code>run_ego.sh</code> 为 <code>--ttt_iter 2 --ttt_layers 4</code>（一致），但 <code>test_time_training</code> 默认 <code>lr=0.0001</code>（1e-4），<code>run_ego.sh</code> 未覆盖 ttt_lr，需自行传入 5e-6 才能与论文一致。</li>
 <li><strong>数据规模</strong>：论文用 755 takes 训练（66 takes 因隐私被删减），README 提示官方流程得到的 true_data 可能比论文实际使用的大（有对应 issue），复现数据规模不完全一致。</li>
 <li><strong>Dice in Lcycle</strong>：论文消融显示 Lcycle 中加 Dice 有害；代码 <code>--consistency-dice-weight 0</code> 默认关闭，与论文一致（若打开需自行对齐 40.20 的配置）。</li>
 <li>论文”CLS Head 微调 96K 迭代约 1 小时”，代码为 <code>posttrain.py</code> 的 <code>--posttrain-epoch 30</code>（迭代数由数据量决定，需按 96K 对齐）。</li>
@@ -311,28 +423,28 @@ document.addEventListener('DOMContentLoaded', function() {
 <tbody><tr>
 <td>Ego-Exo4D Correspondences v2 (test)</td>
 <td>mIoU（主指标，Ego2Exo+Exo2Ego 平均）、VA↑、IoU↑、LE↓、CA↑</td>
-<td>Ego Query &#x2F; Exo Query 双设置</td>
+<td>Ego Query / Exo Query 双设置</td>
 </tr>
 <tr>
 <td>HANDAL-X</td>
 <td>IoU↑（ZSL 与微调两种）</td>
-<td>44,102 训练对 &#x2F; 14,074 测试对，360° 视角</td>
+<td>44,102 训练对 / 14,074 测试对，360° 视角</td>
 </tr>
 </tbody></table>
 <h3 id="主要结果"><a href="#主要结果" class="headerlink" title="主要结果"></a>主要结果</h3><blockquote>
-<p><strong>Ego-Exo4D v2 (test)</strong>：mIoU <strong>44.57</strong>（Ego Query 41.95 &#x2F; Exo Query 47.18），超 O-MaMa 43.32（+1.25 mIoU，相对 +2.9%）；Exo Query IoU 47.18 超此前最优 44.08（O-MaMa）达 <strong>+3.10</strong>；Ego Query 41.95 逼近 O-MaMa 42.57。CA 在 Ego Query 下 0.669（相对 +13.4%）。VA 98.92&#x2F;99.86 远高于 O-MaMa 的 50.00（O-MaMa 无可见性判别）。<br><strong>HANDAL-X</strong>：零样本 78.8（超 ObjectRelator 42.8，相对提升 84.1%）；Ego-Exo4D + HANDAL-X 微调后 85.0（ObjectRelator 84.7）。全部方法在 Ego-Exo4D 训练后 HANDAL-X 均涨点，说明 ego-exo 数据对跨视角泛化有正迁移。<br><strong>Ego Query 普遍难</strong>：多数方法 Ego Query 差于 Exo Query（exo 视图物体更小、背景更杂），论文 Figure 4(b) 定量验证。</p>
+<p><strong>Ego-Exo4D v2 (test)</strong>：mIoU <strong>44.57</strong>（Ego Query 41.95 / Exo Query 47.18），超 O-MaMa 43.32（+1.25 mIoU，相对 +2.9%）；Exo Query IoU 47.18 超此前最优 44.08（O-MaMa）达 <strong>+3.10</strong>；Ego Query 41.95 逼近 O-MaMa 42.57。CA 在 Ego Query 下 0.669（相对 +13.4%）。VA 98.92/99.86 远高于 O-MaMa 的 50.00（O-MaMa 无可见性判别）。<br><strong>HANDAL-X</strong>：零样本 78.8（超 ObjectRelator 42.8，相对提升 84.1%）；Ego-Exo4D + HANDAL-X 微调后 85.0（ObjectRelator 84.7）。全部方法在 Ego-Exo4D 训练后 HANDAL-X 均涨点，说明 ego-exo 数据对跨视角泛化有正迁移。<br><strong>Ego Query 普遍难</strong>：多数方法 Ego Query 差于 Exo Query（exo 视图物体更小、背景更杂），论文 Figure 4(b) 定量验证。</p>
 </blockquote>
 <h3 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h3><blockquote>
-<p><strong>哪个模块贡献最大？</strong> 循环一致性损失最关键：w&#x2F;o Lcycle → 43.05（-1.52），w&#x2F;o Laux → 42.90（-1.67），w&#x2F;o TTT → 42.99（-1.58）——三者几乎同等重要，说明”训练自监督 + 推理自适应”是一个整体。数据侧：w&#x2F;o 同视图合成 -1.38，w&#x2F;o RTA -1.54。架构侧：DINOv3 双骨干 + 条件分割比”XSegTx 换 DINOv3 骨干”（30.44）高 14.13，证明提升主要来自方法设计而非特征（DINOv2 骨干 42.99 仍超 XSegTx+DINOv3）。反直觉发现：Lcycle 里加 Dice 反而掉到 40.20。w&#x2F;o linear probing 阶段 → 40.83（-3.74）。</p>
+<p><strong>哪个模块贡献最大？</strong> 循环一致性损失最关键：w/o Lcycle → 43.05（-1.52），w/o Laux → 42.90（-1.67），w/o TTT → 42.99（-1.58）——三者几乎同等重要，说明”训练自监督 + 推理自适应”是一个整体。数据侧：w/o 同视图合成 -1.38，w/o RTA -1.54。架构侧：DINOv3 双骨干 + 条件分割比”XSegTx 换 DINOv3 骨干”（30.44）高 14.13，证明提升主要来自方法设计而非特征（DINOv2 骨干 42.99 仍超 XSegTx+DINOv3）。反直觉发现：Lcycle 里加 Dice 反而掉到 40.20。w/o linear probing 阶段 → 40.83（-3.74）。</p>
 </blockquote>
 <h3 id="失败案例"><a href="#失败案例" class="headerlink" title="失败案例"></a>失败案例</h3><ul>
 <li>**小目标（&lt; 0.1% 图像面积）仍难**：Figure 4(b) 显示 &gt;0.1% 面积时性能良好，更小目标失败率显著上升；cooking、health、bike repair 场景（物体小、环境复杂）IoU 偏低。</li>
-<li><strong>Ego2Exo 的 TTT 受益有限</strong>：Ego2Exo 任务里小目标比例更高，TTT 提升被稀释（w&#x2F;o TTT 只掉 0.16 on Ego IoU，而 Exo 掉 3.0）。</li>
-<li>不可见物体（遮挡&#x2F;出画）不显式建模：论文承认未处理，靠数据中罕见来规避。</li>
-<li>目标形变&#x2F;尺度骤变（如运动中的球）仍会造成 mask 不完整或漂移（定性补充材料）。</li>
+<li><strong>Ego2Exo 的 TTT 受益有限</strong>：Ego2Exo 任务里小目标比例更高，TTT 提升被稀释（w/o TTT 只掉 0.16 on Ego IoU，而 Exo 掉 3.0）。</li>
+<li>不可见物体（遮挡/出画）不显式建模：论文承认未处理，靠数据中罕见来规避。</li>
+<li>目标形变/尺度骤变（如运动中的球）仍会造成 mask 不完整或漂移（定性补充材料）。</li>
 </ul>
 <h4 id="我认为失败的原因"><a href="#我认为失败的原因" class="headerlink" title="我认为失败的原因"></a>我认为失败的原因</h4><ol>
-<li>小目标失败的本质是<strong>条件信息稀释</strong>：源 mask 池化（Eq.2）是”全局平均”，小目标在源视图也可能只占几个 patch，条件特征里目标信号被背景平均掉；同时 ViT patch（16×16@512px）对小目标分辨率不足——这与我在无人机视角观察到的”目标从大变小时跟踪失效”是同一个病根，且这三篇论文（CAV-SAM&#x2F;V2-SAM&#x2F;CCMP）都未能根本解决。</li>
+<li>小目标失败的本质是<strong>条件信息稀释</strong>：源 mask 池化（Eq.2）是”全局平均”，小目标在源视图也可能只占几个 patch，条件特征里目标信号被背景平均掉；同时 ViT patch（16×16@512px）对小目标分辨率不足——这与我在无人机视角观察到的”目标从大变小时跟踪失效”是同一个病根，且这三篇论文（CAV-SAM/V2-SAM/CCMP）都未能根本解决。</li>
 <li>Ego2Exo TTT 增益小的原因：小目标上 Lcycle 的反向重建信噪比低（M̂s 与 Ms 重叠差），自监督梯度被噪声主导，微调反而难以收敛到有效方向。</li>
 <li>不可见物体未建模的代价是”硬分割”：CLS head 虽判不可见，但 mask head 仍会输出任意掩码，评测时以 VA 惩罚——可见性-分割解耦若不做端到端联合训练，两头的错误无法互相纠错。</li>
 </ol>
@@ -347,10 +459,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <p><strong>关键运行命令</strong></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装</span></span><br><span class="line">conda create -n ccmp python=3.11 -y &amp;&amp; conda activate ccmp</span><br><span class="line">pip install -r requirements.txt</span><br><span class="line">pip install xformers==0.0.31.post1 --no-deps</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练（true_data 解压到 SegSwap/ 下；DINOv3 权重放 SegSwap/model/）</span></span><br><span class="line"><span class="built_in">cd</span> SegSwap/train &amp;&amp; bash run.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 推理（Ego2Exo / Exo2Ego，含 TTT）</span></span><br><span class="line"><span class="built_in">cd</span> SegSwap/train</span><br><span class="line">bash run_ego.sh     <span class="comment"># --ttt_iter 2 --ttt_layers 4</span></span><br><span class="line">bash run_exo.sh     <span class="comment"># --ttt_iter 6 --ttt_layers 11（按论文 Exo2Ego 配置）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 评测（Ego-Exo4D）</span></span><br><span class="line"><span class="built_in">cd</span> evaluation</span><br><span class="line">python process_annotations.py --data_path ../SegSwap/true_data --annotations_path &lt;relations_test.json&gt; \</span><br><span class="line">    --<span class="built_in">split</span> <span class="built_in">test</span> --output_path ../SegSwap/output/correspondence-gt.json</span><br><span class="line">python3 evaluate_egoexo.py --gt-file ../SegSwap/output/correspondence-gt.json \</span><br><span class="line">    --pred-file ../SegSwap/output/&lt;exp&gt;/ego-exo_test_results_ttt.json</span><br><span class="line"></span><br><span class="line"><span class="comment"># HANDAL-X 评测</span></span><br><span class="line"><span class="built_in">cd</span> SegSwap</span><br><span class="line">torchrun --nproc_per_node=8 eval_handal.py --json_path handal/handal_test_visual.json \</span><br><span class="line">    --model_path train/output/&lt;exp&gt;/best_test_miou.pth --root_path handal --image_size 512 \</span><br><span class="line">    --backbone_size large --backbone_type dinov3 --extractor_type dinov3_cn_large --use_amp --dist</span><br></pre></td></tr></table></figure>
 
-<h4 id="复现结果"><a href="#复现结果" class="headerlink" title="复现结果"></a>复现结果</h4><p>未在本地复跑（需 Ego-Exo4D 数据与 8×A800）。论文报告 mIoU 44.57（Ego 41.95 &#x2F; Exo 47.18）；README 提供了预处理数据（网盘 true_data.zip）、预训练权重与推理结果 json，复现链路完整度在三篇中最高（数据、权重、评测脚本齐全）。</p>
+<h4 id="复现结果"><a href="#复现结果" class="headerlink" title="复现结果"></a>复现结果</h4><p>未在本地复跑（需 Ego-Exo4D 数据与 8×A800）。论文报告 mIoU 44.57（Ego 41.95 / Exo 47.18）；README 提供了预处理数据（网盘 true_data.zip）、预训练权重与推理结果 json，复现链路完整度在三篇中最高（数据、权重、评测脚本齐全）。</p>
 <h4 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h4><ul>
 <li>数据链路依赖 SegSwap 官方预处理或百度网盘（国内可用，国际网络受限）；官方流程产出的数据规模可能与论文不完全一致（README 提到相关 issue）。</li>
-<li><code>run_ego.sh</code> &#x2F; <code>run_exo.sh</code> 未显式传 <code>--ttt_lr 5e-6</code>，与论文 TTT 学习率需手动对齐。</li>
+<li><code>run_ego.sh</code> / <code>run_exo.sh</code> 未显式传 <code>--ttt_lr 5e-6</code>，与论文 TTT 学习率需手动对齐。</li>
 <li>HANDAL-X 需要按 ObjectRelator 的 DATASET.md 准备。</li>
 </ul>
 <hr>
@@ -362,8 +474,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </ul>
 <h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><ul>
 <li><strong>小目标短板</strong>：&lt;0.1% 面积目标性能骤降——与无人机远景目标场景直接冲突。</li>
-<li><strong>无记忆&#x2F;时序模块</strong>：逐帧独立处理，不利用视频时间一致性，帧间抖动需 TTT 逐帧补偿。</li>
-<li><strong>TTT 成本</strong>：每测试对 2-6 步反向传播（Exo2Ego 更新 11&#x2F;24 层），推理吞吐受影响；论文未报告时间开销。</li>
+<li><strong>无记忆/时序模块</strong>：逐帧独立处理，不利用视频时间一致性，帧间抖动需 TTT 逐帧补偿。</li>
+<li><strong>TTT 成本</strong>：每测试对 2-6 步反向传播（Exo2Ego 更新 11/24 层），推理吞吐受影响；论文未报告时间开销。</li>
 <li><strong>不可见物体处理薄弱</strong>：CLS head 与 mask head 分开训练，没有联合优化。</li>
 </ul>
 <h3 id="我最关心的问题"><a href="#我最关心的问题" class="headerlink" title="我最关心的问题"></a>我最关心的问题</h3><ol>
@@ -372,10 +484,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <li>TTT 步数 T 与更新层数 K 对每类场景的最优值是否稳定？（论文只给了两个任务的固定值）</li>
 </ol>
 <h3 id="可以迁移到我的研究中的部分"><a href="#可以迁移到我的研究中的部分" class="headerlink" title="可以迁移到我的研究中的部分"></a>可以迁移到我的研究中的部分</h3><ul>
-<li><strong>“往返重建”作为记忆自洁目标</strong>：DAM4SAM 的干扰物记忆可以借鉴 Lcycle——把记忆片段”注入当前帧 → 预测 mask → 反投影回记忆帧重建原 mask”，重建损失高的记忆判定为污染&#x2F;失效记忆，直接删除或降权。这个自监督信号不需要标注，与 TTT 同源。</li>
+<li><strong>“往返重建”作为记忆自洁目标</strong>：DAM4SAM 的干扰物记忆可以借鉴 Lcycle——把记忆片段”注入当前帧 → 预测 mask → 反投影回记忆帧重建原 mask”，重建损失高的记忆判定为污染/失效记忆，直接删除或降权。这个自监督信号不需要标注，与 TTT 同源。</li>
 <li><strong>TTT 用于无人机视角切换自适应</strong>：cross_view_vtuav 中目标从大变小时，可以像 CCMP 一样在测试时用自监督目标（往返重建或记忆一致性）微调最后几层 transformer blocks，代价小、无需新数据。</li>
 <li><strong>小目标分析的评测方法论</strong>：论文 Figure 4(b) 按”目标面积占比分桶”评测的范式，直接可以用在我的 DAM4SAM 评测里——按”目标由大到小变化率”分桶，量化记忆失效的临界点。</li>
-<li><strong>自监督目标设计教训</strong>：Dice 破坏 TTT 的发现提示我：为自监督目标选损失时要考虑”小目标&#x2F;遮挡时梯度噪声”——我的记忆一致性损失也应避免对空 mask 过度惩罚。</li>
+<li><strong>自监督目标设计教训</strong>：Dice 破坏 TTT 的发现提示我：为自监督目标选损失时要考虑”小目标/遮挡时梯度噪声”——我的记忆一致性损失也应避免对空 mask 过度惩罚。</li>
 </ul>
 <h3 id="新想法"><a href="#新想法" class="headerlink" title="新想法"></a>新想法</h3><ol>
 <li><strong>尺度条件化 CDT（Scale-Conditioned CDT）</strong>：把目标在源视图的面积占比编码进 CDT（或加一个 scale token），让模型显式感知”目标变小”，对应训练时用 CCMP 的同视图合成 + 尺度抖动增强——直接针对大→小失效。</li>
@@ -387,7 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <h2 id="7-深度阅读标注"><a href="#7-深度阅读标注" class="headerlink" title="7. 深度阅读标注"></a>7. 深度阅读标注</h2><p>本节暂无额外阅读标注。</p>
 <hr>
 <h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8. 总结"></a>8. 总结</h2><h3 id="三句话总结"><a href="#三句话总结" class="headerlink" title="三句话总结"></a>三句话总结</h3><ol>
-<li><strong>Problem：</strong> ego–exo 跨视角物体对应因视角&#x2F;外观剧变、遮挡与空间布局不一致而困难，现有方法（ObjectRelator、O-MaMa）或重或繁，且都不利用无标注的自监督闭环信号。</li>
+<li><strong>Problem：</strong> ego–exo 跨视角物体对应因视角/外观剧变、遮挡与空间布局不一致而困难，现有方法（ObjectRelator、O-MaMa）或重或繁，且都不利用无标注的自监督闭环信号。</li>
 <li><strong>Method：</strong> CCMP 用 DINOv3 双骨干做条件二值分割，单一 CDT 条件 token 注入 ViT 完成跨视图条件化，循环一致性损失（Lcycle）强制源 mask 往返重建，并在推理时复用作 TTT 目标。</li>
 <li><strong>Result：</strong> Ego-Exo4D v2 测试 mIoU 44.57（Exo Query 47.18 超 O-MaMa +3.10），HANDAL-X 零样本 78.8（超 ObjectRelator +36.0），以极简架构取得 SOTA。</li>
 </ol>
@@ -395,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <h3 id="是否值得复现？"><a href="#是否值得复现？" class="headerlink" title="是否值得复现？"></a>是否值得复现？</h3><ul>
 <li>⭐⭐⭐⭐ 值得复现</li>
 </ul>
-<p>理由：代码、数据、权重、评测全链路发布（三篇中最完整），单模型架构（无双专家&#x2F;无扩散生成）复现成本相对可控；其 TTT + 循环一致性思想与我的 DAM4SAM 记忆自洁、UAV 视角切换自适应直接相关；但训练仍需 8×A800 约 72 小时，且小目标问题未解决（我恰好主要面对小目标），故四颗星。</p>
+<p>理由：代码、数据、权重、评测全链路发布（三篇中最完整），单模型架构（无双专家/无扩散生成）复现成本相对可控；其 TTT + 循环一致性思想与我的 DAM4SAM 记忆自洁、UAV 视角切换自适应直接相关；但训练仍需 8×A800 约 72 小时，且小目标问题未解决（我恰好主要面对小目标），故四颗星。</p>
 </div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/bd23800/" title="论文阅读｜Learning Cross-View Object Correspondence via Cycle-Consistent Mask Prediction">https://20020730.xyz/posts/bd23800/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/a17d3727/" rel="prev" title="论文阅读｜Robust Ego-Exo Correspondence with Long-Term Memory"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">论文阅读｜Robust Ego-Exo Correspondence with Long-Term Memory</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/ef5e6d24/" rel="next" title="论文阅读｜Putting the Object Back into Video Object Segmentation"><span class="post-nav-text">论文阅读｜Putting the Object Back into Video Object Segmentation</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
   display: none;
 }</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
