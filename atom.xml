@@ -286,9 +286,9 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
-    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
+    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
     
     <category term="跨视角目标对应" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%AF%B9%E5%BA%94/"/>
     
@@ -321,13 +321,13 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
-    
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="VOS" scheme="https://20020730.xyz/tags/VOS/"/>
     
+    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
+    
     <category term="视频目标分割 (VOS)" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2-VOS/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
   </entry>
   
@@ -354,11 +354,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
+    <category term="VOS" scheme="https://20020730.xyz/tags/VOS/"/>
+    
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
-    <category term="VOS" scheme="https://20020730.xyz/tags/VOS/"/>
     
     <category term="跨镜头" scheme="https://20020730.xyz/tags/%E8%B7%A8%E9%95%9C%E5%A4%B4/"/>
     
@@ -391,9 +391,9 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
-    <category term="视频目标分割" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
+    <category term="视频目标分割" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
     
   </entry>
   
@@ -420,13 +420,13 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
-    
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="VOS" scheme="https://20020730.xyz/tags/VOS/"/>
     
+    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
+    
     <category term="视频目标分割 (VOS)" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2-VOS/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
   </entry>
   
@@ -455,9 +455,9 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
-    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
+    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
     
     <category term="跨视角目标分割" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
     
@@ -488,9 +488,9 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
-    <category term="视频目标分割" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
+    <category term="视频目标分割" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
     
   </entry>
   
@@ -519,9 +519,9 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
-    <category term="视频目标分割" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
+    <category term="视频目标分割" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
     
   </entry>
   
@@ -550,9 +550,9 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
-    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
+    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
     
     <category term="跨视角目标分割" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
     
@@ -583,15 +583,15 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
     <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    <category term="跨视角目标对应" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%AF%B9%E5%BA%94/"/>
     
     <category term="循环一致性" scheme="https://20020730.xyz/tags/%E5%BE%AA%E7%8E%AF%E4%B8%80%E8%87%B4%E6%80%A7/"/>
     
     <category term="Test-Time Training" scheme="https://20020730.xyz/tags/Test-Time-Training/"/>
-    
-    <category term="跨视角目标对应" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%AF%B9%E5%BA%94/"/>
     
   </entry>
   
@@ -618,13 +618,13 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
-    
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="VOS" scheme="https://20020730.xyz/tags/VOS/"/>
     
+    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
+    
     <category term="视频目标分割 (VOS)" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2-VOS/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
   </entry>
   
@@ -653,15 +653,15 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
-    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
-    <category term="跨视角目标对应" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%AF%B9%E5%BA%94/"/>
+    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
     
     <category term="参考分割" scheme="https://20020730.xyz/tags/%E5%8F%82%E8%80%83%E5%88%86%E5%89%B2/"/>
     
     <category term="Test-Time Adaptation" scheme="https://20020730.xyz/tags/Test-Time-Adaptation/"/>
+    
+    <category term="跨视角目标对应" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92%E7%9B%AE%E6%A0%87%E5%AF%B9%E5%BA%94/"/>
     
   </entry>
   
@@ -690,11 +690,11 @@
     
     <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
     <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
     
     <category term="视频目标分割" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E5%88%86%E5%89%B2/"/>
-    
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
   </entry>
   
