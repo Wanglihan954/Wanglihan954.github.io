@@ -1,0 +1,407 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="宁翰"><meta name="copyright" content="宁翰"><meta name="generator" content="Hexo 8.1.1"><meta name="theme" content="hexo-theme-yun"><title>CC Switch 切换官方与第三方 Codex API 排错记录 | Seventh Knot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{"renderMathInElement":true,"strict":"ignore","output":"htmlAndMathml","displayMode":true,"trust":true},
+    ...undefined?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"20020730.xyz","root":"/","title":"世界需要七休日","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.xml"},"localsearch":{"enable":"fasle","trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://comment.20020730.xyz","comment":true,"visitor":true,"emoji":["//unpkg.com/@waline/emojis@1.1.0/weibo",{"name":"嗯呢漫布","folder":"/images/zzz-stickers","prefix":"bangboo-","type":"jpg","icon":"/images/zzz-stickers/bangboo-thanks.jpg","items":["gift","thanks","rest"]},{"name":"丽都漫步","folder":"/images/zzz-stickers","prefix":"lidu-","type":"png","icon":"/images/zzz-stickers/lidu-anby.png","items":["anby","nekomata","lycaon","rina","soldier11","wise"]}],"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="Seventh Knot" type="application/atom+xml"><link rel="stylesheet" href="/css/custom_theme.css?v=20260812-3"><link rel="stylesheet" href="/css/projects.css?v=20260817-1"><script src="/js/web-pet.js" defer></script><script src="/js/mobile-navigation.js" defer></script><script src="/js/home-intro.js?v=20260810-6" defer></script><meta name="description" content="CC Switch 切换官方与第三方 Codex API 排错记录 摘要 · 先说结论在 Windows 上用 CC Switch 在官方 OpenAI API 与第三方 Codex API 之间切换时，最容易出现的不是单一的“Key 无效”，而是 API Key、Base URL、Codex 配置文件、GUI 会话和 CLI 版本没有保持同一套状态。本文记录一次完整排查过程，并给出一套不暴露密钥">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CC Switch 切换官方与第三方 Codex API 排错记录">
+<meta property="og:url" content="https://20020730.xyz/posts/50fec4d3/index.html">
+<meta property="og:site_name" content="Seventh Knot">
+<meta property="og:description" content="CC Switch 切换官方与第三方 Codex API 排错记录 摘要 · 先说结论在 Windows 上用 CC Switch 在官方 OpenAI API 与第三方 Codex API 之间切换时，最容易出现的不是单一的“Key 无效”，而是 API Key、Base URL、Codex 配置文件、GUI 会话和 CLI 版本没有保持同一套状态。本文记录一次完整排查过程，并给出一套不暴露密钥">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-08-19T15:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-19T15:00:00.000Z">
+<meta property="article:author" content="宁翰">
+<meta property="article:tag" content="API">
+<meta property="article:tag" content="CC Switch">
+<meta property="article:tag" content="Codex">
+<meta property="article:tag" content="PowerShell">
+<meta property="article:tag" content="Windows">
+<meta name="twitter:card" content="summary"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><span class="nav-badge">INTER-KNOT // 20020730</span><div class="nav-left"><button class="nav-item" id="mobile-menu-btn" type="button" title="菜单" aria-label="打开菜单" aria-controls="site-overview-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:menu-line"></span></button><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="代理人档案"><span class="nav-mask-icon" style="--nav-mask-image: url('/images/bangboo-nav.png')" aria-hidden="true"></span></a><a class="nav-item desktop-only-icon" href="/projects/" title="项目终端"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">Seventh Knot</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">CC Switch 切换官方与第三方 Codex API 排错记录</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" aria-hidden="true"></div><button id="mobile-toc-btn" type="button" title="文章目录" aria-label="打开文章目录" aria-controls="post-toc-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:list-unordered"></span></button><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
+  const navCenter = document.getElementById('nav-center');
+  if (navCenter && document.querySelector('.article-title')) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
+    });
+  }
+});
+</script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
+.search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.search-header { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(150,150,150,0.1); }
+.search-header input { flex: 1; border: none; background: transparent; outline: none; font-size: 1.1rem; color: var(--hty-text-color); margin: 0 15px; }
+.search-header .close-btn { cursor: pointer; font-size: 1.4rem; opacity: 0.6; transition: all 0.2s; }
+.search-header .close-btn:hover { opacity: 1; color: var(--hty-primary-color); transform: rotate(90deg); }
+.search-results { overflow-y: auto; padding: 10px 24px 20px; }
+.search-result-item { display: block; padding: 15px 0; border-bottom: 1px dashed rgba(150,150,150,0.1); text-decoration: none; color: var(--hty-text-color); transition: all 0.2s; }
+.search-result-item:hover { transform: translateX(5px); }
+.search-result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--hty-primary-color); }
+.search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
+.search-keyword { color: #ff5252; font-weight: bold; }
+</style><script>let mySearchData = null;
+window.openMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('my-search-input').focus(), 100);
+  if (!mySearchData) {
+    fetch('/search.xml').then(res => res.text()).then(str => {
+      const parser = new DOMParser();
+      const entries = parser.parseFromString(str, "text/xml").getElementsByTagName("entry");
+      mySearchData = Array.from(entries).map(entry => ({
+        title: entry.getElementsByTagName('title')[0]?.textContent || '',
+        content: entry.getElementsByTagName('content')[0]?.textContent.replace(/<[^>]+>/g, '') || '',
+        url: entry.getElementsByTagName('url')[0]?.textContent || ''
+      }));
+    }).catch(err => console.error("搜索数据加载失败:", err));
+  }
+};
+window.closeMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'none';
+  document.getElementById('my-search-input').value = '';
+  document.getElementById('my-search-results').innerHTML = '';
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('my-search-input');
+  if(input) {
+    input.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+      const results = document.getElementById('my-search-results');
+      if (!keyword) { results.innerHTML = ''; return; }
+      if (!mySearchData) return;
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
+      results.innerHTML = matched.map(item => {
+        const reg = new RegExp(keyword, 'gi');
+        const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        let content = item.content;
+        const index = content.toLowerCase().indexOf(keyword);
+        if (index > -1) {
+          let start = Math.max(0, index - 30);
+          let end = Math.min(content.length, index + 30);
+          content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+          content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        } else { content = content.substring(0, 60) + '...'; }
+        return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
+      }).join('');
+    });
+  }
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/funingna.png" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">58</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">7</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">82</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/50fec4d3/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">CC Switch 切换官方与第三方 Codex API 排错记录</h1><div class="post-meta"><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">3.9k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">15m</span></span></span><span class="leancloud_visitors" id="/posts/50fec4d3/" data-flag-title="CC Switch 切换官方与第三方 Codex API 排错记录"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/50fec4d3/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/AI%E5%B7%A5%E5%85%B7/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">AI工具</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/API/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">API</span></a><a class="tag-item" href="/tags/Codex/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Codex</span></a><a class="tag-item" href="/tags/CC-Switch/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">CC Switch</span></a><a class="tag-item" href="/tags/Windows/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Windows</span></a><a class="tag-item" href="/tags/PowerShell/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">PowerShell</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><h1 id="CC-Switch-切换官方与第三方-Codex-API-排错记录"><a href="#CC-Switch-切换官方与第三方-Codex-API-排错记录" class="headerlink" title="CC Switch 切换官方与第三方 Codex API 排错记录"></a>CC Switch 切换官方与第三方 Codex API 排错记录</h1><blockquote>
+<p><strong>摘要 · 先说结论</strong><br>在 Windows 上用 CC Switch 在官方 OpenAI API 与第三方 Codex API 之间切换时，最容易出现的不是单一的“Key 无效”，而是 <strong>API Key、Base URL、Codex 配置文件、GUI 会话和 CLI 版本没有保持同一套状态</strong>。本文记录一次完整排查过程，并给出一套不暴露密钥、方便复用的检查方法。</p>
+</blockquote>
+<blockquote>
+<p><strong>安全提醒</strong><br>本文所有 API Key 都使用占位符。真实密钥不要发到聊天、截图、命令输出、Git 仓库或博客中；已经暴露过的密钥应立即撤销并重新生成。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、问题背景"><a href="#一、问题背景" class="headerlink" title="一、问题背景"></a>一、问题背景</h2><p>我的目标是同时保留两套 Codex API：</p>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>API 地址</th>
+<th>鉴权来源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>官方 Codex</td>
+<td><code>https://api.openai.com/v1</code></td>
+<td>官方 OpenAI API Key，或 Codex 的 ChatGPT 登录</td>
+</tr>
+<tr>
+<td>第三方 Codex</td>
+<td><code>https://openapi.example.com/v1</code></td>
+<td>第三方服务商提供的 Codex API Key</td>
+</tr>
+</tbody></table>
+<p>实际使用的是 Windows、Codex GUI、Codex CLI 和 CC Switch。CC Switch 负责保存供应商配置并切换当前 provider，Codex 则根据 <code>auth.json</code>、<code>config.toml</code>、环境变量以及自身的会话状态发起请求。</p>
+<p>这里有一个很重要的前提：第三方服务商可能分别提供 Claude 配置和 Codex 配置。两者的 Key、模型列表、协议格式甚至 Base URL 都可能不同。Claude 配置能正常使用，并不代表同一个 Key 可以直接放进 Codex。</p>
+<h2 id="二、第一次遇到的-401"><a href="#二、第一次遇到的-401" class="headerlink" title="二、第一次遇到的 401"></a>二、第一次遇到的 401</h2><p>最初的错误类似这样：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">401 Unauthorized: Incorrect API key provided</span><br><span class="line">url: https://api.openai.com/v1/responses</span><br><span class="line">auth error code: invalid_api_key</span><br></pre></td></tr></table></figure>
+
+<p>错误里最有价值的不是 Key 的内容，而是请求 URL：请求已经到达了官方 <code>api.openai.com</code>，但携带的却是第三方 Key。因此不能只检查“Key 是否正确”，还要同时检查下面这组配对关系：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">官方 Key      + https://api.openai.com/v1</span><br><span class="line">第三方 Key    + https://openapi.example.com/v1</span><br></pre></td></tr></table></figure>
+
+<p>如果出现下面这种组合，就一定会有问题：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">第三方 Key    + https://api.openai.com/v1</span><br><span class="line">官方 Key      + https://openapi.example.com/v1</span><br></pre></td></tr></table></figure>
+
+<p>这类错误通常来自两个原因：</p>
+<ol>
+<li>CC Switch 改写了 <code>config.toml</code> 的 Base URL，但没有同步 Codex 实际读取的鉴权文件。</li>
+<li>Codex GUI 或旧进程仍然保留着切换前的配置，而 CC Switch 已经写入了另一套配置。</li>
+</ol>
+<h2 id="三、Codex-的几个配置入口"><a href="#三、Codex-的几个配置入口" class="headerlink" title="三、Codex 的几个配置入口"></a>三、Codex 的几个配置入口</h2><p>排查时先把各个配置入口分开，不要把 Claude Code 的配置和 Codex 的配置混在一起。</p>
+<h3 id="1-auth-json"><a href="#1-auth-json" class="headerlink" title="1. auth.json"></a>1. <code>auth.json</code></h3><p>Codex 的认证文件通常位于：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">%USERPROFILE%\.codex\auth.json</span><br></pre></td></tr></table></figure>
+
+<p>它可能包含 API Key，也可能包含 ChatGPT 登录产生的 OAuth 信息。桌面版 Codex 在切换登录模式时可能重写这个文件；在本次环境中，曾观察到它把 <code>OPENAI_API_KEY</code> 清空并切回 ChatGPT 登录状态。</p>
+<p>因此，不要假设“我刚写入 <code>auth.json</code> 的 Key 永远会留在那里”。切换后应重新检查文件结构，但不要直接打印完整密钥：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="variable">$auth</span> = <span class="built_in">Get-Content</span> <span class="string">&quot;<span class="variable">$HOME</span>\.codex\auth.json&quot;</span> <span class="literal">-Raw</span> | <span class="built_in">ConvertFrom-Json</span></span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$auth</span>.OPENAI_API_KEY) &#123;</span><br><span class="line">    <span class="string">&quot;OPENAI_API_KEY 已设置，长度：<span class="variable">$</span>(<span class="variable">$auth</span>.OPENAI_API_KEY.Length)&quot;</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="string">&quot;OPENAI_API_KEY 未设置&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-config-toml"><a href="#2-config-toml" class="headerlink" title="2. config.toml"></a>2. <code>config.toml</code></h3><p>Codex 的 provider、模型、协议和 Base URL 通常由下面这类配置控制：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="attr">model_provider</span> = <span class="string">&quot;custom&quot;</span></span><br><span class="line"><span class="attr">model</span> = <span class="string">&quot;gpt-5.5&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[model_providers.custom]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;第三方 Codex&quot;</span></span><br><span class="line"><span class="attr">base_url</span> = <span class="string">&quot;https://openapi.example.com/v1&quot;</span></span><br><span class="line"><span class="attr">wire_api</span> = <span class="string">&quot;responses&quot;</span></span><br><span class="line"><span class="attr">env_key</span> = <span class="string">&quot;THIRD_PARTY_CODEX_API_KEY&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中最关键的是：</p>
+<ul>
+<li><code>base_url</code> 必须指向当前供应商，并确认是否需要 <code>/v1</code>。</li>
+<li><code>wire_api = &quot;responses&quot;</code> 要与服务商支持的协议一致。</li>
+<li><code>env_key</code> 的值只是环境变量名称，不是 API Key 本身。</li>
+<li>配置写成 <code>env_key = &quot;THIRD_PARTY_CODEX_API_KEY&quot;</code> 后，Codex 要求当前进程中真的存在这个环境变量。</li>
+</ul>
+<p>可以只查看非敏感字段：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-Content</span> <span class="string">&quot;<span class="variable">$HOME</span>\.codex\config.toml&quot;</span> |</span><br><span class="line">    <span class="built_in">Select-String</span> <span class="string">&quot;model_provider|model|base_url|wire_api|env_key|service_tier&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-CC-Switch-的供应商数据库"><a href="#3-CC-Switch-的供应商数据库" class="headerlink" title="3. CC Switch 的供应商数据库"></a>3. CC Switch 的供应商数据库</h3><p>CC Switch 不只是一个临时环境变量切换器。它会保存供应商配置，并在切换时写入 Codex 的配置文件。因而可能出现这种现象：手动修改 <code>config.toml</code> 后立即生效，但下一次在 CC Switch 中切换供应商时又被重新覆盖。</p>
+<p>排错时要区分：</p>
+<ul>
+<li>当前文件里的配置是什么；</li>
+<li>CC Switch 数据库里保存的模板是什么；</li>
+<li>Codex 进程启动时实际读到的配置是什么。</li>
+</ul>
+<p>如果每次切换都复现同一个错误，优先修正 CC Switch 中对应供应商或公共配置的模板，而不是反复手改生成文件。</p>
+<h2 id="四、requires-openai-auth-与环境变量问题"><a href="#四、requires-openai-auth-与环境变量问题" class="headerlink" title="四、requires_openai_auth 与环境变量问题"></a>四、<code>requires_openai_auth</code> 与环境变量问题</h2><p>排查过程中曾出现这样的配置：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[model_providers.custom]</span></span><br><span class="line"><span class="attr">base_url</span> = <span class="string">&quot;https://openapi.example.com/v1&quot;</span></span><br><span class="line"><span class="attr">wire_api</span> = <span class="string">&quot;responses&quot;</span></span><br><span class="line"><span class="attr">requires_openai_auth</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p><code>requires_openai_auth = true</code> 会让 Codex 按 OpenAI 官方鉴权路径处理该 provider。在第三方 provider 上保留这个字段，可能导致请求绕回 <code>api.openai.com</code>，最终把第三方 Key 发给官方端点。</p>
+<p>另一个问题是把 <code>env_key</code> 设置成了某个环境变量名，却没有设置该变量。例如：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="attr">env_key</span> = <span class="string">&quot;THIRD_PARTY_CODEX_API_KEY&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果进程中没有这个变量，Codex 会报：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Missing environment variable: THIRD_PARTY_CODEX_API_KEY</span><br></pre></td></tr></table></figure>
+
+<p>PowerShell 中可以只检查变量是否存在，不显示其值：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$env:THIRD_PARTY_CODEX_API_KEY</span>) &#123;</span><br><span class="line">    <span class="string">&quot;第三方 Key 已注入当前进程，长度：<span class="variable">$</span>(<span class="variable">$env:THIRD_PARTY_CODEX_API_KEY</span>.Length)&quot;</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="string">&quot;第三方 Key 未注入当前进程&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果确实要使用持久化用户环境变量，可以手动执行：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">setx THIRD_PARTY_CODEX_API_KEY <span class="string">&quot;&lt;你的第三方 Codex API Key&gt;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>setx</code> 不会更新已经打开的 PowerShell 或 GUI 进程。执行后必须关闭旧终端和 Codex GUI，再启动新的进程。需要注意，<code>setx</code> 会把密钥写入用户环境配置，安全性低于由专用启动器在内存中注入密钥；个人电脑上应根据安全要求选择方案。</p>
+<h2 id="五、为什么-GUI-的旧对话会-401，而新对话正常"><a href="#五、为什么-GUI-的旧对话会-401，而新对话正常" class="headerlink" title="五、为什么 GUI 的旧对话会 401，而新对话正常"></a>五、为什么 GUI 的旧对话会 401，而新对话正常</h2><p>这是本次排查中最容易误判的一点。</p>
+<p>在切换到第三方 API 后，Codex GUI 的新对话可以正常使用，但某些已经使用过官方 API 的旧对话仍然请求：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">https://api.openai.com/v1/responses</span><br></pre></td></tr></table></figure>
+
+<p>同时携带第三方 Key，于是得到 401。</p>
+<p>现象可以概括为：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">旧官方对话</span><br><span class="line">    -&gt; 继续沿用创建时的 provider 或请求路由</span><br><span class="line">    -&gt; 请求仍发往 api.openai.com</span><br><span class="line">    -&gt; 当前认证文件已变成第三方 Key</span><br><span class="line">    -&gt; 401 invalid_api_key</span><br><span class="line"></span><br><span class="line">新对话</span><br><span class="line">    -&gt; 读取当前 CC Switch 配置</span><br><span class="line">    -&gt; 使用第三方 Base URL 与第三方 Key</span><br><span class="line">    -&gt; 正常请求</span><br></pre></td></tr></table></figure>
+
+<p>这说明 GUI 的会话状态可能不完全等同于全局配置。切换供应商后，建议新建对话；官方和第三方对话也最好分开管理。如果必须继续旧对话，先尝试在 GUI 中重新选择 provider，或完全退出 GUI 后重新打开该对话。</p>
+<p>这里的结论是根据实际现象得到的经验判断。不同 Codex GUI 版本的会话持久化实现可能不同，不应把它当作所有版本都固定如此的公开协议。</p>
+<h2 id="六、为什么第三方模式看不到官方-Codex-的宠物和其他数据"><a href="#六、为什么第三方模式看不到官方-Codex-的宠物和其他数据" class="headerlink" title="六、为什么第三方模式看不到官方 Codex 的宠物和其他数据"></a>六、为什么第三方模式看不到官方 Codex 的宠物和其他数据</h2><p>切换到第三方 API 后，除了旧对话可能出现 401，还可能发现界面没有原来使用的宠物，或者看不到官方模式下的会话、同步状态和账号相关数据。这并不表示第三方 API 把本地宠物删除了。</p>
+<p>原因在于“模型请求”和“Codex 应用数据”是两条不同的链路：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Codex GUI / CLI</span><br><span class="line">    ├─ 本地界面、宠物资源、缓存与会话索引</span><br><span class="line">    └─ 当前 provider -&gt; API 请求 -&gt; 模型服务</span><br></pre></td></tr></table></figure>
+
+<p>第三方 API 只负责接收请求并返回模型响应，它不会拥有 OpenAI 账号中的官方会话、云端同步状态、宠物配置或其他 GUI 账户数据。CC Switch 改变的是 provider、Base URL 和鉴权来源，并不会把官方账号的数据迁移到第三方服务商。</p>
+<p>本次环境中，本地宠物资源仍然存在于：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">%USERPROFILE%\.codex\pets\xiaolemi</span><br></pre></td></tr></table></figure>
+
+<p>因此，如果官方模式能看到宠物而第三方模式看不到，优先考虑以下情况：</p>
+<ol>
+<li>当前启动的是 Codex CLI，而不是带宠物界面的 Codex GUI。</li>
+<li>GUI 切换 API Key 后退出了 ChatGPT&#x2F;OAuth 账号上下文，进入了纯 API Key 模式。</li>
+<li>第三方启动器使用了不同的 <code>CODEX_HOME</code>、不同的运行时或不同的本地数据目录。</li>
+<li>当前 GUI 版本把宠物显示或账号同步功能限制在官方登录模式中。</li>
+</ol>
+<p>可以先确认是否设置了自定义数据目录：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$env:CODEX_HOME</span>) &#123;</span><br><span class="line">    <span class="string">&quot;CODEX_HOME=<span class="variable">$env:CODEX_HOME</span>&quot;</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="string">&quot;CODEX_HOME 未设置，通常使用默认目录 <span class="variable">$HOME</span>\.codex&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果目标是保留完整的官方 GUI 体验，最稳妥的方式是让官方 Codex GUI 继续使用官方登录，并把第三方 API 放到独立的 Codex CLI、独立 profile 或受控的本地路由中。不要指望把第三方 Key 填入官方端点后仍然共享官方账号数据，也不要为了“恢复宠物”直接复制或覆盖整个 <code>.codex</code> 目录。</p>
+<p>宠物资源存在于本地，只能证明文件没有被删除；它是否显示还取决于当前 GUI 运行时、认证模式和功能开关。这和 API Key 是否能成功调用模型是两个独立问题。</p>
+<h2 id="七、为什么只有-Codex-CLI-报-service-tier-错误"><a href="#七、为什么只有-Codex-CLI-报-service-tier-错误" class="headerlink" title="七、为什么只有 Codex CLI 报 service_tier 错误"></a>七、为什么只有 Codex CLI 报 <code>service_tier</code> 错误</h2><p>切回官方 provider 后，Codex CLI 出现：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Error loading config.toml: unknown variant `default`, expected `fast` or `flex`</span><br><span class="line">in `service_tier`</span><br></pre></td></tr></table></figure>
+
+<p>这个错误发生在读取配置阶段，甚至还没有开始调用 API。它与 401 鉴权错误是两个独立问题。</p>
+<p>本次环境中检查到的版本是：</p>
+<table>
+<thead>
+<tr>
+<th>程序</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PowerShell 中的 npm Codex CLI</td>
+<td><code>0.130.0</code></td>
+</tr>
+<tr>
+<td>Codex GUI 内置 CLI</td>
+<td><code>0.148.0-alpha.9</code></td>
+</tr>
+</tbody></table>
+<p>因此，CLI 与 GUI 并不是同一个 Codex 构建，也不一定使用同一个配置解析器。CC Switch 或较新的 GUI 写入了：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="attr">service_tier</span> = <span class="string">&quot;default&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>而旧版 CLI 的枚举只接受 <code>fast</code> 或 <code>flex</code>，所以直接拒绝加载配置。这个现象不是官方 API 导致的，也不是前面配置第三方 API 时降级了 Codex；更准确地说，是两个程序版本不同，以及生成的配置字段超出了旧 CLI 的 schema。</p>
+<h3 id="推荐修复"><a href="#推荐修复" class="headerlink" title="推荐修复"></a>推荐修复</h3><p>先升级 CLI：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">npm install <span class="literal">-g</span> @openai/codex@latest</span><br></pre></td></tr></table></figure>
+
+<p>关闭当前 PowerShell，重新打开后确认实际调用的是哪个文件：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">codex <span class="literal">--version</span></span><br><span class="line"><span class="built_in">Get-Command</span> codex <span class="literal">-All</span></span><br><span class="line">where.exe codex</span><br><span class="line">&amp; <span class="string">&quot;<span class="variable">$env:APPDATA</span>\npm\codex.cmd&quot;</span> <span class="literal">--version</span></span><br></pre></td></tr></table></figure>
+
+<p>如果暂时不能升级，也可以在实际被 CLI 读取的配置中删除：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="attr">service_tier</span> = <span class="string">&quot;default&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>对于官方 API，通常不需要手动设置 <code>service_tier</code>。如果确实需要保留，应使用当前 CLI 支持的值，但不要把 <code>fast</code> 或 <code>flex</code> 误认为“官方 API 开关”；它们只是服务层配置，和 provider、Base URL、鉴权方式是不同维度。</p>
+<p>如果每次通过 CC Switch 切换官方配置都会重新写回 <code>default</code>，就要修正 CC Switch 的公共配置或供应商模板。只改生成后的 <code>config.toml</code> 只能暂时解决。</p>
+<h2 id="八、官方与第三方配置的安全切换原则"><a href="#八、官方与第三方配置的安全切换原则" class="headerlink" title="八、官方与第三方配置的安全切换原则"></a>八、官方与第三方配置的安全切换原则</h2><h3 id="1-不要共用一个含义模糊的全局变量"><a href="#1-不要共用一个含义模糊的全局变量" class="headerlink" title="1. 不要共用一个含义模糊的全局变量"></a>1. 不要共用一个含义模糊的全局变量</h3><p>更清晰的做法是给第三方 Key 使用独立变量：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">OPENAI_API_KEY              -&gt; 官方 OpenAI API</span><br><span class="line">THIRD_PARTY_CODEX_API_KEY   -&gt; 第三方 Codex API</span><br></pre></td></tr></table></figure>
+
+<p>第三方 provider 使用：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="attr">env_key</span> = <span class="string">&quot;THIRD_PARTY_CODEX_API_KEY&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>官方 provider 则使用官方认证机制。这样可以减少“第三方 Key 留在 <code>OPENAI_API_KEY</code>，但 Base URL 已切回官方”的混用风险。</p>
+<h3 id="2-官方-API-Key-与-ChatGPT-登录不是一回事"><a href="#2-官方-API-Key-与-ChatGPT-登录不是一回事" class="headerlink" title="2. 官方 API Key 与 ChatGPT 登录不是一回事"></a>2. 官方 API Key 与 ChatGPT 登录不是一回事</h3><p>Codex 可能支持两种不同的官方使用方式：</p>
+<ul>
+<li>ChatGPT 账号登录或 OAuth；</li>
+<li><code>platform.openai.com</code> 创建的 OpenAI API Key。</li>
+</ul>
+<p>ChatGPT 订阅不自动等于 API Key 余额，API Key 模式也不等同于 ChatGPT 登录。切换官方 provider 时，要明确自己使用的是哪种认证方式，不要把一个无效的 <code>sk-...</code> 当成 OAuth 登录结果。</p>
+<h3 id="3-切换后按三项配对检查"><a href="#3-切换后按三项配对检查" class="headerlink" title="3. 切换后按三项配对检查"></a>3. 切换后按三项配对检查</h3><p>每次切换供应商后，至少确认：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">provider      当前是不是目标供应商</span><br><span class="line">base_url      是否与 provider 对应</span><br><span class="line">credential    当前进程实际能读取到对应 Key</span><br></pre></td></tr></table></figure>
+
+<p>不要只看 CC Switch 界面显示“已切换”。真正可靠的依据是 Codex 进程读取的 <code>config.toml</code>、认证文件和环境变量，以及请求错误中显示的目标 URL。</p>
+<h2 id="九、一套不泄露密钥的排查流程"><a href="#九、一套不泄露密钥的排查流程" class="headerlink" title="九、一套不泄露密钥的排查流程"></a>九、一套不泄露密钥的排查流程</h2><h3 id="第一步：完全退出-Codex-GUI"><a href="#第一步：完全退出-Codex-GUI" class="headerlink" title="第一步：完全退出 Codex GUI"></a>第一步：完全退出 Codex GUI</h3><p>关闭窗口还不一定够，确认托盘和后台进程也退出，避免 GUI 持有旧配置或重新写回 <code>auth.json</code>。</p>
+<h3 id="第二步：在-CC-Switch-中切换完整供应商"><a href="#第二步：在-CC-Switch-中切换完整供应商" class="headerlink" title="第二步：在 CC Switch 中切换完整供应商"></a>第二步：在 CC Switch 中切换完整供应商</h3><p>供应商配置至少要包含正确的 API 地址、协议格式、模型名和认证来源。不要只修改 Base URL。</p>
+<h3 id="第三步：检查当前-Codex-配置"><a href="#第三步：检查当前-Codex-配置" class="headerlink" title="第三步：检查当前 Codex 配置"></a>第三步：检查当前 Codex 配置</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Get-Content</span> <span class="string">&quot;<span class="variable">$HOME</span>\.codex\config.toml&quot;</span> |</span><br><span class="line">    <span class="built_in">Select-String</span> <span class="string">&quot;model_provider|model|base_url|wire_api|env_key|service_tier&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="第四步：只检查认证是否存在"><a href="#第四步：只检查认证是否存在" class="headerlink" title="第四步：只检查认证是否存在"></a>第四步：只检查认证是否存在</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="variable">$authPath</span> = <span class="string">&quot;<span class="variable">$HOME</span>\.codex\auth.json&quot;</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">Test-Path</span> <span class="variable">$authPath</span>) &#123;</span><br><span class="line">    <span class="variable">$auth</span> = <span class="built_in">Get-Content</span> <span class="variable">$authPath</span> <span class="literal">-Raw</span> | <span class="built_in">ConvertFrom-Json</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$auth</span>.OPENAI_API_KEY) &#123;</span><br><span class="line">        <span class="string">&quot;auth.json 中存在 API Key，长度：<span class="variable">$</span>(<span class="variable">$auth</span>.OPENAI_API_KEY.Length)&quot;</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="string">&quot;auth.json 中没有 API Key&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第五步：确认-CLI-版本与调用路径"><a href="#第五步：确认-CLI-版本与调用路径" class="headerlink" title="第五步：确认 CLI 版本与调用路径"></a>第五步：确认 CLI 版本与调用路径</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">codex <span class="literal">--version</span></span><br><span class="line"><span class="built_in">Get-Command</span> codex <span class="literal">-All</span></span><br><span class="line">where.exe codex</span><br></pre></td></tr></table></figure>
+
+<h3 id="第六步：新建最小测试对话"><a href="#第六步：新建最小测试对话" class="headerlink" title="第六步：新建最小测试对话"></a>第六步：新建最小测试对话</h3><p>不要直接拿一个已经绑定另一套 provider 的旧 GUI 对话测试。先新建会话，发送一条最小请求，再根据错误中的 URL 判断请求是否走到了预期端点。</p>
+<h2 id="十、常见错误与判断方法"><a href="#十、常见错误与判断方法" class="headerlink" title="十、常见错误与判断方法"></a>十、常见错误与判断方法</h2><table>
+<thead>
+<tr>
+<th>错误</th>
+<th>优先检查</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>401 invalid_api_key</code>，URL 是官方端点</td>
+<td>是否把第三方 Key 发给了官方 URL，或官方 Key 已失效</td>
+</tr>
+<tr>
+<td><code>401 invalid_api_key</code>，URL 是第三方端点</td>
+<td>第三方 Key 是否被撤销、复制错误，或第三方服务商要求特殊鉴权头</td>
+</tr>
+<tr>
+<td><code>Missing environment variable</code></td>
+<td><code>config.toml</code> 中的 <code>env_key</code> 是否对应当前进程中的变量</td>
+</tr>
+<tr>
+<td><code>unknown variant default</code></td>
+<td>CLI 版本与 <code>service_tier</code> 字段不兼容</td>
+</tr>
+<tr>
+<td>新对话正常、旧对话 401</td>
+<td>旧会话可能保留了创建时的 provider 或路由状态</td>
+</tr>
+<tr>
+<td>切换后手动修改又被覆盖</td>
+<td>CC Switch 数据库中的供应商模板或公共配置仍是旧值</td>
+</tr>
+<tr>
+<td>模型不存在或 404</td>
+<td>当前 Key 所属供应商的模型列表与 <code>model</code> 配置不匹配</td>
+</tr>
+</tbody></table>
+<h2 id="十一、最终结论"><a href="#十一、最终结论" class="headerlink" title="十一、最终结论"></a>十一、最终结论</h2><p>这次问题不是一个单独的“API Key 错误”，而是多个状态叠加造成的：</p>
+<ol>
+<li>第三方 Claude Key 与第三方 Codex Key 不是同一个配置，不能混用。</li>
+<li><code>auth.json</code>、<code>config.toml</code> 和环境变量可能分别来自不同次切换。</li>
+<li>GUI 旧对话可能继续使用创建时的 provider，新对话才读取当前配置。</li>
+<li>Codex GUI 与 npm CLI 使用了不同版本，CLI <code>0.130.0</code> 无法解析较新配置中的 <code>service_tier = &quot;default&quot;</code>。</li>
+<li>升级 CLI 或删除不兼容字段，可以解决配置解析错误；但这不会自动修复 API Key 与 Base URL 的错配。</li>
+</ol>
+<p>以后排查类似问题时，按“请求 URL → provider → Base URL → 鉴权来源 → 模型 → 客户端版本”的顺序检查，通常比反复更换 API Key 更快定位根因。</p>
+<p>最后再次提醒：真实 API Key 一旦出现在错误日志、终端输出、截图或博客草稿中，就应当视为已经泄露，立即撤销并重新生成。</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/50fec4d3/" title="CC Switch 切换官方与第三方 Codex API 排错记录">https://20020730.xyz/posts/50fec4d3/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/6db0657c/" rel="next" title="论文阅读｜UTPTrack: Towards Simple and Unified Token Pruning for Visual Tracking"><span class="post-nav-text">论文阅读｜UTPTrack: Towards Simple and Unified Token Pruning for Visual Tracking</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
+  display: none;
+}</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
+  //- hide all
+  document.querySelectorAll('.toggle-comment-btn').forEach((btn) => {
+    const container = document.querySelector(btn.dataset.target);
+    if (container) {
+      container.style.display = "none";
+    }
+  });
+}
+function showComment(target) {
+  hideAllComment();
+  //- show target
+  const targetContainer = document.querySelector(target);
+  if (targetContainer) {
+    targetContainer.style.display = "block";
+  }
+}
+</script></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/posts/50fec4d3/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="Wanglihan954/disscussion" issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async></script></div></main><aside class="right-sidebar"><div id="post-toc-wrap" style="display:block; opacity:1; visibility:visible;"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CC-Switch-%E5%88%87%E6%8D%A2%E5%AE%98%E6%96%B9%E4%B8%8E%E7%AC%AC%E4%B8%89%E6%96%B9-Codex-API-%E6%8E%92%E9%94%99%E8%AE%B0%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">CC Switch 切换官方与第三方 Codex API 排错记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">一、问题背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%81%87%E5%88%B0%E7%9A%84-401"><span class="toc-number">1.2.</span> <span class="toc-text">二、第一次遇到的 401</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Codex-%E7%9A%84%E5%87%A0%E4%B8%AA%E9%85%8D%E7%BD%AE%E5%85%A5%E5%8F%A3"><span class="toc-number">1.3.</span> <span class="toc-text">三、Codex 的几个配置入口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-auth-json"><span class="toc-number">1.3.1.</span> <span class="toc-text">1. auth.json</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-config-toml"><span class="toc-number">1.3.2.</span> <span class="toc-text">2. config.toml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-CC-Switch-%E7%9A%84%E4%BE%9B%E5%BA%94%E5%95%86%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.3.3.</span> <span class="toc-text">3. CC Switch 的供应商数据库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81requires-openai-auth-%E4%B8%8E%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E9%97%AE%E9%A2%98"><span class="toc-number">1.4.</span> <span class="toc-text">四、requires_openai_auth 与环境变量问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88-GUI-%E7%9A%84%E6%97%A7%E5%AF%B9%E8%AF%9D%E4%BC%9A-401%EF%BC%8C%E8%80%8C%E6%96%B0%E5%AF%B9%E8%AF%9D%E6%AD%A3%E5%B8%B8"><span class="toc-number">1.5.</span> <span class="toc-text">五、为什么 GUI 的旧对话会 401，而新对话正常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A8%A1%E5%BC%8F%E7%9C%8B%E4%B8%8D%E5%88%B0%E5%AE%98%E6%96%B9-Codex-%E7%9A%84%E5%AE%A0%E7%89%A9%E5%92%8C%E5%85%B6%E4%BB%96%E6%95%B0%E6%8D%AE"><span class="toc-number">1.6.</span> <span class="toc-text">六、为什么第三方模式看不到官方 Codex 的宠物和其他数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AA%E6%9C%89-Codex-CLI-%E6%8A%A5-service-tier-%E9%94%99%E8%AF%AF"><span class="toc-number">1.7.</span> <span class="toc-text">七、为什么只有 Codex CLI 报 service_tier 错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E8%8D%90%E4%BF%AE%E5%A4%8D"><span class="toc-number">1.7.1.</span> <span class="toc-text">推荐修复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%AE%98%E6%96%B9%E4%B8%8E%E7%AC%AC%E4%B8%89%E6%96%B9%E9%85%8D%E7%BD%AE%E7%9A%84%E5%AE%89%E5%85%A8%E5%88%87%E6%8D%A2%E5%8E%9F%E5%88%99"><span class="toc-number">1.8.</span> <span class="toc-text">八、官方与第三方配置的安全切换原则</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%8D%E8%A6%81%E5%85%B1%E7%94%A8%E4%B8%80%E4%B8%AA%E5%90%AB%E4%B9%89%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F"><span class="toc-number">1.8.1.</span> <span class="toc-text">1. 不要共用一个含义模糊的全局变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AE%98%E6%96%B9-API-Key-%E4%B8%8E-ChatGPT-%E7%99%BB%E5%BD%95%E4%B8%8D%E6%98%AF%E4%B8%80%E5%9B%9E%E4%BA%8B"><span class="toc-number">1.8.2.</span> <span class="toc-text">2. 官方 API Key 与 ChatGPT 登录不是一回事</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%88%87%E6%8D%A2%E5%90%8E%E6%8C%89%E4%B8%89%E9%A1%B9%E9%85%8D%E5%AF%B9%E6%A3%80%E6%9F%A5"><span class="toc-number">1.8.3.</span> <span class="toc-text">3. 切换后按三项配对检查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E4%B8%80%E5%A5%97%E4%B8%8D%E6%B3%84%E9%9C%B2%E5%AF%86%E9%92%A5%E7%9A%84%E6%8E%92%E6%9F%A5%E6%B5%81%E7%A8%8B"><span class="toc-number">1.9.</span> <span class="toc-text">九、一套不泄露密钥的排查流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%AE%8C%E5%85%A8%E9%80%80%E5%87%BA-Codex-GUI"><span class="toc-number">1.9.1.</span> <span class="toc-text">第一步：完全退出 Codex GUI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%9C%A8-CC-Switch-%E4%B8%AD%E5%88%87%E6%8D%A2%E5%AE%8C%E6%95%B4%E4%BE%9B%E5%BA%94%E5%95%86"><span class="toc-number">1.9.2.</span> <span class="toc-text">第二步：在 CC Switch 中切换完整供应商</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E6%A3%80%E6%9F%A5%E5%BD%93%E5%89%8D-Codex-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.9.3.</span> <span class="toc-text">第三步：检查当前 Codex 配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E5%8F%AA%E6%A3%80%E6%9F%A5%E8%AE%A4%E8%AF%81%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8"><span class="toc-number">1.9.4.</span> <span class="toc-text">第四步：只检查认证是否存在</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E7%A1%AE%E8%AE%A4-CLI-%E7%89%88%E6%9C%AC%E4%B8%8E%E8%B0%83%E7%94%A8%E8%B7%AF%E5%BE%84"><span class="toc-number">1.9.5.</span> <span class="toc-text">第五步：确认 CLI 版本与调用路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5%EF%BC%9A%E6%96%B0%E5%BB%BA%E6%9C%80%E5%B0%8F%E6%B5%8B%E8%AF%95%E5%AF%B9%E8%AF%9D"><span class="toc-number">1.9.6.</span> <span class="toc-text">第六步：新建最小测试对话</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E4%B8%8E%E5%88%A4%E6%96%AD%E6%96%B9%E6%B3%95"><span class="toc-number">1.10.</span> <span class="toc-text">十、常见错误与判断方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E6%9C%80%E7%BB%88%E7%BB%93%E8%AE%BA"><span class="toc-number">1.11.</span> <span class="toc-text">十一、最终结论</span></a></li></ol></li></ol></div></div></div></aside><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 – 2026 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> 宁翰</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-04-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><!-- hexo injector body_end start --><script src="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/js/index.js"></script><script src="/js/nav-title-fit.js" defer></script><!-- hexo injector body_end end --></body></html>
