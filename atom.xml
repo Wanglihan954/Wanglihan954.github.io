@@ -6,7 +6,7 @@
   <link href="https://20020730.xyz/atom.xml" rel="self"/>
   
   <link href="https://20020730.xyz/"/>
-  <updated>2026-08-31T07:02:57.901Z</updated>
+  <updated>2026-09-01T06:15:39.737Z</updated>
   <id>https://20020730.xyz/</id>
   
   <author>
@@ -20,8 +20,8 @@
     <title>Hello World</title>
     <link href="https://20020730.xyz/posts/4a17b156/"/>
     <id>https://20020730.xyz/posts/4a17b156/</id>
-    <published>2026-08-31T07:02:57.901Z</published>
-    <updated>2026-08-31T07:02:57.901Z</updated>
+    <published>2026-09-01T06:15:39.737Z</published>
+    <updated>2026-09-01T06:15:39.737Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js"></script><p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
     
@@ -59,9 +59,9 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
+    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
     <category term="VOS" scheme="https://20020730.xyz/tags/VOS/"/>
     
@@ -98,9 +98,9 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
-    
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
+    
+    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
     <category term="VOS" scheme="https://20020730.xyz/tags/VOS/"/>
     
@@ -176,13 +176,13 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
     
     <category term="UAV" scheme="https://20020730.xyz/tags/UAV/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -215,11 +215,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
+    <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
     
     <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
-    <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    <category term="SAM2" scheme="https://20020730.xyz/tags/SAM2/"/>
     
     <category term="多模态" scheme="https://20020730.xyz/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/"/>
     
@@ -252,11 +252,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -289,9 +289,9 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -326,11 +326,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -361,11 +361,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="多模态" scheme="https://20020730.xyz/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/"/>
     
@@ -398,10 +398,6 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
-    
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
@@ -410,7 +406,11 @@
     
     <category term="UAV" scheme="https://20020730.xyz/tags/UAV/"/>
     
+    <category term="跨视角" scheme="https://20020730.xyz/tags/%E8%B7%A8%E8%A7%86%E8%A7%92/"/>
+    
     <category term="RGB-T 跟踪" scheme="https://20020730.xyz/tags/RGB-T-%E8%B7%9F%E8%B8%AA/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
   </entry>
   
@@ -502,11 +502,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -537,11 +537,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -572,11 +572,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -607,11 +607,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -642,11 +642,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -677,11 +677,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
@@ -712,11 +712,11 @@
     
     <category term="AI论文" scheme="https://20020730.xyz/tags/AI%E8%AE%BA%E6%96%87/"/>
     
-    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
-    
     <category term="追踪" scheme="https://20020730.xyz/tags/%E8%BF%BD%E8%B8%AA/"/>
     
     <category term="RGB-T" scheme="https://20020730.xyz/tags/RGB-T/"/>
+    
+    <category term="Tracking" scheme="https://20020730.xyz/tags/Tracking/"/>
     
     <category term="视频目标跟踪" scheme="https://20020730.xyz/tags/%E8%A7%86%E9%A2%91%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
