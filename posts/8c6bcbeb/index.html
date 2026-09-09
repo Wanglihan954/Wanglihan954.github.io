@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="zh-CN"><head><!-- hexo injector head_begin start --><link href="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/css/index.css" rel="stylesheet"/><!-- hexo injector head_begin end --><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="宁翰"><meta name="copyright" content="宁翰"><meta name="generator" content="Hexo 8.1.1"><meta name="theme" content="hexo-theme-yun"><title>C++ Day 9 - Move Semantics | Seventh Knot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script><link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.css"><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><script defer src="https://fastly.jsdelivr.net/npm/katex@latest/dist/contrib/auto-render.min.js"></script><script type="module">import { renderKatex } from '/js/utils.js'
+document.addEventListener("DOMContentLoaded", () => {
+  renderKatex({
+    ...{"renderMathInElement":true,"strict":"ignore","output":"htmlAndMathml","displayMode":true,"trust":true},
+    ...undefined?.options,
+  });
+});</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"20020730.xyz","root":"/","title":"世界需要七休日","version":"1.10.11","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"local_search":{"path":"/search.xml"},"localsearch":{"enable":"fasle","trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]},"waline":{"config":{"enable":true,"serverURL":"https://comment.20020730.xyz","comment":true,"visitor":true,"emoji":["//unpkg.com/@waline/emojis@1.1.0/weibo",{"name":"嗯呢漫布","folder":"/images/zzz-stickers","prefix":"bangboo-","type":"jpg","icon":"/images/zzz-stickers/bangboo-thanks.jpg","items":["gift","thanks","rest"]},{"name":"丽都漫步","folder":"/images/zzz-stickers","prefix":"lidu-","type":"png","icon":"/images/zzz-stickers/lidu-anby.png","items":["anby","nekomata","lycaon","rina","soldier11","wise"]}],"el":"#waline","lang":"zh-CN"},"cdn":"https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.js","dark":"html.dark"},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><link rel="alternate" href="/atom.xml" title="Seventh Knot" type="application/atom+xml"><link rel="stylesheet" href="/css/custom_theme.css?v=20260824-2"><link rel="stylesheet" href="/css/projects.css?v=20260817-1"><script src="/js/web-pet.js" defer></script><script src="/js/mobile-navigation.js" defer></script><script src="/js/home-intro.js?v=20260810-6" defer></script><meta name="description" content="从值类别到 move constructor，厘清 std::move、资源转移和 moved-from object。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ Day 9 - Move Semantics">
+<meta property="og:url" content="https://20020730.xyz/posts/8c6bcbeb/index.html">
+<meta property="og:site_name" content="Seventh Knot">
+<meta property="og:description" content="从值类别到 move constructor，厘清 std::move、资源转移和 moved-from object。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Wanglihan954/Picture-bed@main/img/cs106l-2026/day9-copy-move.png">
+<meta property="article:published_time" content="2026-09-02T01:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-09T15:41:00.000Z">
+<meta property="article:author" content="宁翰">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="Modern C++">
+<meta property="article:tag" content="Move">
+<meta property="article:tag" content="Rvalue Reference">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Wanglihan954/Picture-bed@main/img/cs106l-2026/day9-copy-move.png"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script><!-- hexo injector head_end start --><link rel="stylesheet" href="/css/nav-title-fit.css"><!-- hexo injector head_end end --></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><nav class="valaxy-nav"><span class="nav-badge">INTER-KNOT // 20020730</span><div class="nav-left"><button class="nav-item" id="mobile-menu-btn" type="button" title="菜单" aria-label="打开菜单" aria-controls="site-overview-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:menu-line"></span></button><a class="nav-item" href="/" title="首页"><span class="icon iconify" data-icon="ri:home-4-line"></span></a><a class="nav-item desktop-only-icon" href="/archives/" title="归档"><span class="icon iconify" data-icon="ri:archive-line"></span></a><a class="nav-item desktop-only-icon" href="/categories/" title="分类"><span class="icon iconify" data-icon="ri:folder-2-line"></span></a><a class="nav-item desktop-only-icon" href="/tags/" title="标签"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></a><a class="nav-item desktop-only-icon" href="/girls/" title="代理人档案"><span class="nav-mask-icon" style="--nav-mask-image: url('/images/bangboo-nav.png')" aria-hidden="true"></span></a><a class="nav-item desktop-only-icon" href="/projects/" title="项目终端"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><div class="nav-center" id="nav-center"><div class="nav-title-wrapper"><a class="site-name" href="/">Seventh Knot</a><span class="article-title" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="点击回到顶部">C++ Day 9 - Move Semantics</span></div></div><div class="nav-right"><a class="nav-item" id="toggle-mode-btn" href="javascript:;" title="切换主题"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a><a class="nav-item" href="javascript:;" title="搜索" onclick="openMySearch()"><span class="icon iconify" data-icon="ri:search-line"></span></a></div></nav><div id="mobile-overlay" aria-hidden="true"></div><button id="mobile-toc-btn" type="button" title="文章目录" aria-label="打开文章目录" aria-controls="post-toc-wrap" aria-expanded="false"><span class="icon iconify" data-icon="ri:list-unordered"></span></button><script>// 滚动切换标题
+document.addEventListener('DOMContentLoaded', function() {
+  const navCenter = document.getElementById('nav-center');
+  if (navCenter && document.querySelector('.article-title')) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 150) { navCenter.classList.add('show-article-title'); } 
+      else { navCenter.classList.remove('show-article-title'); }
+    });
+  }
+});
+</script><div id="my-search-modal" style="display:none;"><div class="search-modal-bg" onclick="closeMySearch()"></div><div class="search-modal-content"><div class="search-header"><span class="search-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span><input id="my-search-input" type="text" placeholder="输入关键词搜索全站..."><span class="close-btn" id="my-search-close" onclick="closeMySearch()"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-results" id="my-search-results"></div></div></div><style>#my-search-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; display: flex; justify-content: center; padding-top: 12vh; }
+.search-modal-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.search-modal-content { position: relative; width: 90%; max-width: 650px; background: var(--my-card-bg, #ffffff); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); overflow: hidden; animation: slideDown 0.3s ease; display: flex; flex-direction: column; max-height: 75vh; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+.search-header { display: flex; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(150,150,150,0.1); }
+.search-header input { flex: 1; border: none; background: transparent; outline: none; font-size: 1.1rem; color: var(--hty-text-color); margin: 0 15px; }
+.search-header .close-btn { cursor: pointer; font-size: 1.4rem; opacity: 0.6; transition: all 0.2s; }
+.search-header .close-btn:hover { opacity: 1; color: var(--hty-primary-color); transform: rotate(90deg); }
+.search-results { overflow-y: auto; padding: 10px 24px 20px; }
+.search-result-item { display: block; padding: 15px 0; border-bottom: 1px dashed rgba(150,150,150,0.1); text-decoration: none; color: var(--hty-text-color); transition: all 0.2s; }
+.search-result-item:hover { transform: translateX(5px); }
+.search-result-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: var(--hty-primary-color); }
+.search-result-content { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; }
+.search-keyword { color: #ff5252; font-weight: bold; }
+</style><script>let mySearchData = null;
+window.openMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('my-search-input').focus(), 100);
+  if (!mySearchData) {
+    fetch('/search.xml').then(res => res.text()).then(str => {
+      const parser = new DOMParser();
+      const entries = parser.parseFromString(str, "text/xml").getElementsByTagName("entry");
+      mySearchData = Array.from(entries).map(entry => ({
+        title: entry.getElementsByTagName('title')[0]?.textContent || '',
+        content: entry.getElementsByTagName('content')[0]?.textContent.replace(/<[^>]+>/g, '') || '',
+        url: entry.getElementsByTagName('url')[0]?.textContent || ''
+      }));
+    }).catch(err => console.error("搜索数据加载失败:", err));
+  }
+};
+window.closeMySearch = function() {
+  document.getElementById('my-search-modal').style.display = 'none';
+  document.getElementById('my-search-input').value = '';
+  document.getElementById('my-search-results').innerHTML = '';
+};
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('my-search-input');
+  if(input) {
+    input.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+      const results = document.getElementById('my-search-results');
+      if (!keyword) { results.innerHTML = ''; return; }
+      if (!mySearchData) return;
+      const matched = mySearchData.filter(item => item.title.toLowerCase().includes(keyword) || item.content.toLowerCase().includes(keyword));
+      if (matched.length === 0) { results.innerHTML = '<div style="padding:30px;text-align:center;opacity:0.5;">呜呜，什么都没有找到...</div>'; return; }
+      results.innerHTML = matched.map(item => {
+        const reg = new RegExp(keyword, 'gi');
+        const title = item.title.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        let content = item.content;
+        const index = content.toLowerCase().indexOf(keyword);
+        if (index > -1) {
+          let start = Math.max(0, index - 30);
+          let end = Math.min(content.length, index + 30);
+          content = (start > 0 ? '...' : '') + content.substring(start, end) + (end < content.length ? '...' : '');
+          content = content.replace(reg, match => `<span class="search-keyword">${match}</span>`);
+        } else { content = content.substring(0, 60) + '...'; }
+        return `<a href="${item.url}" class="search-result-item"><div class="search-result-title">${title}</div><div class="search-result-content">${content}</div></a>`;
+      }).join('');
+    });
+  }
+});</script><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><div id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="宁翰"><img width="96" loading="lazy" src="/images/niyijiku-avatar.webp" alt="宁翰"><span class="site-author-status" title="四季花开">👍</span></a><div class="site-author-name"><a href="/about/">宁翰</a></div><span class="site-name">Seventh Knot</span><sub class="site-subtitle">第七绳结</sub><div class="site-description">宁翰留在绳网上的一枚私人节点</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">84</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">12</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">149</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><span class="icon iconify" data-icon="ri:rss-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Wanglihan954" title="GitHub" target="_blank" style="color:#f4f5f2"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:admin@yemengstar.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1485292158" title="网易云音乐" target="_blank" style="color:#C10D0C"><span class="icon iconify" data-icon="ri:netease-cloud-music-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://y.qq.com/n/ryqq/msg_center" title="QQ音乐" target="_blank" style="color:#10A983"><span class="icon iconify" data-icon="ri:qq-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/xiao-wang-52-36-47" title="知乎" target="_blank" style="color:#0084FF"><span class="icon iconify" data-icon="ri:zhihu-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435092993" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/girls/" title="代理人列表" style="color:#ffffff"><img class="sidebar-page-icon" src="/images/bangboo-nav.png" alt="" aria-hidden="true" width="32" height="32" style="width:2rem;height:2rem"></a><a class="links-item hty-icon-button" href="/projects/" title="项目终端" style="color:#ffffff"><span class="icon iconify" data-icon="ri:radar-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://20020730.xyz/posts/8c6bcbeb/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="宁翰"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Seventh Knot"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">C++ Day 9 - Move Semantics</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2026-09-02 09:00:00" itemprop="dateCreated datePublished" datetime="2026-09-02T09:00:00+08:00">2026-09-02</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2026-09-09 23:41:00" itemprop="dateModified" datetime="2026-09-09T23:41:00+08:00">2026-09-09</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><span class="icon iconify" data-icon="ri:file-word-line"></span></span> <span title="本文字数">924</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><span class="icon iconify" data-icon="ri:timer-line"></span></span> <span title="阅读时长">3m</span></span></span><span class="leancloud_visitors" id="/posts/8c6bcbeb/" data-flag-title="C++ Day 9 - Move Semantics"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><span class="icon iconify" data-icon="ri:eye-line"></span> <span class="leancloud-visitors-count"></span></span></span><span class="post-meta-divider">-</span><a href="#comment"><span class="post-meta-item-icon" title="评论数"><span class="icon iconify" data-icon="ri:chat-3-line"></span> <span class="waline-comment-count" id="/posts/8c6bcbeb/"></span></span></a><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">学习笔记</span></a></span> > <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/C/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">C++</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/C/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">C++</span></a><a class="tag-item" href="/tags/Modern-C/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Modern C++</span></a><a class="tag-item" href="/tags/Move/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Move</span></a><a class="tag-item" href="/tags/Rvalue-Reference/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Rvalue Reference</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><blockquote>
+<p><strong>学习信息</strong><br><strong>学习日期：</strong> 2026-09-02（周三）<br><strong>重点：</strong> T&amp;&amp;、lvalue&#x2F;rvalue、Move Constructor、Move Assignment、std::move、moved-from state<br><strong>所属计划：</strong> 14 天 C++ 学习计划 · Day 9<br><strong>前置笔记：</strong> C++ Day 8 - Special Member Functions &amp; Copy Semantics</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/Wanglihan954/Picture-bed@main/img/cs106l-2026/day9-copy-move.png" alt="Copy 与 Move Constructor 的资源处理对比" loading="lazy"></p>
+<blockquote>
+<p>图源：Stanford CS106L Spring 2026，<a target="_blank" rel="noopener" href="https://web.stanford.edu/class/cs106l/lectures/2026Spring-14-MoveSemantics.pdf">Move Semantics Slides</a> 第 68 页。Copy 创建独立资源；Move 转交资源并使来源对象保持可析构的有效状态。</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="今日目标"><a href="#今日目标" class="headerlink" title="今日目标"></a>今日目标</h2><ul>
+<li><input checked="" disabled="" type="checkbox"> 区分 Copy 与 Move 的资源语义。</li>
+<li><input checked="" disabled="" type="checkbox"> 理解 T&amp;、const T&amp;、T&amp;&amp; 的工程直觉。</li>
+<li><input checked="" disabled="" type="checkbox"> 解释 std::move 不会自行移动资源。</li>
+<li><input checked="" disabled="" type="checkbox"> 写出 Move Constructor &#x2F; Assignment 的最小所有权转移。</li>
+<li><input checked="" disabled="" type="checkbox"> 正确对待 moved-from object。</li>
+</ul>
+<h2 id="1-Move-的目标"><a href="#1-Move-的目标" class="headerlink" title="1. Move 的目标"></a>1. Move 的目标</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Copy：创建一份独立资源；源对象和目标对象都完整拥有资源</span><br><span class="line">Move：目标对象接管资源；源对象保留合法但未指定状态</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">std::vector&lt;<span class="type">int</span>&gt; <span class="title">a</span><span class="params">(<span class="number">1&#x27;000&#x27;000</span>)</span></span>;</span><br><span class="line">std::vector&lt;<span class="type">int</span>&gt; b = a;            <span class="comment">// 复制元素与存储</span></span><br><span class="line">std::vector&lt;<span class="type">int</span>&gt; c = std::<span class="built_in">move</span>(a); <span class="comment">// 通常转移内部指针、size、capacity</span></span><br></pre></td></tr></table></figure>
+
+<p>Move 的价值是避免不必要的大量数据复制，不是某条语句神奇地“搬内存”。</p>
+<h2 id="2-值类别的实用地图"><a href="#2-值类别的实用地图" class="headerlink" title="2. 值类别的实用地图"></a>2. 值类别的实用地图</h2><table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>实用分类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>x</td>
+<td>lvalue：有名字、通常还要继续使用</td>
+</tr>
+<tr>
+<td>T{}</td>
+<td>prvalue：临时值</td>
+</tr>
+<tr>
+<td>std::move(x)</td>
+<td>xvalue：可被当作将亡值处理</td>
+</tr>
+</tbody></table>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">lvalue  ─→ 倾向匹配 const T&amp; ─→ copy</span><br><span class="line">rvalue/xvalue ─→ 倾向匹配 T&amp;&amp; ─→ move</span><br></pre></td></tr></table></figure>
+
+<p>这只是重载解析的常见结果；是否真的移动取决于类型是否提供可用 move 操作。</p>
+<h2 id="3-std-move-是转换，不是动作"><a href="#3-std-move-是转换，不是动作" class="headerlink" title="3. std::move 是转换，不是动作"></a>3. std::move 是转换，不是动作</h2><p>它表达的是：</p>
+<blockquote>
+<p>我允许后续代码把 x 当作可移动资源。</p>
+</blockquote>
+<p>真正改变资源的是被选中的 Move Constructor 或 Move Assignment。因此调用 std::move(x) 后，不能再假设 x 的原值保持不变；但也不能假设它已经必然被清空。</p>
+<h2 id="4-裸资源的最小-Move-Constructor"><a href="#4-裸资源的最小-Move-Constructor" class="headerlink" title="4. 裸资源的最小 Move Constructor"></a>4. 裸资源的最小 Move Constructor</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Buffer</span>(Buffer&amp;&amp; other) <span class="keyword">noexcept</span></span><br><span class="line">    : <span class="built_in">size_</span>(other.size_),</span><br><span class="line">      <span class="built_in">data_</span>(other.data_) &#123;</span><br><span class="line">    other.size_ = <span class="number">0</span>;</span><br><span class="line">    other.data_ = <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">other.data_ ──→ heap data</span><br><span class="line">       ↓ transfer</span><br><span class="line">this-&gt;data_ ──→ heap data</span><br><span class="line">other.data_ ──→ nullptr</span><br></pre></td></tr></table></figure>
+
+<p>把源对象置空能避免两个对象析构时重复释放同一地址。</p>
+<h2 id="5-有名字的-T-仍是-lvalue"><a href="#5-有名字的-T-仍是-lvalue" class="headerlink" title="5. 有名字的 T&amp;&amp; 仍是 lvalue"></a>5. 有名字的 T&amp;&amp; 仍是 lvalue</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">consume</span><span class="params">(Tensor&amp;&amp; value)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// value 有名字，因此表达式 value 是 lvalue</span></span><br><span class="line">    Tensor next = std::<span class="built_in">move</span>(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>尽管 <code>value</code> 的声明类型是 <code>Tensor&amp;&amp;</code>，表达式 <code>value</code> 仍是 Lvalue；转交其资源时需要再次使用 <code>std::move(value)</code>。</p>
+<h2 id="6-const-与-noexcept"><a href="#6-const-与-noexcept" class="headerlink" title="6. const 与 noexcept"></a>6. const 与 noexcept</h2><p><code>const Tensor</code> 经 <code>std::move</code> 后得到 <code>const Tensor&amp;&amp;</code>；常规 <code>Tensor&amp;&amp;</code> Move Constructor 不能绑定它，因此通常只能走 Copy 路径。</p>
+<p>noexcept 表示移动不抛异常。标准容器扩容时通常更愿意使用 noexcept move，因为它更容易维持异常安全保证。</p>
+<h2 id="7-易错点"><a href="#7-易错点" class="headerlink" title="7. 易错点"></a>7. 易错点</h2><table>
+<thead>
+<tr>
+<th>易错认识</th>
+<th>正确理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>std::move 已经完成移动</td>
+<td>它只转换值类别，移动函数才转移资源</td>
+</tr>
+<tr>
+<td>moved-from object 已销毁</td>
+<td>仍有效，可析构、可重新赋值</td>
+</tr>
+<tr>
+<td>T&amp;&amp; r 中的 r 是 rvalue</td>
+<td>有名字的表达式 r 是 lvalue</td>
+</tr>
+<tr>
+<td>const T&amp;&amp; 更安全</td>
+<td>常阻止需要修改源对象的 move</td>
+</tr>
+<tr>
+<td>move 一定更快</td>
+<td>对小对象或无资源对象未必有收益</td>
+</tr>
+</tbody></table>
+<h2 id="8-过关自测"><a href="#8-过关自测" class="headerlink" title="8. 过关自测"></a>8. 过关自测</h2><ul>
+<li><input checked="" disabled="" type="checkbox"> 能用“复制资源 &#x2F; 转移所有权”解释 Copy 与 Move。</li>
+<li><input checked="" disabled="" type="checkbox"> 能写出四种典型构造、赋值触发路径。</li>
+<li><input checked="" disabled="" type="checkbox"> 能解释 std::move 与 Move Constructor 的分工。</li>
+<li><input checked="" disabled="" type="checkbox"> 能说明 moved-from state 的使用边界。</li>
+<li><input checked="" disabled="" type="checkbox"> 能解释 named rvalue reference 为什么仍要 std::move。</li>
+</ul>
+<blockquote>
+<p><strong>Day 9 完成</strong><br>对话整理记录中的阶段测试为 <strong>27 &#x2F; 28（96%）</strong>。学习重点是 Ownership Transfer，而不是把 Move 简化成“搬内存”。</p>
+</blockquote>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><blockquote>
+<p>C++ Day 10 - RAII &amp; unique_ptr：把资源释放从手工协议变成对象生命周期的自然结果。</p>
+</blockquote>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>宁翰</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://20020730.xyz/posts/8c6bcbeb/" title="C++ Day 9 - Move Semantics">https://20020730.xyz/posts/8c6bcbeb/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/posts/b85144b7/" rel="prev" title="C++ Day 10 - RAII &amp; unique_ptr"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">C++ Day 10 - RAII &amp; unique_ptr</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/posts/2ab8fe9f/" rel="next" title="C++ Day 8 - Special Member Functions &amp; Copy Semantics"><span class="post-nav-text">C++ Day 8 - Special Member Functions &amp; Copy Semantics</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议跳转 GitHub Issues 评论。</span><br><span>若没有本文 Issue，您可以使用 Comment 模版新建。</span><br></div><div class="toggle-comment-system" style="margin: 1rem auto"><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target="#waline" onclick="showComment(this.dataset.target)">waline</a><style>.utterances {
+  display: none;
+}</style><a class="toggle-comment-btn hty-button hty-button--raised text-uppercase" data-target=".utterances" onclick="showComment(this.dataset.target)">utterances</a><script>function hideAllComment() {
+  //- hide all
+  document.querySelectorAll('.toggle-comment-btn').forEach((btn) => {
+    const container = document.querySelector(btn.dataset.target);
+    if (container) {
+      container.style.display = "none";
+    }
+  });
+}
+function showComment(target) {
+  hideAllComment();
+  //- show target
+  const targetContainer = document.querySelector(target);
+  if (targetContainer) {
+    targetContainer.style.display = "block";
+  }
+}
+</script></div><div id="waline"></div><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@waline/client@v2/dist/waline.css"><script>window.CONFIG.waline.config.path = "/posts/8c6bcbeb/"</script><div class="js-Pjax"><script src="/js/comments/waline.js" type="module" defer></script></div><style>.utterances {
+  max-width: 100%;
+}</style><script src="https://utteranc.es/client.js" repo="Wanglihan954/disscussion" issue-term="pathname" label="comment" theme="github-light" crossorigin="anonymous" async></script></div></main><aside class="right-sidebar"><div id="post-toc-wrap" style="display:block; opacity:1; visibility:visible;"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8A%E6%97%A5%E7%9B%AE%E6%A0%87"><span class="toc-number">1.</span> <span class="toc-text">今日目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Move-%E7%9A%84%E7%9B%AE%E6%A0%87"><span class="toc-number">2.</span> <span class="toc-text">1. Move 的目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%80%BC%E7%B1%BB%E5%88%AB%E7%9A%84%E5%AE%9E%E7%94%A8%E5%9C%B0%E5%9B%BE"><span class="toc-number">3.</span> <span class="toc-text">2. 值类别的实用地图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-std-move-%E6%98%AF%E8%BD%AC%E6%8D%A2%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%8A%A8%E4%BD%9C"><span class="toc-number">4.</span> <span class="toc-text">3. std::move 是转换，不是动作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%A3%B8%E8%B5%84%E6%BA%90%E7%9A%84%E6%9C%80%E5%B0%8F-Move-Constructor"><span class="toc-number">5.</span> <span class="toc-text">4. 裸资源的最小 Move Constructor</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%9C%89%E5%90%8D%E5%AD%97%E7%9A%84-T-%E4%BB%8D%E6%98%AF-lvalue"><span class="toc-number">6.</span> <span class="toc-text">5. 有名字的 T&amp;&amp; 仍是 lvalue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-const-%E4%B8%8E-noexcept"><span class="toc-number">7.</span> <span class="toc-text">6. const 与 noexcept</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%98%93%E9%94%99%E7%82%B9"><span class="toc-number">8.</span> <span class="toc-text">7. 易错点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E8%BF%87%E5%85%B3%E8%87%AA%E6%B5%8B"><span class="toc-number">9.</span> <span class="toc-text">8. 过关自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-number">10.</span> <span class="toc-text">下一步</span></a></li></ol></div></div></div></aside><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2025 – 2026 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> 宁翰</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.11</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">(●'◡'●)</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2025-04-12T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:search-line"></span></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="https://fastly.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js"></script><script src="/js/search/local-search.js" defer type="module"></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><span class="icon iconify" data-icon="ri:close-line"></span></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="搜索..." value=""></div><div class="search-result-container"></div></div><!-- hexo injector body_end start --><script src="https://fastly.jsdelivr.net/npm/hexo-tag-common@0.2.0/js/index.js"></script><script src="/js/nav-title-fit.js" defer></script><!-- hexo injector body_end end --></body></html>
