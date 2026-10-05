@@ -6,7 +6,7 @@
   <link href="https://20020730.xyz/atom.xml" rel="self"/>
   
   <link href="https://20020730.xyz/"/>
-  <updated>2026-10-05T07:05:57.828Z</updated>
+  <updated>2026-10-05T13:25:10.115Z</updated>
   <id>https://20020730.xyz/</id>
   
   <author>
@@ -20,8 +20,8 @@
     <title>Hello World</title>
     <link href="https://20020730.xyz/posts/4a17b156/"/>
     <id>https://20020730.xyz/posts/4a17b156/</id>
-    <published>2026-10-05T07:05:57.828Z</published>
-    <updated>2026-10-05T07:05:57.828Z</updated>
+    <published>2026-10-05T13:25:10.115Z</published>
+    <updated>2026-10-05T13:25:10.115Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js"></script><p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
     
@@ -54,12 +54,10 @@
     
     
     
-    <category term="方向综述" scheme="https://20020730.xyz/categories/%E6%96%B9%E5%90%91%E7%BB%BC%E8%BF%B0/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%B9%E5%90%91%E7%BB%BC%E8%BF%B0/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
+    <category term="多模态" scheme="https://20020730.xyz/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/"/>
     
     <category term="DRGBT" scheme="https://20020730.xyz/tags/DRGBT/"/>
     
@@ -68,10 +66,6 @@
     <category term="缺失模态" scheme="https://20020730.xyz/tags/%E7%BC%BA%E5%A4%B1%E6%A8%A1%E6%80%81/"/>
     
     <category term="未配准" scheme="https://20020730.xyz/tags/%E6%9C%AA%E9%85%8D%E5%87%86/"/>
-    
-    <category term="综述" scheme="https://20020730.xyz/tags/%E7%BB%BC%E8%BF%B0/"/>
-    
-    <category term="动态多模态" scheme="https://20020730.xyz/tags/%E5%8A%A8%E6%80%81%E5%A4%9A%E6%A8%A1%E6%80%81/"/>
     
   </entry>
   
@@ -89,12 +83,8 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
-    
-    
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
     <category term="DRGBT" scheme="https://20020730.xyz/tags/DRGBT/"/>
     
@@ -120,16 +110,10 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
-    
-    
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
     <category term="DRGBT" scheme="https://20020730.xyz/tags/DRGBT/"/>
-    
-    <category term="因果表示学习" scheme="https://20020730.xyz/tags/%E5%9B%A0%E6%9E%9C%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0/"/>
     
     <category term="跨平台跟踪" scheme="https://20020730.xyz/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0%E8%B7%9F%E8%B8%AA/"/>
     
@@ -151,18 +135,14 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="UAV" scheme="https://20020730.xyz/tags/UAV/"/>
     
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
-    
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="微小目标" scheme="https://20020730.xyz/tags/%E5%BE%AE%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
+    <category term="小目标" scheme="https://20020730.xyz/tags/%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
     
     <category term="近红外" scheme="https://20020730.xyz/tags/%E8%BF%91%E7%BA%A2%E5%A4%96/"/>
     
@@ -184,18 +164,12 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
-    
-    <category term="多层特征" scheme="https://20020730.xyz/tags/%E5%A4%9A%E5%B1%82%E7%89%B9%E5%BE%81/"/>
-    
-    <category term="融合" scheme="https://20020730.xyz/tags/%E8%9E%8D%E5%90%88/"/>
     
   </entry>
   
@@ -213,20 +187,14 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="UAV" scheme="https://20020730.xyz/tags/UAV/"/>
     
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
-    
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     <category term="RGB" scheme="https://20020730.xyz/tags/RGB/"/>
-    
-    <category term="多层特征" scheme="https://20020730.xyz/tags/%E5%A4%9A%E5%B1%82%E7%89%B9%E5%BE%81/"/>
     
     <category term="Transformer" scheme="https://20020730.xyz/tags/Transformer/"/>
     
@@ -246,18 +214,14 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="UAV" scheme="https://20020730.xyz/tags/UAV/"/>
     
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
-    
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="微小目标" scheme="https://20020730.xyz/tags/%E5%BE%AE%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
+    <category term="小目标" scheme="https://20020730.xyz/tags/%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
     
     <category term="近红外" scheme="https://20020730.xyz/tags/%E8%BF%91%E7%BA%A2%E5%A4%96/"/>
     
@@ -277,16 +241,14 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="时空未对齐" scheme="https://20020730.xyz/tags/%E6%97%B6%E7%A9%BA%E6%9C%AA%E5%AF%B9%E9%BD%90/"/>
+    <category term="未配准" scheme="https://20020730.xyz/tags/%E6%9C%AA%E9%85%8D%E5%87%86/"/>
     
   </entry>
   
@@ -304,20 +266,16 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
     
+    <category term="目标检测" scheme="https://20020730.xyz/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/"/>
     
     <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
+    <category term="小目标" scheme="https://20020730.xyz/tags/%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
+    
     <category term="数据集" scheme="https://20020730.xyz/tags/%E6%95%B0%E6%8D%AE%E9%9B%86/"/>
-    
-    <category term="微小目标" scheme="https://20020730.xyz/tags/%E5%BE%AE%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
-    
-    <category term="检测" scheme="https://20020730.xyz/tags/%E6%A3%80%E6%B5%8B/"/>
-    
-    <category term="评价指标" scheme="https://20020730.xyz/tags/%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87/"/>
     
   </entry>
   
@@ -335,9 +293,7 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
@@ -345,8 +301,6 @@
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     <category term="未配准" scheme="https://20020730.xyz/tags/%E6%9C%AA%E9%85%8D%E5%87%86/"/>
-    
-    <category term="几何对齐" scheme="https://20020730.xyz/tags/%E5%87%A0%E4%BD%95%E5%AF%B9%E9%BD%90/"/>
     
   </entry>
   
@@ -364,20 +318,16 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
-    
-    
-    <category term="Mamba" scheme="https://20020730.xyz/tags/Mamba/"/>
     
     <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
+    
+    <category term="Mamba" scheme="https://20020730.xyz/tags/Mamba/"/>
     
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     <category term="未配准" scheme="https://20020730.xyz/tags/%E6%9C%AA%E9%85%8D%E5%87%86/"/>
-    
-    <category term="时序建模" scheme="https://20020730.xyz/tags/%E6%97%B6%E5%BA%8F%E5%BB%BA%E6%A8%A1/"/>
     
   </entry>
   
@@ -395,22 +345,16 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="UAV" scheme="https://20020730.xyz/tags/UAV/"/>
-    
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     <category term="RGB" scheme="https://20020730.xyz/tags/RGB/"/>
     
-    <category term="微小目标" scheme="https://20020730.xyz/tags/%E5%BE%AE%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
-    
-    <category term="多层特征" scheme="https://20020730.xyz/tags/%E5%A4%9A%E5%B1%82%E7%89%B9%E5%BE%81/"/>
+    <category term="小目标" scheme="https://20020730.xyz/tags/%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
     
   </entry>
   
@@ -428,18 +372,12 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
-    
-    <category term="模态注意力" scheme="https://20020730.xyz/tags/%E6%A8%A1%E6%80%81%E6%B3%A8%E6%84%8F%E5%8A%9B/"/>
-    
-    <category term="竞争学习" scheme="https://20020730.xyz/tags/%E7%AB%9E%E4%BA%89%E5%AD%A6%E4%B9%A0/"/>
     
   </entry>
   
@@ -457,18 +395,14 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
-    
-    
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="数据集" scheme="https://20020730.xyz/tags/%E6%95%B0%E6%8D%AE%E9%9B%86/"/>
+    <category term="小目标" scheme="https://20020730.xyz/tags/%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
     
-    <category term="微小目标" scheme="https://20020730.xyz/tags/%E5%BE%AE%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
+    <category term="数据集" scheme="https://20020730.xyz/tags/%E6%95%B0%E6%8D%AE%E9%9B%86/"/>
     
     <category term="知识蒸馏" scheme="https://20020730.xyz/tags/%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F/"/>
     
@@ -488,18 +422,12 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
     <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
-    
-    <category term="空间重校准" scheme="https://20020730.xyz/tags/%E7%A9%BA%E9%97%B4%E9%87%8D%E6%A0%A1%E5%87%86/"/>
-    
-    <category term="Adapter" scheme="https://20020730.xyz/tags/Adapter/"/>
     
   </entry>
   
@@ -517,20 +445,14 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
     
     <category term="UAV" scheme="https://20020730.xyz/tags/UAV/"/>
     
-    <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
-    
     <category term="RGB" scheme="https://20020730.xyz/tags/RGB/"/>
     
     <category term="小目标" scheme="https://20020730.xyz/tags/%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
-    
-    <category term="检测与跟踪" scheme="https://20020730.xyz/tags/%E6%A3%80%E6%B5%8B%E4%B8%8E%E8%B7%9F%E8%B8%AA/"/>
     
   </entry>
   
@@ -548,18 +470,14 @@
     
     
     
-    <category term="文献阅读" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/"/>
+    <category term="视觉目标跟踪" scheme="https://20020730.xyz/categories/%E8%A7%86%E8%A7%89%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
-    <category term="RGBT 跟踪" scheme="https://20020730.xyz/categories/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB/RGBT-%E8%B7%9F%E8%B8%AA/"/>
-    
-    
-    <category term="Mamba" scheme="https://20020730.xyz/tags/Mamba/"/>
     
     <category term="RGBT" scheme="https://20020730.xyz/tags/RGBT/"/>
     
-    <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
+    <category term="Mamba" scheme="https://20020730.xyz/tags/Mamba/"/>
     
-    <category term="可变形对齐" scheme="https://20020730.xyz/tags/%E5%8F%AF%E5%8F%98%E5%BD%A2%E5%AF%B9%E9%BD%90/"/>
+    <category term="单目标跟踪" scheme="https://20020730.xyz/tags/%E5%8D%95%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     
   </entry>
   
@@ -580,21 +498,13 @@
     <category term="AI 推理工程" scheme="https://20020730.xyz/categories/AI-%E6%8E%A8%E7%90%86%E5%B7%A5%E7%A8%8B/"/>
     
     
-    <category term="学习笔记" scheme="https://20020730.xyz/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    
     <category term="KuiperInfer" scheme="https://20020730.xyz/tags/KuiperInfer/"/>
-    
-    <category term="AI 推理工程" scheme="https://20020730.xyz/tags/AI-%E6%8E%A8%E7%90%86%E5%B7%A5%E7%A8%8B/"/>
-    
-    <category term="深度学习" scheme="https://20020730.xyz/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
     
     <category term="性能分析" scheme="https://20020730.xyz/tags/%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/"/>
     
     <category term="ONNXRuntime" scheme="https://20020730.xyz/tags/ONNXRuntime/"/>
     
     <category term="CUDA" scheme="https://20020730.xyz/tags/CUDA/"/>
-    
-    <category term="课程" scheme="https://20020730.xyz/tags/%E8%AF%BE%E7%A8%8B/"/>
     
   </entry>
   
@@ -619,13 +529,9 @@
     
     <category term="CS106L" scheme="https://20020730.xyz/tags/CS106L/"/>
     
-    <category term="学习笔记" scheme="https://20020730.xyz/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <category term="泛型编程" scheme="https://20020730.xyz/tags/%E6%B3%9B%E5%9E%8B%E7%BC%96%E7%A8%8B/"/>
     
-    <category term="Concepts" scheme="https://20020730.xyz/tags/Concepts/"/>
-    
-    <category term="TMP" scheme="https://20020730.xyz/tags/TMP/"/>
-    
-    <category term="Ranges" scheme="https://20020730.xyz/tags/Ranges/"/>
+    <category term="STL" scheme="https://20020730.xyz/tags/STL/"/>
     
   </entry>
   
