@@ -6,7 +6,7 @@
   <link href="https://20020730.xyz/atom.xml" rel="self"/>
   
   <link href="https://20020730.xyz/"/>
-  <updated>2026-10-05T13:25:10.115Z</updated>
+  <updated>2026-10-06T07:36:08.132Z</updated>
   <id>https://20020730.xyz/</id>
   
   <author>
@@ -20,8 +20,8 @@
     <title>Hello World</title>
     <link href="https://20020730.xyz/posts/4a17b156/"/>
     <id>https://20020730.xyz/posts/4a17b156/</id>
-    <published>2026-10-05T13:25:10.115Z</published>
-    <updated>2026-10-05T13:25:10.115Z</updated>
+    <published>2026-10-06T07:36:08.132Z</published>
+    <updated>2026-10-06T07:36:08.132Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer@latest/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@1/dist/Meting.min.js"></script><p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
     
@@ -144,9 +144,9 @@
     
     <category term="小目标" scheme="https://20020730.xyz/tags/%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
     
-    <category term="近红外" scheme="https://20020730.xyz/tags/%E8%BF%91%E7%BA%A2%E5%A4%96/"/>
-    
     <category term="Transformer" scheme="https://20020730.xyz/tags/Transformer/"/>
+    
+    <category term="近红外" scheme="https://20020730.xyz/tags/%E8%BF%91%E7%BA%A2%E5%A4%96/"/>
     
   </entry>
   
